@@ -114,7 +114,7 @@ def normalise_ticker(t212_ticker: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Sectors config
+# Sectors config + auto-resolution
 # ---------------------------------------------------------------------------
 
 def load_sectors_config() -> dict:
@@ -124,6 +124,83 @@ def load_sectors_config() -> dict:
     except Exception as exc:
         log.error("Could not load sectors config: %s", exc)
         return {"ticker_to_sector": {}, "ticker_to_holding_type": {}, "pie_labels": {}, "watchlist": []}
+
+
+def _infer_holding_type(info: dict) -> str:
+    """
+    Infer holding_type from yfinance info.
+    long_term: mega-cap ($100B+) with moderate volatility (beta < 1.2)
+    short_term: high beta (>2.0) or micro-cap (<$300M)
+    medium: everything else
+    """
+    market_cap = float(info.get("marketCap", 0) or 0)
+    beta = float(info.get("beta", 1.0) or 1.0)
+    if market_cap > 100e9 and beta < 1.2:
+        return "long_term"
+    if beta > 2.0 or (0 < market_cap < 300e6):
+        return "short_term"
+    return "medium"
+
+
+def auto_resolve_sectors(tickers: list[str], sectors: dict) -> None:
+    """
+    For tickers not in sectors config, look up yfinance and fill in sector
+    and holding_type.  ETFs are detected via quoteType.  Resolved entries are
+    written back to sectors.json on disk immediately.  Unresolvable tickers
+    are logged as warnings.
+    """
+    missing = [t for t in tickers if t not in sectors["ticker_to_sector"]]
+    if not missing:
+        return
+
+    try:
+        import yfinance as yf
+    except ImportError:
+        log.warning("yfinance not available — cannot auto-resolve: %s", missing)
+        return
+
+    log.info("Auto-resolving %d unknown ticker(s) via yfinance: %s", len(missing), missing)
+    resolved: list[str] = []
+
+    for ticker in missing:
+        try:
+            info = yf.Ticker(ticker).info or {}
+            quote_type = info.get("quoteType", "")
+
+            if not quote_type or quote_type.upper() == "NONE":
+                log.warning("No yfinance data for %-10s — leaving unresolved", ticker)
+                continue
+
+            if quote_type in ("ETF", "MUTUALFUND"):
+                category = info.get("category", "")
+                sector = f"{category} ETF" if category else "ETF"
+                holding_type = "etf"
+            else:
+                sector = info.get("sector", "")
+                if not sector:
+                    log.warning("No sector from yfinance for %-10s (quoteType=%s)", ticker, quote_type)
+                    continue
+                holding_type = _infer_holding_type(info)
+
+            sectors["ticker_to_sector"][ticker] = sector
+            sectors["ticker_to_holding_type"][ticker] = holding_type
+            log.info("Auto-resolved %-10s  sector=%-35s  type=%s", ticker, sector, holding_type)
+            resolved.append(ticker)
+
+        except Exception as exc:
+            log.warning("yfinance lookup failed for %-10s: %s", ticker, exc)
+
+    still_missing = [t for t in missing if t not in sectors["ticker_to_sector"]]
+    if still_missing:
+        log.warning("Could not resolve %d ticker(s): %s", len(still_missing), still_missing)
+
+    if resolved:
+        try:
+            with open(SECTORS_FILE, "w") as f:
+                json.dump(sectors, f, indent=2)
+            log.info("sectors.json updated with %d auto-resolved ticker(s): %s", len(resolved), resolved)
+        except Exception as exc:
+            log.error("Failed to write sectors.json: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -532,6 +609,10 @@ def fetch_portfolio(use_live: bool = True, allow_mock: bool = False) -> dict:
         if allow_mock:
             return _mock_portfolio()
         raise
+
+    # Auto-resolve any tickers not yet in sectors config, then enrich
+    all_tickers = list({normalise_ticker(p["ticker"]) for p in raw_positions})
+    auto_resolve_sectors(all_tickers, sectors)
 
     positions     = [_enrich_position(p, sectors) for p in raw_positions]
     order_history = _parse_order_history(raw_orders)
