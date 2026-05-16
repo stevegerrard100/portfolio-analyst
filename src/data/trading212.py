@@ -37,6 +37,7 @@ _EP_SUMMARY   = "/equity/account/summary"
 _EP_CASH      = "/equity/account/cash"
 _EP_POSITIONS = "/equity/portfolio/positions"
 _EP_ORDERS    = "/equity/history/orders"
+_EP_PIES      = "/equity/pies"
 
 
 # ---------------------------------------------------------------------------
@@ -57,11 +58,21 @@ class T212Error(Exception):
 
 # Hard overrides for tickers that can't be derived by the regex rules.
 _TICKER_OVERRIDES: dict[str, str] = {
-    "BRK_B_US_EQ": "BRK-B",
-    "BRK_A_US_EQ": "BRK-A",
-    "BF_B_US_EQ":  "BF-B",
-    "FB_US_EQ":    "META",   # Facebook → Meta Platforms rebrand (June 2022)
-    "TWTR_US_EQ":  "X",      # Twitter → X Corp
+    "BRK_B_US_EQ":  "BRK-B",
+    "BRK_A_US_EQ":  "BRK-A",
+    "BF_B_US_EQ":   "BF-B",
+    "FB_US_EQ":     "META",      # Facebook → Meta Platforms rebrand (June 2022)
+    "TWTR_US_EQ":   "X",         # Twitter → X Corp
+    "AVAV__US_EQ":  "AVAV",      # Double-underscore T212 quirk for AeroVironment
+    "FPp_EQ":       "FP.PA",     # TotalEnergies (Euronext Paris)
+}
+
+# T212 uses a lowercase suffix letter to encode the listing exchange for
+# non-US equities, replacing the standard yfinance dot-suffix convention.
+_EXCHANGE_SUFFIX: dict[str, str] = {
+    "l": ".L",   # London Stock Exchange
+    "d": ".DE",  # XETRA (Germany)
+    "p": ".PA",  # Euronext Paris
 }
 
 
@@ -71,10 +82,11 @@ def normalise_ticker(t212_ticker: str) -> str:
 
     T212 examples:
       AAPL_US_EQ   → AAPL
-      VWRP_EQ      → VWRP
-      LLOY_UK_EQ   → LLOY
-      BRK_B_US_EQ  → BRK-B   (override)
-      FB_US_EQ     → META     (override)
+      VWRP_EQ      → VWRP.L    (LSE ETF)
+      SEMIl_EQ     → SEMI.L    (lowercase-l = London)
+      COPGl_EQ     → COPG.L
+      BRK_B_US_EQ  → BRK-B    (override)
+      FB_US_EQ     → META      (override)
     """
     if t212_ticker in _TICKER_OVERRIDES:
         return _TICKER_OVERRIDES[t212_ticker]
@@ -86,7 +98,17 @@ def normalise_ticker(t212_ticker: str) -> str:
         "", ticker, flags=re.IGNORECASE,
     )
     ticker = re.sub(r"_EQ$", "", ticker, flags=re.IGNORECASE)
-    # Single trailing letter → class-share separator (BRK_B → BRK-B)
+    ticker = ticker.rstrip("_")  # Fix double-underscore artefacts (e.g. AVAV__)
+
+    # Lowercase suffix = exchange indicator (e.g. SEMIl → SEMI.L)
+    m = re.match(r"^(.+?)([a-z])$", ticker)
+    if m:
+        base, suffix = m.group(1), m.group(2)
+        exchange = _EXCHANGE_SUFFIX.get(suffix)
+        if exchange:
+            return base + exchange
+
+    # Single trailing uppercase letter → class-share separator (BRK_B → BRK-B)
     ticker = re.sub(r"_([A-Z])$", r"-\1", ticker)
     return ticker
 
@@ -183,6 +205,124 @@ class Trading212Client:
 
     def get_order_history(self) -> list:
         return self._to_list(self._get(_EP_ORDERS))
+
+    def get_pies(self) -> list:
+        """Return list of pie summaries (id, cash, result).  404 → []."""
+        raw = self._get(_EP_PIES, allow_404_empty=True)
+        return raw if isinstance(raw, list) else []
+
+    def get_pie_detail(self, pie_id: int) -> dict:
+        """Return {settings, instruments} for a single pie."""
+        return self._get(f"{_EP_PIES}/{pie_id}")
+
+    def get_pie_positions(self) -> list[dict]:
+        """
+        Fetch all pies and aggregate their instruments into raw T212 position
+        format compatible with _enrich_position.  Sleeps 32s between pie-detail
+        requests (hard rate limit: 1 req/30s on pies endpoints).
+        """
+        pies = self.get_pies()
+        if not pies:
+            return []
+
+        log.info("T212: %d pies — fetching details (1 req/30s rate limit)", len(pies))
+        agg: dict[str, dict] = {}
+
+        for pie_summary in pies:
+            pie_id = pie_summary["id"]
+            time.sleep(32)
+
+            detail: dict = {}
+            for attempt in range(3):
+                try:
+                    detail = self.get_pie_detail(pie_id)
+                    # Rate-limit "errors" are returned as HTTP 200 with a BusinessException body
+                    if isinstance(detail, dict) and detail.get("code") == "BusinessException":
+                        log.warning("Pie %d rate limited on attempt %d, waiting 32s", pie_id, attempt + 1)
+                        time.sleep(32)
+                        detail = {}
+                        continue
+                    break
+                except T212Error as exc:
+                    log.warning("Pie %d attempt %d failed: %s", pie_id, attempt + 1, exc)
+                    if attempt < 2:
+                        time.sleep(32)
+
+            if not detail:
+                log.warning("Skipping pie %d after failed fetches", pie_id)
+                continue
+
+            pie_name = detail.get("settings", {}).get("name", str(pie_id))
+            instruments = detail.get("instruments", [])
+            log.info("T212 pie '%s' (%d): %d instruments", pie_name, pie_id, len(instruments))
+
+            for instr in instruments:
+                t = instr.get("ticker", "")
+                if not t:
+                    continue
+                res = instr.get("result", {})
+                qty    = float(instr.get("ownedQuantity", 0))
+                cost   = float(res.get("priceAvgInvestedValue", 0))
+                mktval = float(res.get("priceAvgValue", 0))
+                ppl    = float(res.get("priceAvgResult", 0))
+
+                if t in agg:
+                    agg[t]["_qty"]    += qty
+                    agg[t]["_cost"]   += cost
+                    agg[t]["_mktval"] += mktval
+                    agg[t]["_ppl"]    += ppl
+                else:
+                    agg[t] = {"_qty": qty, "_cost": cost, "_mktval": mktval, "_ppl": ppl}
+
+        result: list[dict] = []
+        for t, d in agg.items():
+            qty = d["_qty"]
+            result.append({
+                "ticker":       t,
+                "quantity":     qty,
+                "averagePrice": round(d["_cost"] / qty, 4) if qty > 0 else 0.0,
+                "currentPrice": round(d["_mktval"] / qty, 4) if qty > 0 else 0.0,
+                "ppl":          d["_ppl"],
+            })
+        return result
+
+
+# ---------------------------------------------------------------------------
+# Position merging (direct holdings + pie holdings)
+# ---------------------------------------------------------------------------
+
+def _merge_raw_positions(direct: list[dict], pie: list[dict]) -> list[dict]:
+    """
+    Combine direct and pie raw positions, aggregating by T212 ticker.
+    If the same ticker appears in both (unusual but possible), quantities and
+    P&L are summed and per-share prices are recomputed from combined totals.
+    """
+    agg: dict[str, dict] = {}
+    for pos in direct + pie:
+        t = pos["ticker"]
+        qty = float(pos.get("quantity", 0))
+        avg = float(pos.get("averagePrice", 0))
+        cur = float(pos.get("currentPrice", 0))
+        ppl = float(pos.get("ppl", 0))
+        if t not in agg:
+            agg[t] = {"ticker": t, "_qty": qty, "_cost": qty * avg, "_mktval": qty * cur, "_ppl": ppl}
+        else:
+            agg[t]["_qty"]    += qty
+            agg[t]["_cost"]   += qty * avg
+            agg[t]["_mktval"] += qty * cur
+            agg[t]["_ppl"]    += ppl
+
+    result: list[dict] = []
+    for t, d in agg.items():
+        qty = d["_qty"]
+        result.append({
+            "ticker":       t,
+            "quantity":     qty,
+            "averagePrice": round(d["_cost"] / qty, 4) if qty > 0 else 0.0,
+            "currentPrice": round(d["_mktval"] / qty, 4) if qty > 0 else 0.0,
+            "ppl":          d["_ppl"],
+        })
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -354,6 +494,12 @@ def fetch_portfolio(use_live: bool = True, allow_mock: bool = False) -> dict:
 
         log.info("T212: fetching positions...")
         raw_positions = client.get_positions()
+
+        log.info("T212: fetching pie positions...")
+        raw_pie_positions = [p for p in client.get_pie_positions() if float(p.get("quantity", 0)) > 0]
+        if raw_pie_positions:
+            raw_positions = _merge_raw_positions(raw_positions, raw_pie_positions)
+            log.info("T212: merged — %d total positions from pies", len(raw_positions))
 
         log.info("T212: fetching account summary...")
         summary = client.get_account_summary()
