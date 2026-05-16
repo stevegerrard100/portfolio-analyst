@@ -120,14 +120,15 @@ def sector_rotation_narrative(sector_flows: dict, macro: dict) -> str:
     if not sector_flows:
         return "Sector flow data unavailable."
 
-    # Build compact sector table
+    # Build compact sector table (finviz_performance uses change_1w/1m/1y keys)
     rows = []
-    for s in sector_flows.get("sector_performance", []):
+    sector_perf = sector_flows.get("finviz_performance") or sector_flows.get("sector_performance", [])
+    for s in sector_perf:
         name = s.get("sector", "?")
-        w1  = _fmt_pct(s.get("perf_1w"))
-        m1  = _fmt_pct(s.get("perf_1m"))
-        ytd = _fmt_pct(s.get("perf_ytd"))
-        rows.append(f"  {name:<30} 1W:{w1:>7}  1M:{m1:>7}  YTD:{ytd:>7}")
+        w1  = _fmt_pct(s.get("change_1w") or s.get("perf_1w"))
+        m1  = _fmt_pct(s.get("change_1m") or s.get("perf_1m"))
+        ytd = _fmt_pct(s.get("change_1y") or s.get("perf_ytd"))
+        rows.append(f"  {name:<30} 1W:{w1:>7}  1M:{m1:>7}  1Y:{ytd:>7}")
 
     rotation_signals = sector_flows.get("rotation_signals", [])
     signal_lines = [f"  {r['ticker']}: {r['signal']}" for r in rotation_signals[:6]]
