@@ -1,106 +1,1387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Analyst</title>
-    <style>
-        :root {
-            --bg-primary:   #0d1117;
-            --bg-card:      #1c2128;
-            --border:       #30363d;
-            --text-primary: #e6edf3;
-            --text-muted:   #8b949e;
-            --blue:         #58a6ff;
-            --green:        #3fb950;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Analyst</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --surface2:#1c2128;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --green:   #3fb950;
+      --red:     #f85149;
+      --yellow:  #d29922;
+      --orange:  #f0883e;
+      --blue:    #58a6ff;
+      --purple:  #bc8cff;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      padding-bottom: 48px;
+    }
 
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    /* ── Header ──────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .hdr-meta { color: var(--muted); font-size: 12px; text-align: right; line-height: 1.6; }
+    .hdr-meta strong { color: var(--text); }
 
-        .container {
-            max-width: 560px;
-            padding: 48px 32px;
-            text-align: center;
-        }
+    /* ── Page ────────────────────────────────────────────── */
+    .page { max-width: 1440px; margin: 0 auto; padding: 0 24px; }
+    .section { margin-top: 20px; }
 
-        .badge {
-            display: inline-block;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--blue);
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: var(--blue);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 28px;
-        }
+    /* ── Grid helpers ────────────────────────────────────── */
+    .row { display: grid; gap: 16px; }
+    .row-2       { grid-template-columns: 1fr 1fr; }
+    .row-3       { grid-template-columns: 1fr 1fr 1fr; }
+    .row-sidebar { grid-template-columns: 300px 1fr; }
 
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 16px;
-        }
+    @media (max-width: 960px) {
+      .row-sidebar, .row-2, .row-3 { grid-template-columns: 1fr; }
+    }
 
-        p {
-            color: var(--text-muted);
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
+    /* ── Card ────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
 
-        .status {
-            margin-top: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+    /* ── Verdict ─────────────────────────────────────────── */
+    .verdict-card {
+      border-left: 3px solid var(--blue);
+      padding: 18px 22px;
+    }
+    .verdict-card p {
+      font-size: 15px;
+      line-height: 1.75;
+    }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            animation: pulse 2s ease-in-out infinite;
-        }
+    /* ── Account stats ───────────────────────────────────── */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-value { font-size: 15px; font-weight: 600; }
+    .pos { color: var(--green); }
+    .neg { color: var(--red);   }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-    </style>
+    /* ── Signal badges ───────────────────────────────────── */
+    .signal {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .s-ADD    { background: #0d2a14; color: var(--green);  border: 1px solid #245c2a; }
+    .s-HOLD   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .s-WATCH  { background: #2a1f07; color: var(--yellow); border: 1px solid #5a3d0a; }
+    .s-REDUCE { background: #2a1507; color: var(--orange); border: 1px solid #5a3010; }
+    .s-EXIT   { background: #2a0b0b; color: var(--red);    border: 1px solid #5a1414; }
+
+    /* ── Filter bar ──────────────────────────────────────── */
+    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-btn {
+      padding: 3px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: #0c1e2e;
+    }
+
+    /* ── Holdings grid ───────────────────────────────────── */
+    .holdings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── Holding card (expandable) ───────────────────────── */
+    details.hcard {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    details.hcard:hover  { border-color: #58a6ff55; }
+    details.hcard[open]  { border-color: var(--blue); }
+    details.hcard summary {
+      padding: 10px 12px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+    details.hcard summary::-webkit-details-marker { display: none; }
+
+    .hc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 3px;
+    }
+    .hc-ticker {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .hc-sector { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+    .hc-pnl   { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .hc-tags  { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+
+    .tag {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag.g { color: var(--green);  background: #0d2a14; border-color: #245c2a; }
+    .tag.r { color: var(--red);    background: #2a0b0b; border-color: #5a1414; }
+    .tag.y { color: var(--yellow); }
+
+    /* RS indicator bar */
+    .rs-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .rs-fill { height: 100%; border-radius: 2px; }
+
+    /* Expanded analysis */
+    .hc-analysis {
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .expand-hint {
+      font-size: 10px;
+      color: #444d56;
+      text-align: right;
+      margin-top: 4px;
+    }
+    details.hcard[open] .expand-hint { display: none; }
+
+    /* ── Narrative text ──────────────────────────────────── */
+    .narrative {
+      font-size: 13px;
+      line-height: 1.8;
+      color: #c9d1d9;
+    }
+    .narrative strong { color: var(--text); }
+
+    /* ── Screener table ──────────────────────────────────── */
+    .stbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .stbl th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .stbl td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--surface2);
+      vertical-align: middle;
+    }
+    .stbl tr:last-child td { border-bottom: none; }
+    .stbl tr:hover td { background: var(--surface2); }
+
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-bar {
+      display: inline-block;
+      height: 6px;
+      background: var(--blue);
+      border-radius: 3px;
+      min-width: 2px;
+    }
+
+    /* ── Chart wrapper ───────────────────────────────────── */
+    .chart-wrap { position: relative; margin-top: 16px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="badge">Portfolio Analyst</div>
-        <h1>Analysis pipeline deploying</h1>
-        <p>
-            The automated market analysis system is being built.
-            Daily reports covering your portfolio, sector rotation, and
-            growth opportunities will appear here once setup is complete.
-        </p>
-        <p>
-            Runs every weekday morning, or on demand via GitHub Actions.
-        </p>
-        <div class="status">
-            <div class="dot"></div>
-            <span>Pipeline active &mdash; Phase 1 complete</span>
-        </div>
+  <header>
+    <h1>Portfolio Analyst</h1>
+    <div class="hdr-meta">
+      <div><strong id="hdr-date"></strong></div>
+      <div id="hdr-sub"></div>
     </div>
+  </header>
+
+  <div class="page">
+
+    <!-- Today's Verdict -->
+    <div class="section">
+      <div class="card verdict-card">
+        <div class="card-title">Today's Verdict</div>
+        <p id="verdict-text"></p>
+      </div>
+    </div>
+
+    <!-- Portfolio Summary + Holdings -->
+    <div class="section row row-sidebar">
+
+      <!-- Left: summary + donut -->
+      <div class="card">
+        <div class="card-title">Portfolio</div>
+        <div id="account-stats"></div>
+        <div class="chart-wrap" style="height:230px">
+          <canvas id="sector-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Right: holdings -->
+      <div class="card">
+        <div class="card-title">Holdings Analysis</div>
+        <div class="filter-bar" id="filter-bar"></div>
+        <div class="holdings-grid" id="holdings-grid"></div>
+      </div>
+
+    </div>
+
+    <!-- Macro · Sectors · Opportunities -->
+    <div class="section row row-3">
+      <div class="card">
+        <div class="card-title">Macro Environment</div>
+        <div class="narrative" id="macro-text"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Sector Rotation</div>
+        <div class="narrative" id="sector-text"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Growth Opportunities</div>
+        <div class="narrative" id="opps-text"></div>
+      </div>
+    </div>
+
+    <!-- Screener candidates -->
+    <div class="section">
+      <div class="card">
+        <div class="card-title">Top Screener Candidates — S&amp;P 500</div>
+        <table class="stbl">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Company</th>
+              <th>Sector</th>
+              <th>Mansfield RS</th>
+              <th>Rev Growth</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody id="screener-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // ── Injected data ────────────────────────────────────────────────────────
+    const DATA = {
+  "meta": {
+    "generated_at": "2026-05-16T23:26:06.985160",
+    "date_str": "Saturday, 16 May 2026",
+    "time_str": "23:26",
+    "model": "claude-sonnet-4-6"
+  },
+  "verdict": "**Today's Verdict**\n\nYour portfolio is in decent shape — up nearly 5% overall with strong winners carrying their weight — but with 39 holdings, you're spread thin and likely diluting your best ideas. The single most important thing to consider today is your MSFT position: it's your biggest loser, sitting in a sector that's currently winning, which means something specific to that holding is underperforming — and that deserves a hard look. Looking ahead, the rotation into Energy and Tech is real and building, so expect your stronger positions to do more of the heavy lifting over the coming weeks.\n\n*For informational purposes only — not financial advice.*",
+  "macro_narrative": "## What the Macro Picture Means for Your Portfolio\n\nInterest rates are slowly easing, which is generally good news — borrowing gets cheaper, and that tends to support both stocks and bonds. But with the Fed Funds Rate still at 3.6% and 10-year Treasuries yielding 4.5%, you're still being paid a decent return just to hold relatively safe assets. That's a genuine alternative to taking on stock market risk, so it's worth making sure your cash and bonds are actually working for you.\n\nThe yield curve — essentially a map of what bond markets expect for the economy — is flat but positive, which isn't flashing recession warnings. Corporate credit spreads (the extra return investors demand for lending to riskier companies) are tight, meaning markets are feeling fairly confident about the economy. Together, these signals lean cautiously optimistic.\n\nThe key risk to watch: inflation is still running hot at 12.1% annually, which could force the Fed to pause or reverse its rate cuts — a headwind for stocks. The tailwind: falling market volatility (the VIX has dropped meaningfully) suggests investors are growing more confident, which historically supports equity gains.\n\n*This is for informational purposes only and is not financial advice.*",
+  "sector_narrative": "**The big picture:** Money is quietly shifting toward two clear winners right now — **Energy** and **Technology**. Energy had a standout week (up 5%) and is building real momentum, while Tech has surged over 12% in the past month alone. At the same time, defensive corners of the market like Consumer Staples and Utilities are actually losing ground over the past month, which typically signals that investors feel confident enough to take on more risk.\n\n**What you should watch:** The momentum building in Financials, Industrials, and Consumer Discretionary (think retail and travel companies) suggests the market is leaning toward an economic recovery story — helped by the fact that borrowing conditions are healthy and interest rates are starting to ease. If you're currently sitting heavily in \"safe\" sectors, this data suggests it's worth reviewing whether that still matches your goals — you may be missing where the action is right now.\n\n*This is for informational purposes only and is not financial advice.*",
+  "opportunities": "Based on your current holdings and the macro backdrop (rates starting to ease, but credit still tight — meaning borrowing is expensive but getting cheaper), here are the five picks most worth your attention. I've leaned toward companies with real revenue momentum and reasonable prices, while complementing rather than doubling up on what you already own.\n\n---\n\n**MU — Micron Technology** makes the memory chips that power AI servers, smartphones, and data centers. Revenue has exploded nearly 200% — a genuine recovery after a brutal industry downturn. Falling rates directly lower Micron's borrowing costs, and surging AI infrastructure spending is the catalyst that could drive the next leg higher.\n\n**PWR — Quanta Services** builds and maintains America's electrical grid and energy infrastructure. With grid modernization and the energy demands of AI data centers accelerating, Quanta sits at the intersection of two powerful spending waves. Its top-tier score and 26% revenue growth suggest the market is already noticing — but the buildout is still early.\n\n**DELL — Dell Technologies** sells servers and infrastructure that companies need to run AI workloads. At a price-to-sales ratio of just 1.4 — very cheap for nearly 40% revenue growth — the market hasn't fully priced in Dell's role as a back-end AI play. An enterprise spending rebound as rates ease could be the trigger.\n\n**GOOG — Alphabet** runs Google Search, YouTube, and one of the world's largest cloud platforms. It has the highest relative strength score here, meaning it's genuinely outperforming the broader market. Growing AI integration across its products and recovering digital ad spending are the near-term catalysts. You have Communication Services exposure already, but Alphabet's scale is hard to replicate.\n\n**EME — EMCOR Group** designs and builds electrical and mechanical systems for buildings, data centers, and industrial facilities. It complements your existing holdings without overlapping much. With 20% revenue growth and a modest valuation, the catalyst is straightforward: every new data center and infrastructure project needs what EMCOR installs.\n\n---\n\n*This is for informational purposes only and is not financial advice. Always consider your full financial picture before making any investment decisions.*",
+  "account": {
+    "total": 78988.14,
+    "unrealized_ppl": 3596.09,
+    "realized_ppl": 10213.92,
+    "currency": "GBP",
+    "pct_gain": 4.8,
+    "n_positions": 39
+  },
+  "sectors": [
+    {
+      "label": "Global ETF",
+      "value": 17735.43,
+      "color": "#58a6ff"
+    },
+    {
+      "label": "Technology",
+      "value": 13412.82,
+      "color": "#3fb950"
+    },
+    {
+      "label": "Technology ETF",
+      "value": 11591.06,
+      "color": "#d29922"
+    },
+    {
+      "label": "Commodities",
+      "value": 8518.15,
+      "color": "#f85149"
+    },
+    {
+      "label": "Consumer Discretionary",
+      "value": 6061.55,
+      "color": "#bc8cff"
+    },
+    {
+      "label": "Energy",
+      "value": 2936.01,
+      "color": "#79c0ff"
+    },
+    {
+      "label": "Unknown",
+      "value": 2667.31,
+      "color": "#56d364"
+    },
+    {
+      "label": "Defense & Aerospace",
+      "value": 2150.29,
+      "color": "#e3b341"
+    },
+    {
+      "label": "Communication Services",
+      "value": 1914.41,
+      "color": "#ffa657"
+    }
+  ],
+  "holdings": [
+    {
+      "ticker": "SEMI.L",
+      "signal": "HOLD",
+      "analysis": "This is your largest ETF holding and your biggest pound-gain position, up over £1,800. A semiconductor-focused ETF with strong underlying revenue growth gives you broad exposure to one of the most important technology themes of the decade. The short-term technicals have softened, but this is a long-term structural theme — semiconductors underpin AI, electric vehicles, data centres and more. Hold confidently and consider whether you want to protect some of that gain with a mental stop-loss level.",
+      "sector": "Technology ETF",
+      "holding_type": "etf",
+      "pnl_pct": 36.4,
+      "ppl": 1848.0,
+      "market_value": 6919.0,
+      "quantity": 481.10283,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 108.41,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "MSFT",
+      "signal": "HOLD",
+      "analysis": "Microsoft remains a fundamentally strong business with nearly 15% revenue growth and a consistent track record of beating earnings expectations, so the long-term case is intact. However, the price is sliding — you're sitting on a 13% loss — and the short-term momentum is clearly negative with bearish signals across the board. Stay the course if this is a long-term holding, but keep watching: if losses deepen meaningfully, it's worth reassessing your entry point thesis.",
+      "sector": "Technology",
+      "holding_type": "long_term",
+      "pnl_pct": -13.0,
+      "ppl": -701.0,
+      "market_value": 4703.0,
+      "quantity": 14.943539,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -25.75,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "EQQQ.L",
+      "signal": "HOLD",
+      "analysis": "This tracks the Nasdaq 100, giving you broad exposure to the largest US technology companies. You're up over 10% and while short-term momentum is soft, the long-term track record of this index is strong. Note that you also have direct holdings in many of the same companies (MSFT, AAPL, AMZN etc.), so check whether the combined tech exposure across your whole portfolio is as large as you intend it to be.",
+      "sector": "Technology ETF",
+      "holding_type": "etf",
+      "pnl_pct": 10.5,
+      "ppl": 420.0,
+      "market_value": 4439.0,
+      "quantity": 8.26828,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 8.35,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "FWRG.L",
+      "signal": "HOLD",
+      "analysis": "A global ETF with an 8% gain and near-flat relative strength — it's moving broadly in line with world markets. This is likely your core diversified holding and serves an important stabilising role in the portfolio. No red flags here — hold as a foundation position and let it do its job.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": 8.3,
+      "ppl": 337.0,
+      "market_value": 4413.0,
+      "quantity": 644.116344,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 0.64,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "AMZN",
+      "signal": "WATCH",
+      "analysis": "Amazon is growing revenues solidly at over 12% and the business remains healthy, but two recent earnings misses are a yellow flag worth tracking — it suggests the company may be struggling to meet the market's high expectations. The stock is technically weak right now, sitting below key moving averages with bearish momentum. You're still up 16%, which is a decent cushion, but watch the next earnings report closely before adding more.",
+      "sector": "Consumer Discretionary",
+      "holding_type": "long_term",
+      "pnl_pct": 16.6,
+      "ppl": 574.0,
+      "market_value": 4024.0,
+      "quantity": 20.43302,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 2.11,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "GOOGL",
+      "signal": "HOLD",
+      "analysis": "Google is one of the stronger setups here: 15% revenue growth, a high relative strength score of 90, and only one recent earnings miss suggest the fundamentals are solid and the stock has been holding up better than many peers. The short-term technicals are soft like everything else right now, but for a long-term holder this is a quality name worth keeping. No urgent action needed.",
+      "sector": "Technology",
+      "holding_type": "long_term",
+      "pnl_pct": 26.2,
+      "ppl": 670.0,
+      "market_value": 3225.0,
+      "quantity": 10.879821,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 90.41,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "ARCI.L",
+      "signal": "HOLD",
+      "analysis": "A global ETF with a 10% gain and moderate positive signals — this looks like another sensible diversified core holding. The relative strength is modest but positive. Hold as part of your broader ETF base.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": 10.3,
+      "ppl": 300.0,
+      "market_value": 3215.0,
+      "quantity": 396.527305,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 10.33,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "SPEX.L",
+      "signal": "HOLD",
+      "analysis": "Marginally positive return and slightly negative relative strength, suggesting this ETF is underperforming the broader market slightly. Not a cause for alarm — ETFs like this are meant to be held through short-term noise. No action needed but worth checking what index or theme this tracks to ensure it still aligns with your goals.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": 2.8,
+      "ppl": 80.0,
+      "market_value": 2927.0,
+      "quantity": 56.649669,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -9.42,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "NCLP.L",
+      "signal": "WATCH",
+      "analysis": "Down just over 5% with a reasonable relative strength score — this is underperforming modestly. Without more detail on what this ETF tracks it's hard to be precise, but the loss in a broadly rising market environment is worth monitoring. Identify the underlying theme and check whether it's facing structural headwinds.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": -5.2,
+      "ppl": -148.0,
+      "market_value": 2721.0,
+      "quantity": 61.164108,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 64.44,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "XLPS.L",
+      "signal": "HOLD",
+      "analysis": "A small positive return and slightly negative relative strength — broadly keeping pace with markets but not leading. This looks like another core diversified holding. Hold and keep monitoring for any sustained drift lower.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": 3.0,
+      "ppl": 79.0,
+      "market_value": 2699.0,
+      "quantity": 4.648542,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -13.31,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "AAPL",
+      "signal": "WATCH",
+      "analysis": "Apple's revenue growth of just over 6% is relatively modest for a tech giant trading at a premium valuation (a PE of 31 means you're paying £31 for every £1 of earnings), and insider selling — where company executives are offloading their own shares — is a subtle but worth-noting caution signal. The beat streak on earnings is reassuring, but the combination of rich valuation, slowing growth, and insider selling warrants keeping a closer eye on this one. No need to panic, but don't add more at this price.",
+      "sector": "Technology",
+      "holding_type": "long_term",
+      "pnl_pct": 14.5,
+      "ppl": 331.0,
+      "market_value": 2606.0,
+      "quantity": 11.591553,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 13.4,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "TSLA",
+      "signal": "REDUCE",
+      "analysis": "Tesla is the most concerning position in your portfolio from a fundamental standpoint: revenue is actually shrinking, the valuation is extraordinarily high (a PE of 168 means the market is pricing in perfection), and it has missed earnings twice recently. You're barely breakeven at the moment, which gives you a relatively clean exit if you want one. Consider trimming this position — the risk-reward here looks unfavourable.",
+      "sector": "Consumer Discretionary",
+      "holding_type": "medium",
+      "pnl_pct": 0.7,
+      "ppl": 13.0,
+      "market_value": 2038.0,
+      "quantity": 6.491642,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -4.11,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "META",
+      "signal": "ADD",
+      "analysis": "Meta looks like one of the more attractive opportunities in your portfolio right now: 22% revenue growth, strong cash generation, a relatively modest valuation for a company of its quality, and a consistent track record of beating earnings. You're only marginally up, which means you're not chasing a rally — you're buying in at a reasonable level. If you have capacity to add, this is one of the better-supported names here.",
+      "sector": "Communication Services",
+      "holding_type": "medium",
+      "pnl_pct": 2.3,
+      "ppl": 44.0,
+      "market_value": 1914.0,
+      "quantity": 4.182093,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -23.53,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "COPG.L",
+      "signal": "HOLD",
+      "analysis": "This copper-linked holding is showing a healthy 13% gain and a solid relative strength score, suggesting it's been performing well compared to the broader market. Commodities don't have traditional earnings metrics, so the focus here is on price momentum and macro factors like industrial demand and global growth. The short-term technicals have weakened, so watch for further softness, but the underlying trend has been positive.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": 13.7,
+      "ppl": 224.0,
+      "market_value": 1861.0,
+      "quantity": 38.003344,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 74.18,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "AMD",
+      "signal": "WATCH",
+      "analysis": "AMD has genuinely impressive revenue growth of 34%, which is the kind of number that justifies some patience, but one recent earnings miss and a fairly elevated valuation means it needs to keep delivering. Short interest (the proportion of investors betting the stock will fall) is a little elevated at 2.2%, which is worth noting. Hold what you have but don't rush to add until the technical picture stabilises and earnings consistency improves.",
+      "sector": "Technology",
+      "holding_type": "medium",
+      "pnl_pct": -4.5,
+      "ppl": -86.0,
+      "market_value": 1834.0,
+      "quantity": 5.820182,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 187.67,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "GDXJ.L",
+      "signal": "HOLD",
+      "analysis": "This is a fund tracking smaller gold mining companies, and it's showing a modest 2% loss with a reasonable relative strength score. Gold miners tend to be more volatile than gold itself, but if you believe in the medium-term case for gold as a store of value, this is a reasonable way to get exposure. The bearish short-term signals are worth noting, but this is a hold for now given the commodity backdrop.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": -2.0,
+      "ppl": -37.0,
+      "market_value": 1766.0,
+      "quantity": 21.828804,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 64.76,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "R2SC.L",
+      "signal": "HOLD",
+      "analysis": "Up nearly 15% with broadly neutral momentum signals — this looks like one of your better-performing ETF positions. Small-cap exposure (if that's what this tracks, as the name suggests a Russell 2000 small-cap fund) can add useful diversification alongside your large-cap tech holdings. Hold with comfort.",
+      "sector": "Global ETF",
+      "holding_type": "etf",
+      "pnl_pct": 14.7,
+      "ppl": 226.0,
+      "market_value": 1761.0,
+      "quantity": 28.789678,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 6.43,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "GDX.L",
+      "signal": "HOLD",
+      "analysis": "Similar to GDXJ but tracking larger, more established gold miners, GDX is down about 6.5% and showing below-average short-term momentum. It's a slightly more conservative version of the gold miner theme compared to GDXJ. If you're holding both GDX and GDXJ, it's worth asking whether you need both — there's significant overlap and consolidating into one could simplify your portfolio without losing the exposure.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": -6.5,
+      "ppl": -122.0,
+      "market_value": 1759.0,
+      "quantity": 23.706932,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 52.39,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "SILG.L",
+      "signal": "WATCH",
+      "analysis": "Silver-linked exposure with a near 10% loss, and despite a very high relative strength score of 91 (suggesting silver has actually been outperforming many assets), the technical trend has turned soft recently. Silver can be more volatile than gold and more sensitive to industrial demand. Hold for now if this fits your commodity thesis, but keep a close eye — the combination of a loss and weakening short-term signals warrants monitoring.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": -9.6,
+      "ppl": -184.0,
+      "market_value": 1743.0,
+      "quantity": 53.274509,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 91.29,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "GEV",
+      "signal": "HOLD",
+      "analysis": "GE Vernova is a clean energy infrastructure business with solid revenue growth and a strong relative strength score of 95, suggesting it has been outperforming the market recently. You're roughly breakeven on cost, and the fundamentals look reasonable for a medium-term hold. One recent earnings miss is not a major concern. This is a well-positioned energy transition play — hold and give it time.",
+      "sector": "Energy",
+      "holding_type": "medium",
+      "pnl_pct": -1.0,
+      "ppl": -15.0,
+      "market_value": 1468.0,
+      "quantity": 1.868025,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 95.23,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "NVDA",
+      "signal": "HOLD",
+      "analysis": "Nvidia's fundamentals are exceptional — 65% revenue growth and a consistent earnings beat streak put it in a league of its own in this portfolio. You're sitting on a solid 24% gain, and while the short-term price action is soft like the rest of the market, the long-term story here is one of the strongest available. Hold firmly and consider whether you want to increase your position size over time given how small this holding currently is relative to the opportunity.",
+      "sector": "Technology",
+      "holding_type": "medium",
+      "pnl_pct": 24.6,
+      "ppl": 206.0,
+      "market_value": 1044.0,
+      "quantity": 6.203266,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 32.29,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "KGS",
+      "signal": "HOLD",
+      "analysis": "Kingswood Group shows decent revenue growth of nearly 13% and solid free cash flow of 4.4%, and you're up 7% overall. The elevated short interest of 8% is worth flagging — it suggests some investors are sceptical — but the fundamentals are sound enough to justify holding. Two recent earnings misses are a mild concern; watch the next result closely.",
+      "sector": "Energy",
+      "holding_type": "medium",
+      "pnl_pct": 7.0,
+      "ppl": 68.0,
+      "market_value": 1035.0,
+      "quantity": 18.660764,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 70.74,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "SGLP.L",
+      "signal": "WATCH",
+      "analysis": "This is your weakest-performing commodity holding, down over 10%, and it has a deeply negative relative strength score of nearly -99, meaning it has been significantly underperforming the market. That's a meaningful warning sign. Clarify what this product tracks specifically — if it's a leveraged or short-dated instrument, the risk of further decay is real and the case for holding becomes harder to justify.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": -10.4,
+      "ppl": -105.0,
+      "market_value": 908.0,
+      "quantity": 2.767415,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -98.87,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "VACQ",
+      "signal": "WATCH",
+      "analysis": "You're up 31% on this unknown holding, which is a great result, but without any financial data or sector information it's impossible to assess whether that gain is built on solid foundations or is speculative froth. Consider taking some profit here — banking a gain when you can't properly analyse the fundamentals is sensible risk management. Find out what this is before deciding whether to hold the remainder.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": 31.2,
+      "ppl": 148.0,
+      "market_value": 621.0,
+      "quantity": 6.751332,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "DMYI",
+      "signal": "WATCH",
+      "analysis": "There's very little information available here: no earnings data, no revenue figures, and an unknown sector classification, which makes it impossible to assess the fundamental health of this holding. You're barely breakeven, so the downside is limited for now, but without being able to understand what you own, this is difficult to justify holding with conviction. Try to identify exactly what this is and whether it still fits your investment goals.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": 0.5,
+      "ppl": 3.0,
+      "market_value": 588.0,
+      "quantity": 15.291481,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "ONDS",
+      "signal": "WATCH",
+      "analysis": "Ondas Holdings shows explosive revenue growth of over 600%, which sounds remarkable, but the negative PE ratio means the company is still losing money, and a short interest of 34% is a very significant red flag — that means a large proportion of market participants are actively betting this stock will fall. Three recent earnings misses add to the concern. This is a high-risk, speculative position — size it accordingly and don't add more until the losses turn to profits.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": -4.9,
+      "ppl": -27.0,
+      "market_value": 533.0,
+      "quantity": 67.737711,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 807.57,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "SNII",
+      "signal": "EXIT",
+      "analysis": "A 44% loss with zero visible financial data, no sector clarity, and no earnings information is a serious red flag. Without any fundamental basis to believe in a recovery, holding on in the hope it bounces back is speculative rather than strategic. Consider cutting this position and redeploying the capital somewhere you have higher conviction — the opportunity cost of waiting here is real.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": -44.4,
+      "ppl": -422.0,
+      "market_value": 528.0,
+      "quantity": 39.395899,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "XPOA",
+      "signal": "WATCH",
+      "analysis": "You're down nearly 32% on this position and there's no financial data available to assess whether the business behind it is worth holding through that loss. Unknown sector, no earnings history, no revenue figures — this is a significant blind spot in your portfolio. Before doing anything, make sure you understand what this company actually does and whether the original reason you bought it still holds.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": -31.9,
+      "ppl": -234.0,
+      "market_value": 500.0,
+      "quantity": 32.877816,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "LMT",
+      "signal": "HOLD",
+      "analysis": "Lockheed Martin is a steady, profitable defence business with a sensible valuation and meaningful free cash flow — that's the money left over after running and investing in the business — of nearly 6%. You're down about 9%, which isn't alarming for a long-term hold in a quality company like this. One recent earnings miss is a minor blemish. This is likely a market-wide sentiment issue rather than a company-specific problem — hold and let it recover.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": -9.4,
+      "ppl": -50.0,
+      "market_value": 485.0,
+      "quantity": 1.247729,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -10.04,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "GORO",
+      "signal": "REDUCE",
+      "analysis": "Gold Royalty is down 24% and has missed earnings three times recently, which is a pattern that's hard to ignore in a commodity producer. Despite impressive revenue growth of 52%, the consistent earnings misses suggest the business is struggling to convert that growth into profit as expected. The loss is already significant — consider trimming this to limit further downside and reallocating to a cleaner gold exposure like GDX or GDXJ.",
+      "sector": "Commodities",
+      "holding_type": "medium",
+      "pnl_pct": -24.2,
+      "ppl": -153.0,
+      "market_value": 481.0,
+      "quantity": 482.188281,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 65.26,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "BE",
+      "signal": "WATCH",
+      "analysis": "Bloom Energy is growing revenues rapidly at 37% and has been beating earnings expectations, which is encouraging, but the valuation is expensive, free cash flow is almost zero, and short interest of over 10% is high — meaning a meaningful proportion of the market is betting against this stock. It's a high-conviction bet on hydrogen and fuel cell technology succeeding commercially. Hold for now given the beat streak, but be aware this is a speculative position where sentiment can shift quickly.",
+      "sector": "Energy",
+      "holding_type": "medium",
+      "pnl_pct": -3.9,
+      "ppl": -17.0,
+      "market_value": 433.0,
+      "quantity": 2.098712,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 990.58,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "KTOS",
+      "signal": "WATCH",
+      "analysis": "Kratos Defence is down 36%, which is a painful loss, but the underlying business has been consistently beating earnings expectations and growing revenue at nearly 19%. The high short interest of 6.3% suggests some scepticism in the market, but the fundamentals tell a more positive story. This is one where the price has moved against you but the business case hasn't collapsed — hold and review after the next earnings report.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": -36.2,
+      "ppl": -228.0,
+      "market_value": 403.0,
+      "quantity": 10.354713,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 17.58,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "AVAV",
+      "signal": "WATCH",
+      "analysis": "AeroVironment is down nearly 38% and has missed earnings three times recently, which is concerning. The valuation remains elevated, free cash flow is slightly negative — meaning the business is spending more than it generates — and short interest at nearly 12% is high. The revenue growth of 14.5% is decent but not enough on its own to justify confidence. Be patient, but this needs to show earnings improvement before you can feel comfortable here.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": -37.9,
+      "ppl": -159.0,
+      "market_value": 261.0,
+      "quantity": 2.199613,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -23.47,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "5UR.DE",
+      "signal": "WATCH",
+      "analysis": "This appears to be a European technology ETF with a 17% loss and very soft momentum across all technical measures. The underlying revenue and cash flow metrics are reasonable, suggesting the holdings inside the fund are fundamentally decent. The loss is uncomfortable but manageable — this likely reflects broad tech sector weakness rather than anything specific to this fund. Review whether you want this European tech exposure alongside your direct US tech holdings, as there may be overlap.",
+      "sector": "Technology ETF",
+      "holding_type": "etf",
+      "pnl_pct": -17.1,
+      "ppl": -48.0,
+      "market_value": 233.0,
+      "quantity": 1.789124,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": -0.07,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "NPA",
+      "signal": "HOLD",
+      "analysis": "A small position with a negligible 1.7% loss and no financial data to work with. Given the tiny size and minimal loss, there's no urgency here, but as with the other unknown holdings, it's worth clarifying exactly what this is and whether it still deserves a place in your portfolio.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": -1.7,
+      "ppl": -4.0,
+      "market_value": 232.0,
+      "quantity": 3.752278,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "UTX",
+      "signal": "WATCH",
+      "analysis": "No financial data is available for this ticker, making it very difficult to assess. You're sitting on an 18% loss with no way to evaluate whether the business warrants patience or an exit. Investigate what this holding represents and why you originally bought it — if you can't identify a clear investment thesis supported by data, it may be time to consider freeing up that capital.",
+      "sector": "Unknown",
+      "holding_type": "medium",
+      "pnl_pct": -18.2,
+      "ppl": -44.0,
+      "market_value": 197.0,
+      "quantity": 1.536083,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": null,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "LPTH",
+      "signal": "WATCH",
+      "analysis": "LightPath Technologies is a small defence and optics company that has missed earnings four consecutive times — that's a streak of underperformance that demands attention. Despite growing revenues and a very high relative strength score suggesting recent price momentum, the persistent earnings misses and negative free cash flow mean the business isn't yet consistently profitable. This is a small position, but the fundamental execution record is weak — watch carefully and set a level at which you'd exit if things don't improve.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": 4.5,
+      "ppl": 8.0,
+      "market_value": 185.0,
+      "quantity": 21.472285,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 259.05,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "LASR",
+      "signal": "HOLD",
+      "analysis": "nLIGHT is your best-performing individual stock on a percentage basis, up over 100%, which is a fantastic result. Revenue is growing at 32%, the company has a consistent earnings beat streak, and the relative strength score is very high. The main caution here is that the valuation is stretched and the position is tiny, meaning the actual profit in pounds is modest. Consider whether to take some profit to lock in gains, but the underlying momentum is strong.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": 100.4,
+      "ppl": 75.0,
+      "market_value": 149.0,
+      "quantity": 2.652083,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 374.29,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    },
+    {
+      "ticker": "SKYT",
+      "signal": "WATCH",
+      "analysis": "Skywater Technology is up nearly 50% which is impressive, but the company is loss-making (negative PE), free cash flow is negative, short interest is elevated at nearly 8%, and it has missed earnings twice recently. The revenue growth of 29% is encouraging, but this is a high-risk name where the price has run ahead of the fundamentals. The position is small, which limits your risk, but be aware this could give back gains quickly — consider whether you'd want to lock in some of that 50% gain.",
+      "sector": "Defense & Aerospace",
+      "holding_type": "medium",
+      "pnl_pct": 49.4,
+      "ppl": 44.0,
+      "market_value": 134.0,
+      "quantity": 5.239736,
+      "avg_price": 0,
+      "current_price": 0,
+      "mansfield_rs": 210.4,
+      "above_sma50": null,
+      "macd_bullish": null,
+      "stop_loss": null,
+      "dist_52w_high": null
+    }
+  ],
+  "screener_candidates": [
+    {
+      "ticker": "PWR",
+      "company_name": "Quanta Services, Inc.",
+      "sector": "Industrials",
+      "composite_score": 93.0,
+      "mansfield_rs": 77.7,
+      "revenue_growth_pct": 26.3
+    },
+    {
+      "ticker": "NUE",
+      "company_name": "Nucor Corporation",
+      "sector": "Basic Materials",
+      "composite_score": 89.3,
+      "mansfield_rs": 57.7,
+      "revenue_growth_pct": 21.3
+    },
+    {
+      "ticker": "DELL",
+      "company_name": "Dell Technologies Inc.",
+      "sector": "Technology",
+      "composite_score": 88.0,
+      "mansfield_rs": 71.0,
+      "revenue_growth_pct": 39.5
+    },
+    {
+      "ticker": "GOOG",
+      "company_name": "Alphabet Inc.",
+      "sector": "Communication Services",
+      "composite_score": 86.8,
+      "mansfield_rs": 87.3,
+      "revenue_growth_pct": 21.8
+    },
+    {
+      "ticker": "HPE",
+      "company_name": "Hewlett Packard Enterprise Company",
+      "sector": "Technology",
+      "composite_score": 86.4,
+      "mansfield_rs": 52.0,
+      "revenue_growth_pct": 18.4
+    },
+    {
+      "ticker": "STX",
+      "company_name": "Seagate Technology Holdings plc",
+      "sector": "Technology",
+      "composite_score": 86.0,
+      "mansfield_rs": 300.0,
+      "revenue_growth_pct": 44.1
+    },
+    {
+      "ticker": "MU",
+      "company_name": "Micron Technology, Inc.",
+      "sector": "Technology",
+      "composite_score": 86.0,
+      "mansfield_rs": 300.0,
+      "revenue_growth_pct": 196.3
+    },
+    {
+      "ticker": "GLW",
+      "company_name": "Corning Incorporated",
+      "sector": "Technology",
+      "composite_score": 85.0,
+      "mansfield_rs": 220.9,
+      "revenue_growth_pct": 20.0
+    },
+    {
+      "ticker": "LRCX",
+      "company_name": "Lam Research Corporation",
+      "sector": "Technology",
+      "composite_score": 83.8,
+      "mansfield_rs": 170.0,
+      "revenue_growth_pct": 23.8
+    },
+    {
+      "ticker": "EME",
+      "company_name": "EMCOR Group, Inc.",
+      "sector": "Industrials",
+      "composite_score": 82.7,
+      "mansfield_rs": 54.6,
+      "revenue_growth_pct": 19.7
+    }
+  ]
+};
+
+    // ── Utilities ────────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function fmt(v, {sign=false, dp=1, suffix=''}={}) {
+      if (v == null) return '—';
+      return (sign && v > 0 ? '+' : '') + Number(v).toFixed(dp) + suffix;
+    }
+    function fmtCcy(v, ccy, sign=false) {
+      if (v == null) return '—';
+      const prefix = sign ? (v > 0 ? '+' : v < 0 ? '−' : '') : (v < 0 ? '−' : '');
+      return prefix + ccy + Math.abs(v).toLocaleString('en-GB', {maximumFractionDigits: 0});
+    }
+    function md(text) {
+      // minimal markdown: **bold**, newlines
+      return esc(text || '')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+    const SIGNAL_ORDER = {ADD:0, WATCH:1, HOLD:2, REDUCE:3, EXIT:4};
+
+    // ── Header ───────────────────────────────────────────────────────────────
+    const m = DATA.meta;
+    document.getElementById('hdr-date').textContent = m.date_str;
+    document.getElementById('hdr-sub').textContent  =
+      `Generated ${m.time_str} · ${m.model}`;
+
+    // ── Verdict ──────────────────────────────────────────────────────────────
+    document.getElementById('verdict-text').textContent = DATA.verdict;
+
+    // ── Account stats ─────────────────────────────────────────────────────────
+    const acc = DATA.account;
+    const SYM = acc.currency === 'GBP' ? '£' : acc.currency + ' ';
+    const STATS = [
+      ['Total Value',    `<span>${fmtCcy(acc.total, SYM)}</span>`],
+      ['Unrealised P&L', `<span class="${acc.unrealized_ppl>=0?'pos':'neg'}">`
+        + `${fmtCcy(acc.unrealized_ppl, SYM, true)} `
+        + `(${fmt(acc.pct_gain,{sign:true,dp:1})}%)</span>`],
+      ['Realised P&L',   `<span class="${acc.realized_ppl>=0?'pos':'neg'}">`
+        + `${fmtCcy(acc.realized_ppl, SYM, true)}</span>`],
+      ['Positions',      `<span>${acc.n_positions}</span>`],
+    ];
+    document.getElementById('account-stats').innerHTML = STATS.map(([l,v]) =>
+      `<div class="stat-row">
+         <span class="stat-label">${l}</span>
+         <span class="stat-value">${v}</span>
+       </div>`
+    ).join('');
+
+    // ── Sector donut ─────────────────────────────────────────────────────────
+    new Chart(document.getElementById('sector-chart'), {
+      type: 'doughnut',
+      data: {
+        labels:   DATA.sectors.map(s => s.label),
+        datasets: [{
+          data:            DATA.sectors.map(s => s.value),
+          backgroundColor: DATA.sectors.map(s => s.color),
+          borderColor:     '#161b22',
+          borderWidth:     2,
+          hoverOffset:     8,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color:'#8b949e', font:{size:10}, boxWidth:10, padding:6 },
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${SYM}${ctx.raw.toLocaleString('en-GB',{maximumFractionDigits:0})}`,
+            },
+          },
+        },
+      },
+    });
+
+    // ── Holdings grid ─────────────────────────────────────────────────────────
+    const sorted = [...DATA.holdings].sort(
+      (a,b) => (SIGNAL_ORDER[a.signal]??5) - (SIGNAL_ORDER[b.signal]??5)
+    );
+
+    function rsBar(rs) {
+      if (rs == null) return '';
+      // Map [-50 … 150] → [0 … 100%]
+      const pct  = Math.min(100, Math.max(0, ((rs + 50) / 200) * 100));
+      const fill = rs >= 0 ? '#3fb950' : '#f85149';
+      return `<div class="rs-track">
+        <div class="rs-fill" style="width:${pct.toFixed(1)}%;background:${fill}"></div>
+      </div>`;
+    }
+
+    function holdingCard(h) {
+      const pnlCls = h.pnl_pct >= 0 ? 'pos' : 'neg';
+      const pnlPfx = h.pnl_pct >= 0 ? '+' : '';
+      const pnlStr = `${pnlPfx}${h.pnl_pct}% (${fmtCcy(h.ppl, SYM, true)})`;
+
+      const tags = [];
+      if (h.mansfield_rs  != null) tags.push(
+        `<span class="tag ${h.mansfield_rs>=0?'g':'r'}">RS ${fmt(h.mansfield_rs,{sign:true})}</span>`);
+      if (h.above_sma50   != null) tags.push(
+        `<span class="tag ${h.above_sma50?'g':'r'}">${h.above_sma50?'▲':'▼'} SMA50</span>`);
+      if (h.macd_bullish  != null) tags.push(
+        `<span class="tag ${h.macd_bullish?'g':'r'}">MACD ${h.macd_bullish?'▲':'▼'}</span>`);
+      if (h.stop_loss     != null) tags.push(
+        `<span class="tag y">stop ${h.stop_loss.toFixed(2)}</span>`);
+      if (h.dist_52w_high != null) tags.push(
+        `<span class="tag">52w ${fmt(h.dist_52w_high,{sign:true})}%</span>`);
+
+      const analysisHtml = h.analysis
+        ? `<div class="hc-analysis">${esc(h.analysis)}</div>`
+        : '';
+
+      return `
+        <details class="hcard">
+          <summary>
+            <div class="hc-top">
+              <span class="hc-ticker">${esc(h.ticker)}</span>
+              <span class="signal s-${esc(h.signal)}">${esc(h.signal)}</span>
+            </div>
+            <div class="hc-sector">${esc(h.sector)}</div>
+            <div class="hc-pnl ${pnlCls}">${pnlStr}</div>
+            ${tags.length ? `<div class="hc-tags">${tags.join('')}</div>` : ''}
+            ${rsBar(h.mansfield_rs)}
+            ${h.analysis ? '<div class="expand-hint">click to expand ›</div>' : ''}
+          </summary>
+          ${analysisHtml}
+        </details>`;
+    }
+
+    function renderGrid(filter) {
+      const items = filter === 'ALL'
+        ? sorted
+        : sorted.filter(h => h.signal === filter);
+      document.getElementById('holdings-grid').innerHTML =
+        items.length ? items.map(holdingCard).join('') : '<p style="color:var(--muted);font-size:13px">No holdings for this filter.</p>';
+    }
+
+    // Signal filter buttons
+    const counts = {};
+    sorted.forEach(h => { counts[h.signal] = (counts[h.signal]||0)+1; });
+    const btns = ['ALL', ...Object.keys(SIGNAL_ORDER)]
+      .filter(s => s === 'ALL' || counts[s])
+      .map(s => {
+        const n = s === 'ALL' ? sorted.length : counts[s];
+        return `<button class="filter-btn${s==='ALL'?' active':''}" data-sig="${s}">${s} ${n}</button>`;
+      });
+    document.getElementById('filter-bar').innerHTML = btns.join('');
+    document.getElementById('filter-bar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderGrid(btn.dataset.sig);
+    });
+    renderGrid('ALL');
+
+    // ── Narrative sections ───────────────────────────────────────────────────
+    document.getElementById('macro-text').innerHTML   = md(DATA.macro_narrative);
+    document.getElementById('sector-text').innerHTML  = md(DATA.sector_narrative);
+    document.getElementById('opps-text').innerHTML    = md(DATA.opportunities);
+
+    // ── Screener table ───────────────────────────────────────────────────────
+    document.getElementById('screener-body').innerHTML = DATA.screener_candidates.map(c => {
+      const rg = c.revenue_growth_pct != null
+        ? `<span style="color:${c.revenue_growth_pct>=0?'var(--green)':'var(--red)'}">`
+          + `${fmt(c.revenue_growth_pct,{sign:true})}%</span>`
+        : '—';
+      const rsCol = `<span style="color:${c.mansfield_rs>=0?'var(--green)':'var(--red)'}">`
+        + `${fmt(c.mansfield_rs,{sign:true})}</span>`;
+      const barW = Math.min(80, c.composite_score * 0.8);
+      const scoreHtml = `<div class="score-bar-wrap">
+        <span class="score-bar" style="width:${barW}px"></span>
+        <span>${c.composite_score}</span></div>`;
+      return `<tr>
+        <td style="font-family:var(--mono);font-weight:700">${esc(c.ticker)}</td>
+        <td>${esc(c.company_name)}</td>
+        <td style="color:var(--muted);font-size:12px">${esc(c.sector)}</td>
+        <td>${rsCol}</td>
+        <td>${rg}</td>
+        <td>${scoreHtml}</td>
+      </tr>`;
+    }).join('');
+  </script>
 </body>
 </html>
