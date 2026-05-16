@@ -127,8 +127,8 @@ def _52w_proximity(df: pd.DataFrame) -> tuple[float, float]:
 # JSON serialisers for chart embedding
 # ---------------------------------------------------------------------------
 
-def _ohlcv_to_json(df: pd.DataFrame, days: int = 90) -> list[dict]:
-    """Last N days of OHLCV as chart-ready JSON (embedded in HTML at build time)."""
+def _ohlcv_daily_to_json(df: pd.DataFrame, days: int = 365) -> list[dict]:
+    """Last N trading days of OHLCV for the daily candlestick view."""
     subset = df.tail(days)
     return [
         {
@@ -143,10 +143,43 @@ def _ohlcv_to_json(df: pd.DataFrame, days: int = 90) -> list[dict]:
     ]
 
 
-def _mrs_to_json(mrs_series: pd.Series, days: int = 90) -> list[dict]:
-    """Mansfield RS weekly series resampled to daily for Lightweight Charts."""
+def _ohlcv_weekly_to_json(df: pd.DataFrame, weeks: int = 104) -> list[dict]:
+    """Last N weeks of OHLCV aggregated to weekly candles (OHLCV) for the 2Y view."""
+    weekly = df.resample("W").agg(
+        Open=("Open", "first"),
+        High=("High", "max"),
+        Low=("Low", "min"),
+        Close=("Close", "last"),
+        Volume=("Volume", "sum"),
+    ).dropna(subset=["Close"])
+    subset = weekly.tail(weeks)
+    return [
+        {
+            "time": ts.strftime("%Y-%m-%d"),
+            "open": round(float(row["Open"]), 4),
+            "high": round(float(row["High"]), 4),
+            "low": round(float(row["Low"]), 4),
+            "close": round(float(row["Close"]), 4),
+            "volume": int(row["Volume"]),
+        }
+        for ts, row in subset.iterrows()
+    ]
+
+
+def _mrs_daily_to_json(mrs_series: pd.Series, days: int = 365) -> list[dict]:
+    """Mansfield RS weekly series linearly interpolated to daily frequency."""
     daily = mrs_series.resample("D").interpolate(method="linear")
     subset = daily.tail(days)
+    return [
+        {"time": ts.strftime("%Y-%m-%d"), "value": round(float(v), 2)}
+        for ts, v in subset.items()
+        if not pd.isna(v)
+    ]
+
+
+def _mrs_weekly_to_json(mrs_series: pd.Series, weeks: int = 104) -> list[dict]:
+    """Raw weekly Mansfield RS series for the weekly candle view."""
+    subset = mrs_series.tail(weeks)
     return [
         {"time": ts.strftime("%Y-%m-%d"), "value": round(float(v), 2)}
         for ts, v in subset.items()
@@ -206,13 +239,17 @@ def process_ticker(ticker: str, spy_daily: pd.DataFrame) -> dict | None:
     sma_50 = _safe_float(df["sma_50"])
     atr = _safe_float(df["atr_14"]) or 0.0
 
+    macd_bullish = _macd_crossover_recent(df)
+
     return {
         "ticker": ticker,
         "current_price": round(current_price, 2),
         "day_change_pct": day_change_pct,
-        # Chart data
-        "ohlcv_json": _ohlcv_to_json(df),
-        "mrs_json": _mrs_to_json(mrs_series),
+        # Chart data (injected into HTML for TradingView Lightweight Charts)
+        "ohlcv_daily":  _ohlcv_daily_to_json(df),
+        "ohlcv_weekly": _ohlcv_weekly_to_json(df),
+        "mrs_daily":    _mrs_daily_to_json(mrs_series),
+        "mrs_weekly":   _mrs_weekly_to_json(mrs_series),
         # Mansfield RS
         "mansfield_rs": round(current_mrs, 2),
         "mansfield_rs_4w_ago": round(mrs_4w_ago, 2),
@@ -223,27 +260,28 @@ def process_ticker(ticker: str, spy_daily: pd.DataFrame) -> dict | None:
         "rs_5d": round(daily_rs["rs_5d"], 2),
         "rs_20d": round(daily_rs["rs_20d"], 2),
         "rs_60d": round(daily_rs["rs_60d"], 2),
-        # Moving averages
+        # Moving averages (canonical names used by renderer and Claude analyst)
         "sma_20": sma_20,
         "sma_50": sma_50,
+        "above_sma50": bool(sma_50 and current_price > sma_50),
         "above_sma_20": bool(sma_20 and current_price > sma_20),
-        "above_sma_50": bool(sma_50 and current_price > sma_50),
         # Volatility
         "atr_14": round(atr, 4),
         "bb_upper": _safe_float(df["bb_upper"]),
         "bb_lower": _safe_float(df["bb_lower"]),
         "bb_pct": _safe_float(df["bb_pct"]),
-        # MACD
-        "macd_crossover_recent": _macd_crossover_recent(df),
+        # MACD (canonical name used by renderer and Claude analyst)
+        "macd_bullish": macd_bullish,
         "macd_value": _safe_float(df["macd"]),
         "macd_signal_value": _safe_float(df["macd_signal"]),
         # Volume
         "volume_ratio": _volume_ratio(df),
-        # 52-week levels
-        "near_52w_high": dist_high > -5.0,
-        "near_52w_low": dist_low < 5.0,
+        # 52-week levels (canonical name used by renderer)
+        "dist_52w_high": dist_high,
         "dist_52w_high_pct": dist_high,
         "dist_52w_low_pct": dist_low,
+        "near_52w_high": dist_high > -5.0,
+        "near_52w_low": dist_low < 5.0,
     }
 
 
