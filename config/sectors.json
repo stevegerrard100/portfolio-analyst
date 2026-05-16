@@ -9,9 +9,9 @@
     "GOOGL":  "Technology",
     "META":   "Communication Services",
 
-    "DMYI":   "Technology",
-    "XPOA":   "Technology",
-    "SNII":   "Technology",
+    "IONQ":   "Technology",
+    "QBTS":   "Technology",
+    "RGTI":   "Technology",
 
     "COPG.L": "Commodities",
     "GDXJ.L": "Commodities",
@@ -24,17 +24,18 @@
     "KTOS":   "Defense & Aerospace",
     "AVAV":   "Defense & Aerospace",
     "LPTH":   "Defense & Aerospace",
-    "UTX":    "Defense & Aerospace",
+    "RTX":    "Defense & Aerospace",
     "LASR":   "Defense & Aerospace",
     "SKYT":   "Defense & Aerospace",
-    "VACQ":   "Defense & Aerospace",
-    "NPA":    "Defense & Aerospace",
+    "RKLB":   "Defense & Aerospace",
+    "ASTS":   "Defense & Aerospace",
+    "ONDS":   "Defense & Aerospace",
 
     "GEV":    "Energy",
     "KGS":    "Energy",
     "BE":     "Energy",
     "FP.PA":  "Energy",
-    "ONDS":   "Energy",
+   
 
     "SEMI.L": "Technology ETF",
     "EQQQ.L": "Technology ETF",
@@ -75,9 +76,9 @@
     "GOOGL":  "long_term",
     "META":   "medium",
 
-    "DMYI":   "short_term",
-    "XPOA":   "short_term",
-    "SNII":   "short_term",
+    "IONQ": "short_term", 
+    "QBTS": "short_term", 
+    "RGTI": "short_term",
 
     "COPG.L": "medium",
     "GDXJ.L": "medium",
@@ -90,11 +91,11 @@
     "KTOS":   "medium",
     "AVAV":   "medium",
     "LPTH":   "medium",
-    "UTX":    "medium",
+    "RTX":    "medium",
     "LASR":   "medium",
     "SKYT":   "medium",
-    "VACQ":   "short_term",
-    "NPA":    "short_term",
+    "RKLB":   "short_term",
+    "ASTS":    "short_term",
 
     "GEV":    "medium",
     "KGS":    "medium",
