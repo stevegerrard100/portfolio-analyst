@@ -1,0 +1,11 @@
+anthropic>=0.25.0
+yfinance>=0.2.40
+pandas-ta>=0.3.14b
+finnhub-python>=2.4.19
+fredapi>=0.5.2
+finvizfinance>=0.14.0
+requests>=2.31.0
+pandas>=2.0.0
+numpy>=1.24.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
