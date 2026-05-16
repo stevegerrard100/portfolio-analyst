@@ -40,6 +40,10 @@ CACHE_DIR = Path("cache")
 SCREENER_CACHE = CACHE_DIR / "screener.json"
 SCREENER_CACHE_HOURS = 8
 
+CIK_CACHE       = CACHE_DIR / "sec_company_tickers.json"
+CIK_CACHE_DAYS  = 7
+_SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
+
 _SP500_WIKI = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 _HEADERS = {"User-Agent": "portfolio-analyst contact@stevegerrard.org"}
 
@@ -68,6 +72,57 @@ def fetch_sp500_tickers() -> list[str]:
     except Exception as exc:
         log.error("S&P 500 fetch failed: %s", exc)
         return []
+
+
+# ---------------------------------------------------------------------------
+# CIK map — SEC EDGAR ticker → CIK for same-company deduplication
+# ---------------------------------------------------------------------------
+
+def _load_cik_map() -> dict[str, str]:
+    """
+    Return a {TICKER: CIK_str} mapping built from the SEC EDGAR
+    company_tickers.json.  Used to group share classes (GOOG/GOOGL → same CIK)
+    so only the highest-RS ticker per company appears in results.
+
+    Cached at cache/sec_company_tickers.json for CIK_CACHE_DAYS days.
+    Returns an empty dict on failure — dedup is silently skipped.
+    """
+    CACHE_DIR.mkdir(exist_ok=True)
+
+    if CIK_CACHE.exists():
+        try:
+            age_days = (
+                datetime.now() - datetime.fromtimestamp(CIK_CACHE.stat().st_mtime)
+            ).days
+            if age_days < CIK_CACHE_DAYS:
+                with open(CIK_CACHE) as f:
+                    mapping = json.load(f)
+                log.info("CIK map: loaded from cache (%d days old, %d entries)", age_days, len(mapping))
+                return mapping
+        except Exception:
+            pass
+
+    log.info("Downloading SEC EDGAR company_tickers.json...")
+    try:
+        resp = requests.get(_SEC_TICKERS_URL, headers=_HEADERS, timeout=30)
+        resp.raise_for_status()
+        raw = resp.json()
+        # Format: {"0": {"cik_str": 320193, "ticker": "AAPL", "title": "..."}, ...}
+        mapping: dict[str, str] = {}
+        for entry in raw.values():
+            ticker = str(entry.get("ticker", "")).upper()
+            cik    = str(entry.get("cik_str", ""))
+            if ticker and cik:
+                mapping[ticker] = cik
+
+        with open(CIK_CACHE, "w") as f:
+            json.dump(mapping, f)
+        log.info("CIK map cached: %d ticker→CIK entries", len(mapping))
+        return mapping
+
+    except Exception as exc:
+        log.error("CIK map download failed: %s", exc)
+        return {}
 
 
 # ---------------------------------------------------------------------------
@@ -195,8 +250,6 @@ def _fundamental_profile(info: dict) -> dict:
         "earnings_growth_pct":round(earn_growth * 100, 1)if earn_growth is not None else None,
         "institutional_pct":  info.get("institutionPercentHeld"),
         "short_interest_pct": short_pct,
-        # Used for same-company deduplication (GOOG/GOOGL etc.)
-        "isin":               info.get("isin"),
     }
 
 
@@ -421,32 +474,38 @@ def run_screener(
 
     log.info("Pass 2: %d candidates processed", len(candidates))
 
-    # Pass 3: remove disqualified; dedup same-company pairs (GOOG/GOOGL etc.)
+    # Pass 3: remove disqualified, cap runaway RS, dedup by CIK
     qualified = [c for c in candidates if not c["disqualified"]]
 
-    # Cap RS display at 300 — values above this are data artefacts from spinoffs
-    # (e.g. SNDK spun from WDC; "52w ago" price belongs to the parent).
+    # Cap Mansfield RS at 300 — values far above this are spinoff / rebase artefacts
+    # (e.g. SNDK was spun from WDC mid-year; its "52w-ago" price is the parent's).
     for c in qualified:
         if (c.get("mansfield_rs") or 0) > 300:
             c["rs_data_quality"] = "capped"
             c["mansfield_rs"] = 300.0
             c["composite_score"] = _composite_score(c)
 
-    # Deduplicate: if a company's ISIN already appears (different share class),
-    # keep only the higher-scored candidate.
-    seen_isins: dict[str, int] = {}  # isin → index in qualified
+    # CIK-based deduplication: group by SEC CIK so share classes of the same
+    # company (GOOG/GOOGL, BRK-A/BRK-B, etc.) produce only one candidate.
+    # Within each CIK group, keep the ticker with the highest Mansfield RS.
+    cik_map = _load_cik_map()
+    seen_ciks: set[str] = set()
     deduped: list[dict] = []
-    for c in sorted(qualified, key=lambda x: x["composite_score"], reverse=True):
-        isin = c.get("isin")
-        if isin and isin in seen_isins:
-            log.info("Dedup: skipping %s (same company as earlier candidate)", c["ticker"])
-            continue
-        if isin:
-            seen_isins[isin] = 1
+    # Sort descending by RS first so the highest-RS share class wins the tie-break
+    for c in sorted(qualified, key=lambda x: x.get("mansfield_rs") or 0, reverse=True):
+        cik = cik_map.get(c["ticker"].upper())
+        if cik:
+            if cik in seen_ciks:
+                log.info(
+                    "Dedup: skipping %s (CIK %s already represented by a higher-RS candidate)",
+                    c["ticker"], cik,
+                )
+                continue
+            seen_ciks.add(cik)
         deduped.append(c)
 
     deduped.sort(key=lambda x: x["composite_score"], reverse=True)
-    log.info("Pass 3 (qualified after dedup): %d → returning top %d", len(deduped), max_candidates)
+    log.info("Pass 3 (qualified after CIK dedup): %d → returning top %d", len(deduped), max_candidates)
 
     result = {
         "candidates":     deduped[:max_candidates],
