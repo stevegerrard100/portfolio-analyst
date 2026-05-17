@@ -30,6 +30,8 @@
     "RKLB":   "Defense & Aerospace",
     "ASTS":   "Defense & Aerospace",
     "ONDS":   "Defense & Aerospace",
+    "VACQ":   "Defense & Aerospace",
+    "NPA":    "Defense & Aerospace",
 
     "GEV":    "Energy",
     "KGS":    "Energy",
@@ -102,6 +104,8 @@
     "BE":     "medium",
     "FP.PA":  "medium",
     "ONDS":   "medium",
+    "VACQ":   "medium",
+    "NPA":    "medium",
 
     "SEMI.L": "etf",
     "EQQQ.L": "etf",

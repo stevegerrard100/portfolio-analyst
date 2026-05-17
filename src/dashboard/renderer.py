@@ -93,6 +93,7 @@ def render_dashboard(
             "analysis":      hdg.get("analysis", ""),
             "sector":        pos.get("sector", "?"),
             "holding_type":  holding_type,
+            "pie_name":      pos.get("pie_name"),
             "pnl_pct":       round(float(pos.get("pnl_pct", 0)), 1),
             "ppl":           round(float(pos.get("ppl", 0)), 0),
             "market_value":  round(float(pos.get("market_value", 0)), 0),

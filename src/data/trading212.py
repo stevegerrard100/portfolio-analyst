@@ -35,7 +35,7 @@ SECTORS_FILE = Path("config/sectors.json")
 # Read-only endpoints — order-placement endpoints intentionally absent.
 _EP_SUMMARY   = "/equity/account/summary"
 _EP_CASH      = "/equity/account/cash"
-_EP_POSITIONS = "/equity/positions"
+_EP_POSITIONS = "/equity/portfolio"
 _EP_ORDERS    = "/equity/history/orders"
 _EP_PIES      = "/equity/pies"
 
@@ -168,6 +168,17 @@ def auto_resolve_sectors(tickers: list[str], sectors: dict) -> None:
             quote_type = info.get("quoteType", "")
 
             if not quote_type or quote_type.upper() == "NONE":
+                # Defunct or renamed ticker — try resolving to a current successor
+                try:
+                    from src.data.ticker_resolver import resolve_ticker as _resolve
+                    resolved, company_name = _resolve(ticker)
+                    if resolved and resolved != ticker:
+                        log.info("auto_resolve fallback: %s → %s (%s)", ticker, resolved, company_name)
+                        info = yf.Ticker(resolved).info or {}
+                        quote_type = info.get("quoteType", "")
+                except Exception:
+                    pass
+            if not quote_type or quote_type.upper() == "NONE":
                 log.warning("No yfinance data for %-10s — leaving unresolved", ticker)
                 continue
 
@@ -276,9 +287,16 @@ class Trading212Client:
         return self._get(_EP_CASH)
 
     def get_positions(self) -> list:
-        # 404 means no open positions — not an error
         raw = self._get(_EP_POSITIONS, allow_404_empty=True)
-        return self._to_list(raw)
+        all_pos = self._to_list(raw)
+        # Filter to direct holdings only — positions in pies have pieQuantity > 0
+        # and are returned separately via get_pie_positions() with pie metadata.
+        direct = [p for p in all_pos if float(p.get("pieQuantity", 0)) == 0]
+        log.info(
+            "T212 %s: %d total positions, %d direct (pieQuantity=0)",
+            _EP_POSITIONS, len(all_pos), len(direct),
+        )
+        return direct
 
     def get_order_history(self) -> list:
         return self._to_list(self._get(_EP_ORDERS))
@@ -349,7 +367,7 @@ class Trading212Client:
                     agg[t]["_mktval"] += mktval
                     agg[t]["_ppl"]    += ppl
                 else:
-                    agg[t] = {"_qty": qty, "_cost": cost, "_mktval": mktval, "_ppl": ppl}
+                    agg[t] = {"_qty": qty, "_cost": cost, "_mktval": mktval, "_ppl": ppl, "_pie_name": pie_name}
 
         result: list[dict] = []
         for t, d in agg.items():
@@ -360,6 +378,7 @@ class Trading212Client:
                 "averagePrice": round(d["_cost"] / qty, 4) if qty > 0 else 0.0,
                 "currentPrice": round(d["_mktval"] / qty, 4) if qty > 0 else 0.0,
                 "ppl":          d["_ppl"],
+                "pie_name":     d["_pie_name"],
             })
         return result
 
@@ -380,17 +399,20 @@ def _merge_raw_positions(direct: list[dict], pie: list[dict]) -> list[dict]:
         if not t:
             log.warning("_merge_raw_positions: position missing 'ticker' key — skipping: %s", pos)
             continue
-        qty = float(pos.get("quantity", 0))
-        avg = float(pos.get("averagePrice", 0))
-        cur = float(pos.get("currentPrice", 0))
-        ppl = float(pos.get("ppl", 0))
+        qty      = float(pos.get("quantity", 0))
+        avg      = float(pos.get("averagePrice", 0))
+        cur      = float(pos.get("currentPrice", 0))
+        ppl      = float(pos.get("ppl", 0))
+        pie_name = pos.get("pie_name")
         if t not in agg:
-            agg[t] = {"ticker": t, "_qty": qty, "_cost": qty * avg, "_mktval": qty * cur, "_ppl": ppl}
+            agg[t] = {"ticker": t, "_qty": qty, "_cost": qty * avg, "_mktval": qty * cur, "_ppl": ppl, "_pie_name": pie_name}
         else:
             agg[t]["_qty"]    += qty
             agg[t]["_cost"]   += qty * avg
             agg[t]["_mktval"] += qty * cur
             agg[t]["_ppl"]    += ppl
+            if pie_name and not agg[t]["_pie_name"]:
+                agg[t]["_pie_name"] = pie_name
 
     result: list[dict] = []
     for t, d in agg.items():
@@ -401,6 +423,7 @@ def _merge_raw_positions(direct: list[dict], pie: list[dict]) -> list[dict]:
             "averagePrice": round(d["_cost"] / qty, 4) if qty > 0 else 0.0,
             "currentPrice": round(d["_mktval"] / qty, 4) if qty > 0 else 0.0,
             "ppl":          d["_ppl"],
+            "pie_name":     d.get("_pie_name"),
         })
     return result
 
@@ -455,6 +478,7 @@ def _enrich_position(pos: dict, sectors: dict) -> dict:
         "sector":        sector,
         "holding_type":  holding_type,
         "pie_label":     pie_label,
+        "pie_name":      pos.get("pie_name"),
         "quantity":      round(quantity, 6),
         "avg_price":     round(avg_price, 4),
         "current_price": round(current_price, 4),

@@ -93,6 +93,10 @@
 
     /* ── Holdings grid ───────────────────────────────────── */
     .holdings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; align-items: start; }
+    .h-section { margin-bottom: 22px; }
+    .h-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .h-pie-group { margin-bottom: 14px; }
+    .h-pie-name { font-size: 11px; color: #444d56; margin-bottom: 6px; padding-left: 2px; }
 
     /* ── Holding card ────────────────────────────────────── */
     details.hcard { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: border-color 0.15s; }
@@ -188,7 +192,7 @@
       <div class="card">
         <div class="card-title">Holdings Analysis</div>
         <div class="filter-bar" id="filter-bar"></div>
-        <div class="holdings-grid" id="holdings-grid"></div>
+        <div id="holdings-sections"></div>
       </div>
     </div>
 
@@ -289,15 +293,15 @@
       if (rs == null) return '';
       const pct  = Math.min(100, Math.max(0, ((rs+50)/200)*100));
       const fill = rs >= 0 ? '#3fb950' : '#f85149';
-      return `<div class="rs-track"><div class="rs-fill" style="width:${pct.toFixed(1)}%;background:${fill}"></div></div>`;
+      return `<div class="rs-track" title="Mansfield RS visualised — green = outperforming S&amp;P 500, red = underperforming"><div class="rs-fill" style="width:${pct.toFixed(1)}%;background:${fill}"></div></div>`;
     }
     function metricTags(h) {
       const tags = [];
-      if (h.mansfield_rs  != null) tags.push(`<span class="tag ${h.mansfield_rs>=0?'g':'r'}">RS ${fmt(h.mansfield_rs,{sign:true})}</span>`);
-      if (h.above_sma50   != null) tags.push(`<span class="tag ${h.above_sma50?'g':'r'}">${h.above_sma50?'▲':'▼'} SMA50</span>`);
-      if (h.macd_bullish  != null) tags.push(`<span class="tag ${h.macd_bullish?'g':'r'}">MACD ${h.macd_bullish?'▲':'▼'}</span>`);
-      if (h.stop_loss     != null) tags.push(`<span class="tag y">stop ${Number(h.stop_loss).toFixed(2)}</span>`);
-      if (h.dist_52w_high != null) tags.push(`<span class="tag">52w ${fmt(h.dist_52w_high,{sign:true})}%</span>`);
+      if (h.mansfield_rs  != null) tags.push(`<span class="tag ${h.mansfield_rs>=0?'g':'r'}" title="Mansfield Relative Strength vs S&amp;P 500 — positive means outperforming">RS ${fmt(h.mansfield_rs,{sign:true})}</span>`);
+      if (h.above_sma50   != null) tags.push(`<span class="tag ${h.above_sma50?'g':'r'}" title="Green = stock above 50-day moving average, red = below">${h.above_sma50?'▲':'▼'} SMA50</span>`);
+      if (h.macd_bullish  != null) tags.push(`<span class="tag ${h.macd_bullish?'g':'r'}" title="Green = bullish MACD crossover in last 5 sessions, red = bearish">MACD ${h.macd_bullish?'▲':'▼'}</span>`);
+      if (h.stop_loss     != null) tags.push(`<span class="tag y" title="ATR-based suggested exit — 1.5× ATR short-term, 2.5× medium, 3× long-term">stop ${Number(h.stop_loss).toFixed(2)}</span>`);
+      if (h.dist_52w_high != null) tags.push(`<span class="tag" title="Distance from 52-week high — closer to 0% is stronger">52w ${fmt(h.dist_52w_high,{sign:true})}%</span>`);
       return tags.join('');
     }
 
@@ -346,19 +350,65 @@
     // Render all cards once; filter by show/hide to preserve chart state
     let gridRendered = false;
     function renderGrid(filter) {
-      const grid = document.getElementById('holdings-grid');
+      const container = document.getElementById('holdings-sections');
       if (!gridRendered) {
-        grid.innerHTML = sorted.map(holdingCard).join('');
+        const etfs   = sorted.filter(h => h.holding_type === 'etf');
+        const direct = sorted.filter(h => h.holding_type !== 'etf' && !h.pie_name);
+        const inPies = sorted.filter(h => h.holding_type !== 'etf' && !!h.pie_name);
+
+        const pieGroupMap = {};
+        inPies.forEach(h => {
+          if (!pieGroupMap[h.pie_name]) pieGroupMap[h.pie_name] = [];
+          pieGroupMap[h.pie_name].push(h);
+        });
+
+        let html = '';
+        if (direct.length) {
+          html += `<div class="h-section" data-section="individual">
+            <div class="h-section-title">Individual Holdings</div>
+            <div class="holdings-grid">${direct.map(holdingCard).join('')}</div>
+          </div>`;
+        }
+        if (inPies.length) {
+          const pieHtml = Object.entries(pieGroupMap).map(([name, hs]) =>
+            `<div class="h-pie-group" data-pie="${esc(name)}">
+              <div class="h-pie-name">${esc(name)}</div>
+              <div class="holdings-grid">${hs.map(holdingCard).join('')}</div>
+            </div>`
+          ).join('');
+          html += `<div class="h-section" data-section="pies">
+            <div class="h-section-title">Pie Holdings</div>
+            ${pieHtml}
+          </div>`;
+        }
+        if (etfs.length) {
+          html += `<div class="h-section" data-section="etfs">
+            <div class="h-section-title">ETFs</div>
+            <div class="holdings-grid">${etfs.map(holdingCard).join('')}</div>
+          </div>`;
+        }
+        container.innerHTML = html;
         attachCardListeners();
         gridRendered = true;
       }
-      // Show/hide and close hidden open cards
-      grid.querySelectorAll('.hcard').forEach(card => {
+
+      // Show/hide individual cards
+      container.querySelectorAll('.hcard').forEach(card => {
         const t = card.dataset.ticker;
         const h = sorted.find(x => x.ticker === t);
         const show = filter === 'ALL' || h?.signal === filter;
         card.style.display = show ? '' : 'none';
         if (!show && card.open) card.open = false;
+      });
+
+      // Hide section/pie-group headers when all their cards are filtered out
+      container.querySelectorAll('.h-pie-group').forEach(grp => {
+        const any = [...grp.querySelectorAll('.hcard')].some(c => c.style.display !== 'none');
+        grp.style.display = any ? '' : 'none';
+      });
+      container.querySelectorAll('.h-section').forEach(sec => {
+        const any = [...sec.querySelectorAll('.hcard')].some(c => c.style.display !== 'none');
+        sec.style.display = any ? '' : 'none';
       });
     }
 

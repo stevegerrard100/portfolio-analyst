@@ -65,6 +65,13 @@ def _fmt_num(v, dp=1) -> str:
     return f"{v:.{dp}f}"
 
 
+def _strip_md_markers(text: str) -> str:
+    """Remove **bold** and *italic* markers so plain-text fields render clean."""
+    text = re.sub(r'\*\*(.+?)\*\*', r'\1', text, flags=re.DOTALL)
+    text = re.sub(r'\*([^*\n]+?)\*', r'\1', text)
+    return text.strip()
+
+
 # ---------------------------------------------------------------------------
 # 1. Macro plain English
 # ---------------------------------------------------------------------------
@@ -251,7 +258,7 @@ Portfolio positions:
     for m in pattern.finditer(raw):
         upper   = m.group(1).upper()
         signal  = m.group(2).upper()
-        analysis = re.sub(r"\s+", " ", m.group(3)).strip()
+        analysis = _strip_md_markers(re.sub(r"\s+", " ", m.group(3)).strip())
         # Restore original ticker casing (COPGl, SEMI.L etc.)
         ticker = upper_to_orig.get(upper, upper)
         results.append({"ticker": ticker, "signal": signal, "analysis": analysis})
@@ -397,7 +404,7 @@ Write "Today's Verdict" — a single punchy paragraph (max 100 words) that:
 
 Be direct. Lead with a verdict, not with observations. No hedging."""
 
-    return _call(prompt, max_tokens=250)
+    return _strip_md_markers(_call(prompt, max_tokens=250))
 
 
 # ---------------------------------------------------------------------------
