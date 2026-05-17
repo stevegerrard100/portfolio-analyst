@@ -7,8 +7,9 @@ Step sequence:
   4. fetch_macro_data       FRED rates, spreads, yield curve
   5. fetch_all_fundamentals Finnhub + yfinance per holding
   6. run_screener           S&P 500 growth screen (8h cached)
-  7. run_analysis           Claude 5-prompt pipeline
-  8. render_dashboard       Static HTML → output/index.html
+  7. run_breakout_screener  S&P 500 breakout/accumulation screen (8h cached)
+  8. run_analysis           Claude 5-prompt pipeline
+  9. render_dashboard       Static HTML → output/index.html
 """
 
 import logging
@@ -39,7 +40,7 @@ def main() -> None:
     os.makedirs(_OUTPUT_DIR, exist_ok=True)
 
     # ── 1. Portfolio ──────────────────────────────────────────────────────────
-    _step(1, 8, "Trading 212 portfolio")
+    _step(1, 9, "Trading 212 portfolio")
     from src.data.trading212 import fetch_portfolio
     portfolio = fetch_portfolio()
     positions = portfolio.get("positions", [])
@@ -47,7 +48,7 @@ def main() -> None:
     log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
     # ── 2. Market data ────────────────────────────────────────────────────────
-    _step(2, 8, "Market data (yfinance + Mansfield RS)")
+    _step(2, 9, "Market data (yfinance + Mansfield RS)")
     from src.data.market_data import fetch_market_data, SPDR_ETFS, COMMODITY_PROXIES
     # Always include SPDR ETFs and commodity proxies for sector rotation signals
     extra = [t for t in (SPDR_ETFS + COMMODITY_PROXIES) if t not in portfolio_tickers]
@@ -56,7 +57,7 @@ def main() -> None:
     log.info("Market data: %d/%d tickers processed", len(market_data), len(all_tickers))
 
     # ── 3. Sector flows ───────────────────────────────────────────────────────
-    _step(3, 8, "Sector rotation (Finviz + ETF RS)")
+    _step(3, 9, "Sector rotation (Finviz + ETF RS)")
     from src.data.sector_flows import fetch_sector_data
     sector_flows = fetch_sector_data(market_data, positions)
     n_signals = len(sector_flows.get("rotation_signals", []))
@@ -64,7 +65,7 @@ def main() -> None:
              n_signals, sector_flows.get("alignment", {}).get("alignment_pct", 0))
 
     # ── 4. Macro ──────────────────────────────────────────────────────────────
-    _step(4, 8, "FRED macro data")
+    _step(4, 9, "FRED macro data")
     from src.data.macro import fetch_macro_data
     macro = fetch_macro_data()
     if macro:
@@ -76,21 +77,29 @@ def main() -> None:
                  macro.get("rate_trajectory", "?"))
 
     # ── 5. Fundamentals ───────────────────────────────────────────────────────
-    _step(5, 8, "Fundamentals (Finnhub + yfinance)")
+    _step(5, 9, "Fundamentals (Finnhub + yfinance)")
     from src.data.fundamentals import fetch_all_fundamentals
     fundamentals = fetch_all_fundamentals(portfolio_tickers)
     log.info("Fundamentals: %d/%d tickers", len(fundamentals), len(portfolio_tickers))
 
     # ── 6. Screener ───────────────────────────────────────────────────────────
-    _step(6, 8, "S&P 500 growth screener (8h cached)")
+    _step(6, 9, "S&P 500 growth screener (8h cached)")
     from src.data.screener import run_screener
     screener = run_screener(exclude_tickers=portfolio_tickers)
     log.info("Screener: %d candidates (universe=%d)",
              len(screener.get("candidates", [])),
              screener.get("universe_size", 0))
 
-    # ── 7. Claude analysis ────────────────────────────────────────────────────
-    _step(7, 8, "Claude analysis (5-prompt pipeline)")
+    # ── 7. Breakout Watch List ────────────────────────────────────────────────
+    _step(7, 9, "Breakout Watch List screener (8h cached)")
+    from src.data.breakout_screener import run_breakout_screener
+    breakout = run_breakout_screener(exclude_tickers=portfolio_tickers)
+    log.info("Breakout screener: %d candidates (universe=%d)",
+             len(breakout.get("candidates", [])),
+             breakout.get("universe_size", 0))
+
+    # ── 8. Claude analysis ────────────────────────────────────────────────────
+    _step(8, 9, "Claude analysis (5-prompt pipeline)")
     from src.analysis.claude_analyst import run_analysis
     analysis = run_analysis(
         portfolio=portfolio,
@@ -103,14 +112,15 @@ def main() -> None:
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))
 
-    # ── 8. Render ─────────────────────────────────────────────────────────────
-    _step(8, 8, "Rendering dashboard → output/index.html")
+    # ── 9. Render ─────────────────────────────────────────────────────────────
+    _step(9, 9, "Rendering dashboard → output/index.html")
     from src.dashboard.renderer import render_dashboard
     render_dashboard(
         analysis=analysis,
         portfolio=portfolio,
         market_data=market_data,
         screener=screener,
+        breakout=breakout,
         output_path=_OUTPUT_HTML,
     )
 

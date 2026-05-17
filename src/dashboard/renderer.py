@@ -32,6 +32,7 @@ def render_dashboard(
     portfolio: dict | None = None,
     market_data: dict | None = None,
     screener: dict | None = None,
+    breakout: dict | None = None,
     output_path: str = "output/index.html",
 ) -> None:
     """
@@ -42,11 +43,13 @@ def render_dashboard(
         portfolio:    Output of fetch_portfolio()
         market_data:  {ticker: {mansfield_rs, stop_loss, macd_bullish, above_sma50, dist_52w_high}}
         screener:     Output of run_screener()
+        breakout:     Output of run_breakout_screener()
         output_path:  Destination path for index.html
     """
     portfolio   = portfolio   or {}
     market_data = market_data or {}
     screener    = screener    or {}
+    breakout    = breakout    or {}
 
     account   = portfolio.get("account", {})
     positions = portfolio.get("positions", [])
@@ -134,6 +137,24 @@ def render_dashboard(
             "mrs_weekly":         c.get("mrs_weekly"),
         })
 
+    # --- Breakout Watch List (top 15) ---
+    breakout_candidates = []
+    for c in breakout.get("candidates", [])[:15]:
+        breakout_candidates.append({
+            "ticker":          c["ticker"],
+            "company_name":    c.get("company_name") or c["ticker"],
+            "sector":          c.get("sector", "?"),
+            "mansfield_rs":    round(float(c.get("mansfield_rs", 0)), 1),
+            "composite_score": int(c.get("composite_score", 0)),
+            "reasoning":       c.get("reasoning", ""),
+            "signals":         c.get("signals", []),
+            "stop_loss":       c.get("stop_loss"),
+            "ohlcv_daily":     c.get("ohlcv_daily"),
+            "ohlcv_weekly":    c.get("ohlcv_weekly"),
+            "mrs_daily":       c.get("mrs_daily"),
+            "mrs_weekly":      c.get("mrs_weekly"),
+        })
+
     # --- Meta ---
     gen_at = analysis.get("generated_at", datetime.now().isoformat())
     try:
@@ -163,6 +184,7 @@ def render_dashboard(
         "sectors":              sector_data,
         "holdings":             holdings,
         "screener_candidates":  screener_candidates,
+        "breakout_candidates":  breakout_candidates,
     }
 
     template = _TEMPLATE.read_text(encoding="utf-8")
@@ -171,5 +193,5 @@ def render_dashboard(
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
-    log.info("Dashboard written → %s  (%d holdings, %d screener picks)",
-             output_path, len(holdings), len(screener_candidates))
+    log.info("Dashboard written → %s  (%d holdings, %d screener picks, %d breakout picks)",
+             output_path, len(holdings), len(screener_candidates), len(breakout_candidates))
