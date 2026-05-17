@@ -35,7 +35,7 @@ SECTORS_FILE = Path("config/sectors.json")
 # Read-only endpoints — order-placement endpoints intentionally absent.
 _EP_SUMMARY   = "/equity/account/summary"
 _EP_CASH      = "/equity/account/cash"
-_EP_POSITIONS = "/equity/portfolio/positions"
+_EP_POSITIONS = "/equity/positions"
 _EP_ORDERS    = "/equity/history/orders"
 _EP_PIES      = "/equity/pies"
 

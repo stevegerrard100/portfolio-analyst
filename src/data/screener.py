@@ -32,6 +32,10 @@ from src.data.market_data import (
     _volume_ratio,
     _52w_proximity,
     mansfield_rs,
+    _ohlcv_daily_to_json,
+    _ohlcv_weekly_to_json,
+    _mrs_daily_to_json,
+    _mrs_weekly_to_json,
 )
 
 log = logging.getLogger(__name__)
@@ -183,11 +187,11 @@ def _batch_mansfield_rs(
 
 def _technical_profile(ticker: str) -> dict | None:
     """
-    Fetch 1y daily OHLCV and compute technical signals.
+    Fetch 2y daily OHLCV, compute technical signals, and capture chart arrays.
     Returns None if data is insufficient.
     """
     try:
-        df = yf.Ticker(ticker).history(period="1y")
+        df = yf.Ticker(ticker).history(period="2y")
         if df.empty or len(df) < 60:
             return None
         if df.index.tz is not None:
@@ -201,6 +205,7 @@ def _technical_profile(ticker: str) -> dict | None:
         sma20   = df["sma_20"].iloc[-1]
         bb_pct  = df["bb_pct"].iloc[-1]
         macd_d  = df["macd_diff"].iloc[-1]
+        atr     = df["atr_14"].iloc[-1]
 
         above_sma50  = bool(price > float(sma50))  if not pd.isna(sma50)  else None
         macd_bullish = bool(float(macd_d) > 0)      if not pd.isna(macd_d) else None
@@ -212,6 +217,7 @@ def _technical_profile(ticker: str) -> dict | None:
             "price":         price,
             "sma50":         round(float(sma50), 2)  if not pd.isna(sma50)  else None,
             "sma20":         round(float(sma20), 2)  if not pd.isna(sma20)  else None,
+            "atr_14":        round(float(atr), 4)    if not pd.isna(atr)    else None,
             "above_sma50":   above_sma50,
             "macd_bullish":  macd_bullish,
             "macd_crossover_recent": macd_cross,
@@ -219,6 +225,9 @@ def _technical_profile(ticker: str) -> dict | None:
             "dist_52w_high": dist_high,
             "dist_52w_low":  dist_low,
             "bb_pct":        round(float(bb_pct), 3) if not pd.isna(bb_pct) else None,
+            # Chart data for TradingView Lightweight Charts
+            "ohlcv_daily":  _ohlcv_daily_to_json(df),
+            "ohlcv_weekly": _ohlcv_weekly_to_json(df),
         }
     except Exception as exc:
         log.debug("Technical profile failed for %s: %s", ticker, exc)
@@ -260,6 +269,73 @@ def _fundamental_profile(info: dict) -> dict:
 _DISQUALIFIER_RULES: list[tuple[str, str]] = [
     # (condition_key_or_logic, label)
 ]
+
+
+def _candidate_reasoning(c: dict) -> str:
+    """
+    Generate a 2-3 sentence plain-English explanation of why this candidate
+    scored highly. No API calls — derived entirely from screener data.
+    """
+    parts: list[str] = []
+
+    rs = c.get("mansfield_rs") or 0
+    rs_trend = c.get("rs_trend_4w") or 0
+
+    if rs > 30:
+        parts.append(
+            f"Mansfield RS of {rs:.0f} puts this stock in the top tier of S&P 500 "
+            f"performers — it has significantly outperformed the index over the past year."
+        )
+    elif rs > 15:
+        parts.append(
+            f"Mansfield RS of {rs:.0f} shows consistent outperformance vs the S&P 500 "
+            f"over the past 12 months."
+        )
+    else:
+        parts.append(
+            f"Mansfield RS of {rs:.0f} indicates positive relative strength vs the market."
+        )
+
+    rev_g = c.get("revenue_growth_pct")
+    dist_h = c.get("dist_52w_high") or -100
+    macd_bull = c.get("macd_bullish") or c.get("macd_crossover_recent")
+    above_sma = c.get("above_sma50")
+    ps = c.get("price_sales")
+
+    tech_signals: list[str] = []
+    if dist_h > -5:
+        tech_signals.append("at a 52-week high (sustained momentum)")
+    elif dist_h > -10:
+        tech_signals.append("within 10% of its 52-week high")
+    if macd_bull:
+        tech_signals.append("MACD bullish crossover")
+    if above_sma:
+        tech_signals.append("holding above the 50-day moving average")
+
+    if rev_g is not None and rev_g > 20:
+        parts.append(
+            f"Revenue is growing at {rev_g:.0f}% year-over-year — well above the market average — "
+            f"showing the business has genuine top-line momentum."
+        )
+    elif rev_g is not None and rev_g > 5:
+        parts.append(f"Revenue growing at {rev_g:.0f}% YoY demonstrates solid top-line momentum.")
+    elif tech_signals:
+        parts.append(f"The technical setup is strong: {', '.join(tech_signals[:2])}.")
+
+    if rs_trend > 5:
+        parts.append(
+            f"RS is accelerating — up {rs_trend:.1f} points over the past 4 weeks — "
+            f"suggesting fresh institutional buying."
+        )
+    elif tech_signals and rev_g is not None and rev_g > 5:
+        # Add technical colour as a third sentence if not already covered
+        parts.append(f"Technically: {', '.join(tech_signals[:2])}.")
+    elif ps is not None and ps <= 5:
+        parts.append(
+            f"A price-to-sales ratio of {ps:.1f}× is attractive relative to peers in this sector."
+        )
+
+    return " ".join(parts[:3])
 
 
 def _disqualifiers(candidate: dict) -> list[str]:
@@ -451,12 +527,27 @@ def run_screener(
             info = yf.Ticker(ticker).info or {}
             fund = _fundamental_profile(info)
 
+            # Mansfield RS weekly time series for chart overlay
+            mrs_weekly_data: list[dict] = []
+            mrs_daily_data:  list[dict] = []
+            if not ticker_weekly.empty:
+                try:
+                    wkly_c = ticker_weekly["Close"].dropna()
+                    aligned_spy = spy_weekly.reindex(wkly_c.index, method="ffill")
+                    rs_series_full = mansfield_rs(wkly_c, aligned_spy).dropna()
+                    mrs_weekly_data = _mrs_weekly_to_json(rs_series_full)
+                    mrs_daily_data  = _mrs_daily_to_json(rs_series_full)
+                except Exception:
+                    pass
+
             candidate = {
                 "ticker":       ticker,
                 "mansfield_rs": rs_score,
                 "rs_trend_4w":  rs_trend_4w,
                 **tech,
                 **fund,
+                "mrs_weekly": mrs_weekly_data,
+                "mrs_daily":  mrs_daily_data,
             }
 
             dq = _disqualifiers(candidate)
@@ -465,6 +556,7 @@ def run_screener(
             candidate["composite_score"] = (
                 _composite_score(candidate) if not dq else 0.0
             )
+            candidate["reasoning"] = _candidate_reasoning(candidate)
             candidates.append(candidate)
             time.sleep(0.5)
 

@@ -116,6 +116,8 @@ def render_dashboard(
     screener_candidates = []
     for c in screener.get("candidates", [])[:10]:
         rg = c.get("revenue_growth_pct")
+        price = float(c.get("price") or c.get("current_price") or 0)
+        atr   = c.get("atr_14")
         screener_candidates.append({
             "ticker":             c["ticker"],
             "company_name":       c.get("company_name") or c["ticker"],
@@ -123,6 +125,12 @@ def render_dashboard(
             "composite_score":    round(float(c.get("composite_score", 0)), 1),
             "mansfield_rs":       round(float(c.get("mansfield_rs", 0)), 1),
             "revenue_growth_pct": round(float(rg), 1) if rg is not None else None,
+            "reasoning":          c.get("reasoning", ""),
+            "stop_loss":          _calc_stop_loss(price, atr, "medium"),
+            "ohlcv_daily":        c.get("ohlcv_daily"),
+            "ohlcv_weekly":       c.get("ohlcv_weekly"),
+            "mrs_daily":          c.get("mrs_daily"),
+            "mrs_weekly":         c.get("mrs_weekly"),
         })
 
     # --- Meta ---
