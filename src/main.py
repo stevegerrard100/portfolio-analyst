@@ -42,13 +42,8 @@ def main() -> None:
     _step(1, 8, "Trading 212 portfolio")
     from src.data.trading212 import fetch_portfolio
     portfolio = fetch_portfolio()
-    _KNOWN_DEFUNCT = {"VACQ", "NPA", "DMYI", "XPOA", "SNII"}
-
     positions = portfolio.get("positions", [])
-    for p in positions:
-        if p["ticker"] in _KNOWN_DEFUNCT:
-            log.warning("known defunct SPAC — skipping: %s", p["ticker"])
-    portfolio_tickers = [p["ticker"] for p in positions if p["ticker"] not in _KNOWN_DEFUNCT]
+    portfolio_tickers = [p["ticker"] for p in positions]
     log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
     # ── 2. Market data ────────────────────────────────────────────────────────

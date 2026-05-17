@@ -8,6 +8,8 @@ import pandas as pd
 import ta
 import yfinance as yf
 
+from src.data.ticker_resolver import _TICKER_OVERRIDES, resolve_ticker
+
 log = logging.getLogger(__name__)
 
 INDEX_TICKERS = ["SPY", "QQQ", "IWM"]
@@ -299,8 +301,15 @@ def fetch_market_data(tickers: list[str]) -> dict[str, dict]:
 
     results: dict[str, dict] = {}
     for ticker in tickers:
-        log.info("Processing %s", ticker)
-        data = process_ticker(ticker, spy_daily)
+        effective = _TICKER_OVERRIDES.get(ticker, ticker)
+        log.info("Processing %s%s", effective, f" (override for {ticker})" if effective != ticker else "")
+        data = process_ticker(effective, spy_daily)
+        if data is None:
+            resolved, company_name = resolve_ticker(ticker)
+            if resolved:
+                data = process_ticker(resolved, spy_daily)
+            if data is None:
+                log.warning("No market data for %s (%s) — skipping", ticker, company_name)
         if data:
             results[ticker] = data
 
