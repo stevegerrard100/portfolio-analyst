@@ -376,7 +376,10 @@ def _merge_raw_positions(direct: list[dict], pie: list[dict]) -> list[dict]:
     """
     agg: dict[str, dict] = {}
     for pos in direct + pie:
-        t = pos["ticker"]
+        t = pos.get("ticker")
+        if not t:
+            log.warning("_merge_raw_positions: position missing 'ticker' key — skipping: %s", pos)
+            continue
         qty = float(pos.get("quantity", 0))
         avg = float(pos.get("averagePrice", 0))
         cur = float(pos.get("currentPrice", 0))
