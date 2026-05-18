@@ -423,7 +423,7 @@ Rules:
 - Do not include disclaimers or preamble"""
 
     try:
-        raw = _call(prompt, max_tokens=800)
+        raw = _call(prompt, max_tokens=2000)
         # Strip accidental markdown fences
         raw = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
         actions = json.loads(raw)
