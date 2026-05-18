@@ -91,8 +91,21 @@
     .filter-btn { padding: 3px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; }
     .filter-btn:hover, .filter-btn.active { border-color: var(--blue); color: var(--blue); background: #0c1e2e; }
 
-    /* ── Holdings grid ───────────────────────────────────── */
-    .holdings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; align-items: start; }
+    /* ── Holdings list ───────────────────────────────────── */
+    .h-list-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .h-list-table th { text-align: left; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 5px 8px; border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
+    .h-list-table td { padding: 6px 8px; border-bottom: 1px solid var(--surface2); vertical-align: middle; white-space: nowrap; }
+    .h-list-table tr:last-child td { border-bottom: none; }
+    .h-row { cursor: pointer; transition: background 0.1s; }
+    .h-row:hover td, .h-row.h-row-open td { background: var(--surface2); }
+    .h-ind { font-size: 11px; font-weight: 700; }
+    .h-ind.g { color: var(--green); }
+    .h-ind.r { color: var(--red); }
+    .h-ind.n { color: var(--muted); }
+    .hc-expand-inner { padding: 10px 8px 14px; }
+    .h-rs-cell { min-width: 58px; }
+    .h-rs-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 3px; }
+    .h-rs-fill { height: 100%; border-radius: 1px; }
     .h-section { margin-bottom: 22px; }
     .h-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
     .h-pie-group { margin-bottom: 14px; }
@@ -254,7 +267,6 @@
     <button class="tab-btn active" data-tab="brief">Today's Brief</button>
     <button class="tab-btn" data-tab="portfolio">My Portfolio</button>
     <button class="tab-btn" data-tab="opportunities">Opportunities</button>
-    <button class="tab-btn" data-tab="market">Market</button>
   </nav>
 
   <div class="page">
@@ -290,6 +302,16 @@
 
     <!-- Tab 2: My Portfolio -->
     <div id="tab-portfolio" class="tab-panel">
+      <div class="section row row-sidebar">
+        <div class="card">
+          <div class="card-title">Sector Allocation</div>
+          <div class="chart-wrap" style="height:260px"><canvas id="sector-chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Allocation by Sector</div>
+          <div id="sector-table"></div>
+        </div>
+      </div>
       <div class="section">
         <div class="acct-bar" id="account-stats"></div>
       </div>
@@ -333,20 +355,6 @@
             </tr></thead>
             <tbody id="breakout-body"></tbody>
           </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab 4: Market -->
-    <div id="tab-market" class="tab-panel">
-      <div class="section row row-sidebar">
-        <div class="card">
-          <div class="card-title">Sector Allocation</div>
-          <div class="chart-wrap" style="height:280px"><canvas id="sector-chart"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Allocation by Sector</div>
-          <div id="sector-table"></div>
         </div>
       </div>
     </div>
@@ -473,13 +481,20 @@
       return tags.join('');
     }
 
-    function holdingCard(h) {
-      const pnlCls = h.pnl_pct >= 0 ? 'pos' : 'neg';
-      const pnlStr = `${h.pnl_pct>=0?'+':''}${h.pnl_pct}% (${fmtCcy(h.ppl,SYM,true)})`;
-      const safeId = 'chart-' + h.ticker.replace(/[^A-Za-z0-9]/g,'_');
-      const hasChart = !!(h.ohlcv_daily?.length);
+    function holdingRow(h) {
+      const pnlCls  = h.pnl_pct >= 0 ? 'pos' : 'neg';
+      const safeId  = h.ticker.replace(/[^A-Za-z0-9]/g,'_');
+      const hasContent = !!(h.ohlcv_daily?.length || h.analysis);
 
-      const chartHtml = hasChart ? `
+      const smaCls   = h.above_sma50  == null ? 'n' : (h.above_sma50  ? 'g' : 'r');
+      const smaArrow = h.above_sma50  == null ? '—' : (h.above_sma50  ? '▲' : '▼');
+      const macdCls  = h.macd_bullish == null ? 'n' : (h.macd_bullish ? 'g' : 'r');
+      const macdArrow= h.macd_bullish == null ? '—' : (h.macd_bullish ? '▲' : '▼');
+      const rsCls    = h.mansfield_rs == null ? '' : (h.mansfield_rs >= 0 ? 'pos' : 'neg');
+      const rsPct    = h.mansfield_rs != null ? Math.min(100, Math.max(0, ((h.mansfield_rs+50)/200)*100)).toFixed(1) : '0';
+      const rsFill   = h.mansfield_rs != null ? (h.mansfield_rs >= 0 ? '#3fb950' : '#f85149') : 'var(--border)';
+
+      const chartHtml = h.ohlcv_daily?.length ? `
         <div class="chart-controls">
           <div class="ctrl-group" data-group="period">
             <button class="ctrl-btn" data-period="1M">1M</button>
@@ -493,33 +508,52 @@
             <button class="ctrl-btn" data-candle="weekly">Weekly</button>
           </div>
         </div>
-        <div class="hc-chart" id="${safeId}"></div>` : '';
+        <div class="hc-chart" id="hc-${safeId}"></div>` : '';
 
-      return `
-        <details class="hcard" data-ticker="${esc(h.ticker)}">
-          <summary>
-            <div class="hc-top">
-              <span class="hc-ticker">${esc(h.ticker)}</span>
-              <span class="signal s-${esc(h.signal)}">${esc(h.signal)}</span>
+      const mainRow = `
+        <tr class="h-row" data-ticker="${esc(h.ticker)}">
+          <td><span style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(h.ticker)}</span></td>
+          <td style="color:var(--muted);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${esc(h.sector)}</td>
+          <td class="${pnlCls}">${h.pnl_pct>=0?'+':''}${h.pnl_pct}%</td>
+          <td class="${pnlCls}">${fmtCcy(h.ppl,SYM,true)}</td>
+          <td><span class="signal s-${esc(h.signal)}">${esc(h.signal)}</span></td>
+          <td class="h-rs-cell">
+            <span class="${rsCls}" style="font-size:11px">${h.mansfield_rs!=null?fmt(h.mansfield_rs,{sign:true}):'—'}</span>
+            <div class="h-rs-bar"><div class="h-rs-fill" style="width:${rsPct}%;background:${rsFill}"></div></div>
+          </td>
+          <td title="${h.above_sma50==null?'No data':(h.above_sma50?'Above SMA50':'Below SMA50')}"><span class="h-ind ${smaCls}">${smaArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">SMA</span></td>
+          <td title="${h.macd_bullish==null?'No data':(h.macd_bullish?'MACD bullish':'MACD bearish')}"><span class="h-ind ${macdCls}">${macdArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">MACD</span></td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${h.stop_loss!=null?Number(h.stop_loss).toFixed(2):'—'}</td>
+          <td style="font-size:11px;color:var(--muted)">${h.dist_52w_high!=null?fmt(h.dist_52w_high,{sign:true})+'%':'—'}</td>
+        </tr>`;
+
+      const expandRow = hasContent ? `
+        <tr class="h-expand-row" data-ticker="${esc(h.ticker)}" style="display:none">
+          <td colspan="10" style="padding:0">
+            <div class="hc-expand-inner">
+              ${h.analysis ? `<div class="hc-analysis">${esc(h.analysis)}</div>` : ''}
+              ${chartHtml}
             </div>
-            <div class="hc-sector">${esc(h.sector)}</div>
-            <div class="hc-pnl ${pnlCls}">${pnlStr}</div>
-            <div class="hc-tags">${metricTags(h)}</div>
-            ${rsBar(h.mansfield_rs)}
-            ${hasChart ? '<div class="expand-hint">click to expand ›</div>' : ''}
-          </summary>
-          <div class="hc-expanded">
-            ${h.analysis ? `<div class="hc-analysis">${esc(h.analysis)}</div>` : ''}
-            ${chartHtml}
-          </div>
-        </details>`;
+          </td>
+        </tr>` : '';
+
+      return mainRow + expandRow;
     }
 
-    // Render all cards once; filter by show/hide to preserve chart state
-    let gridRendered = false;
-    function renderGrid(filter) {
+    // Render list once; filter by show/hide to preserve chart state
+    let listRendered = false;
+    const THEAD = `<thead><tr>
+      <th>Ticker</th><th>Sector</th><th>P&amp;L%</th><th>P&amp;L</th>
+      <th>Signal</th><th>RS</th><th>SMA50</th><th>MACD</th><th>Stop</th><th>52w</th>
+    </tr></thead>`;
+
+    function makeTable(holdings) {
+      return `<table class="h-list-table">${THEAD}<tbody>${holdings.map(holdingRow).join('')}</tbody></table>`;
+    }
+
+    function renderList(filter) {
       const container = document.getElementById('holdings-sections');
-      if (!gridRendered) {
+      if (!listRendered) {
         const etfs   = sorted.filter(h => h.holding_type === 'etf');
         const direct = sorted.filter(h => h.holding_type !== 'etf' && !h.pie_name);
         const inPies = sorted.filter(h => h.holding_type !== 'etf' && !!h.pie_name);
@@ -534,14 +568,14 @@
         if (direct.length) {
           html += `<div class="h-section" data-section="individual">
             <div class="h-section-title">Individual Holdings</div>
-            <div class="holdings-grid">${direct.map(holdingCard).join('')}</div>
+            ${makeTable(direct)}
           </div>`;
         }
         if (inPies.length) {
           const pieHtml = Object.entries(pieGroupMap).map(([name, hs]) =>
             `<div class="h-pie-group" data-pie="${esc(name)}">
               <div class="h-pie-name">${esc(name)}</div>
-              <div class="holdings-grid">${hs.map(holdingCard).join('')}</div>
+              ${makeTable(hs)}
             </div>`
           ).join('');
           html += `<div class="h-section" data-section="pies">
@@ -552,30 +586,33 @@
         if (etfs.length) {
           html += `<div class="h-section" data-section="etfs">
             <div class="h-section-title">ETFs</div>
-            <div class="holdings-grid">${etfs.map(holdingCard).join('')}</div>
+            ${makeTable(etfs)}
           </div>`;
         }
         container.innerHTML = html;
-        attachCardListeners();
-        gridRendered = true;
+        attachRowListeners();
+        listRendered = true;
       }
 
-      // Show/hide individual cards
-      container.querySelectorAll('.hcard').forEach(card => {
-        const t = card.dataset.ticker;
+      // Show/hide rows and their expand partners
+      container.querySelectorAll('tr.h-row').forEach(row => {
+        const t = row.dataset.ticker;
         const h = sorted.find(x => x.ticker === t);
         const show = filter === 'ALL' || h?.signal === filter;
-        card.style.display = show ? '' : 'none';
-        if (!show && card.open) card.open = false;
+        row.style.display = show ? '' : 'none';
+        if (!show) {
+          const exp = container.querySelector(`tr.h-expand-row[data-ticker="${t}"]`);
+          if (exp) { exp.style.display = 'none'; row.classList.remove('h-row-open'); }
+        }
       });
 
-      // Hide section/pie-group headers when all their cards are filtered out
+      // Hide pie-group and section headers when all their rows are filtered out
       container.querySelectorAll('.h-pie-group').forEach(grp => {
-        const any = [...grp.querySelectorAll('.hcard')].some(c => c.style.display !== 'none');
+        const any = [...grp.querySelectorAll('tr.h-row')].some(r => r.style.display !== 'none');
         grp.style.display = any ? '' : 'none';
       });
       container.querySelectorAll('.h-section').forEach(sec => {
-        const any = [...sec.querySelectorAll('.hcard')].some(c => c.style.display !== 'none');
+        const any = [...sec.querySelectorAll('tr.h-row')].some(r => r.style.display !== 'none');
         sec.style.display = any ? '' : 'none';
       });
     }
@@ -594,9 +631,9 @@
       if (!btn) return;
       document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      renderGrid(btn.dataset.sig);
+      renderList(btn.dataset.sig);
     });
-    renderGrid('ALL');
+    renderList('ALL');
 
     // ── TradingView chart state and helpers ───────────────────────────────────
     const chartInstances = {};  // ticker → {chart, candleSeries, volSeries, sma50Series, period, candle}
@@ -647,12 +684,61 @@
       inst.chart.timeScale().fitContent();
     }
 
-    function createChart(ticker, details) {
+    // ── Row expand listener ───────────────────────────────────────────────────
+    function attachRowListeners() {
+      document.querySelectorAll('.h-row').forEach(row => {
+        const ticker    = row.dataset.ticker;
+        const expandRow = document.querySelector(`.h-expand-row[data-ticker="${ticker}"]`);
+        if (!expandRow) return;
+
+        row.addEventListener('click', () => {
+          const isOpen = expandRow.style.display !== 'none';
+          if (isOpen) {
+            expandRow.style.display = 'none';
+            row.classList.remove('h-row-open');
+          } else {
+            expandRow.style.display = '';
+            row.classList.add('h-row-open');
+            if (!chartInstances[ticker]) {
+              setTimeout(() => createChart(ticker), 30);
+            } else {
+              chartInstances[ticker].chart.timeScale().fitContent();
+            }
+          }
+        });
+
+        expandRow.addEventListener('click', e => {
+          e.stopPropagation();
+          const btn = e.target.closest('.ctrl-btn');
+          if (!btn) return;
+          const inst = chartInstances[ticker];
+          if (!inst) return;
+          if (btn.dataset.period) {
+            if (btn.dataset.period === '2Y') {
+              expandRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+              expandRow.querySelector('[data-candle="weekly"]').classList.add('active');
+              inst.candle = 'weekly';
+            }
+            expandRow.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            inst.period = btn.dataset.period;
+          }
+          if (btn.dataset.candle) {
+            expandRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            inst.candle = btn.dataset.candle;
+          }
+          applyChartData(ticker);
+        });
+      });
+    }
+
+    function createChart(ticker) {
       const h = DATA.holdings.find(x => x.ticker === ticker);
       if (!h?.ohlcv_daily?.length) return;
 
-      const safeId  = 'chart-' + ticker.replace(/[^A-Za-z0-9]/g,'_');
-      const container = details.querySelector('#' + safeId);
+      const safeId    = ticker.replace(/[^A-Za-z0-9]/g,'_');
+      const container = document.getElementById('hc-' + safeId);
       if (!container) return;
 
       const chart = LightweightCharts.createChart(container, {
@@ -670,7 +756,6 @@
         handleScale:  true,
       });
 
-      // Candlestick series (right scale)
       const candleSeries = chart.addCandlestickSeries({
         upColor:        '#3fb950',
         downColor:      '#f85149',
@@ -681,7 +766,6 @@
         priceScaleId:   'right',
       });
 
-      // Volume histogram (overlay, bottom 15% of chart)
       const volSeries = chart.addHistogramSeries({
         priceFormat:  { type: 'volume' },
         priceScaleId: 'vol',
@@ -691,7 +775,6 @@
         visible: false,
       });
 
-      // 50-day SMA (yellow, overlaid on candles)
       const sma50Series = chart.addLineSeries({
         color:              '#d29922',
         lineWidth:          1,
@@ -702,7 +785,6 @@
         crosshairMarkerVisible: false,
       });
 
-      // Stop loss price line
       if (h.stop_loss != null) {
         candleSeries.createPriceLine({
           price:            h.stop_loss,
@@ -720,50 +802,6 @@
       };
 
       applyChartData(ticker);
-    }
-
-    // ── Card toggle listener ──────────────────────────────────────────────────
-    function attachCardListeners() {
-      document.querySelectorAll('.hcard').forEach(details => {
-        // Chart init on first open
-        details.addEventListener('toggle', () => {
-          if (!details.open) return;
-          const ticker = details.dataset.ticker;
-          if (!chartInstances[ticker]) {
-            // Small delay so grid-column layout settles before chart auto-sizes
-            setTimeout(() => createChart(ticker, details), 30);
-          } else {
-            chartInstances[ticker].chart.timeScale().fitContent();
-          }
-        });
-
-        // Period and candle selector buttons (inside each card)
-        details.addEventListener('click', e => {
-          const btn = e.target.closest('.ctrl-btn');
-          if (!btn) return;
-          const ticker = details.dataset.ticker;
-          const inst   = chartInstances[ticker];
-          if (!inst) return;
-
-          if (btn.dataset.period) {
-            // If 2Y selected, force weekly candles
-            if (btn.dataset.period === '2Y') {
-              details.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
-              details.querySelector('[data-candle="weekly"]').classList.add('active');
-              inst.candle = 'weekly';
-            }
-            details.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            inst.period = btn.dataset.period;
-          }
-          if (btn.dataset.candle) {
-            details.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            inst.candle = btn.dataset.candle;
-          }
-          applyChartData(ticker);
-        });
-      });
     }
 
     // ── Narrative sections ───────────────────────────────────────────────────
@@ -1161,8 +1199,10 @@
       document.getElementById('tab-' + tabId).classList.add('active');
       document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
       window.scrollTo({top: 0, behavior: 'instant'});
-      if (tabId === 'market') ensureSectorChart();
-      if (tabId === 'portfolio') requestAnimationFrame(() => Object.values(chartInstances).forEach(i => i.chart.timeScale().fitContent()));
+      if (tabId === 'portfolio') {
+        ensureSectorChart();
+        requestAnimationFrame(() => Object.values(chartInstances).forEach(i => i.chart.timeScale().fitContent()));
+      }
       if (tabId === 'opportunities') requestAnimationFrame(() => {
         Object.values(screenerChartInstances).forEach(i => i.chart.timeScale().fitContent());
         Object.values(breakoutChartInstances).forEach(i => i.chart.timeScale().fitContent());
