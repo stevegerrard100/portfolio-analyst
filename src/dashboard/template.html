@@ -106,6 +106,15 @@
     .h-rs-cell { min-width: 58px; }
     .h-rs-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 3px; }
     .h-rs-fill { height: 100%; border-radius: 1px; }
+    .h-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .h-expand-content { display: none; width: 100%; box-sizing: border-box; padding: 0 4px 16px; border-top: 1px solid var(--border); }
+    .h-expand-content.open { display: block; }
+    @media (max-width: 768px) {
+      .chart-controls { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+      .ctrl-group { flex-wrap: wrap; }
+      .hc-chart { height: 250px !important; }
+      .h-list-table th:nth-child(n+7), .h-list-table td:nth-child(n+7) { display: none; }
+    }
     .h-section { margin-bottom: 22px; }
     .h-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
     .h-pie-group { margin-bottom: 14px; }
@@ -363,6 +372,7 @@
 
   <script>
     const DATA = {{DASHBOARD_DATA}};
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
 
     // ── Utilities ────────────────────────────────────────────────────────────
     function esc(s) {
@@ -481,11 +491,8 @@
       return tags.join('');
     }
 
-    function holdingRow(h) {
-      const pnlCls  = h.pnl_pct >= 0 ? 'pos' : 'neg';
-      const safeId  = h.ticker.replace(/[^A-Za-z0-9]/g,'_');
-      const hasContent = !!(h.ohlcv_daily?.length || h.analysis);
-
+    function _holdingCols(h) {
+      const pnlCls   = h.pnl_pct >= 0 ? 'pos' : 'neg';
       const smaCls   = h.above_sma50  == null ? 'n' : (h.above_sma50  ? 'g' : 'r');
       const smaArrow = h.above_sma50  == null ? '—' : (h.above_sma50  ? '▲' : '▼');
       const macdCls  = h.macd_bullish == null ? 'n' : (h.macd_bullish ? 'g' : 'r');
@@ -493,7 +500,31 @@
       const rsCls    = h.mansfield_rs == null ? '' : (h.mansfield_rs >= 0 ? 'pos' : 'neg');
       const rsPct    = h.mansfield_rs != null ? Math.min(100, Math.max(0, ((h.mansfield_rs+50)/200)*100)).toFixed(1) : '0';
       const rsFill   = h.mansfield_rs != null ? (h.mansfield_rs >= 0 ? '#3fb950' : '#f85149') : 'var(--border)';
+      return { pnlCls, smaCls, smaArrow, macdCls, macdArrow, rsCls, rsPct, rsFill };
+    }
 
+    function holdingMainRow(h) {
+      const { pnlCls, smaCls, smaArrow, macdCls, macdArrow, rsCls, rsPct, rsFill } = _holdingCols(h);
+      const hasExpand = !!(h.ohlcv_daily?.length || h.analysis);
+      return `<tr class="h-row" data-ticker="${esc(h.ticker)}"${!hasExpand ? ' style="cursor:default"' : ''}>
+          <td><span style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(h.ticker)}</span></td>
+          <td style="color:var(--muted);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${esc(h.sector)}</td>
+          <td class="${pnlCls}">${h.pnl_pct>=0?'+':''}${h.pnl_pct}%</td>
+          <td class="${pnlCls}">${fmtCcy(h.ppl,SYM,true)}</td>
+          <td><span class="signal s-${esc(h.signal)}">${esc(h.signal)}</span></td>
+          <td class="h-rs-cell">
+            <span class="${rsCls}" style="font-size:11px">${h.mansfield_rs!=null?fmt(h.mansfield_rs,{sign:true}):'—'}</span>
+            <div class="h-rs-bar"><div class="h-rs-fill" style="width:${rsPct}%;background:${rsFill}"></div></div>
+          </td>
+          <td title="${h.above_sma50==null?'No data':(h.above_sma50?'Above SMA50':'Below SMA50')}"><span class="h-ind ${smaCls}">${smaArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">SMA</span></td>
+          <td title="${h.macd_bullish==null?'No data':(h.macd_bullish?'MACD bullish':'MACD bearish')}"><span class="h-ind ${macdCls}">${macdArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">MACD</span></td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${h.stop_loss!=null?Number(h.stop_loss).toFixed(2):'—'}</td>
+          <td style="font-size:11px;color:var(--muted)">${h.dist_52w_high!=null?fmt(h.dist_52w_high,{sign:true})+'%':'—'}</td>
+        </tr>`;
+    }
+
+    function holdingExpandDiv(h) {
+      const safeId = h.ticker.replace(/[^A-Za-z0-9]/g,'_');
       const chartHtml = h.ohlcv_daily?.length ? `
         <div class="chart-controls">
           <div class="ctrl-group" data-group="period">
@@ -509,35 +540,10 @@
           </div>
         </div>
         <div class="hc-chart" id="hc-${safeId}"></div>` : '';
-
-      const mainRow = `
-        <tr class="h-row" data-ticker="${esc(h.ticker)}">
-          <td><span style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(h.ticker)}</span></td>
-          <td style="color:var(--muted);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${esc(h.sector)}</td>
-          <td class="${pnlCls}">${h.pnl_pct>=0?'+':''}${h.pnl_pct}%</td>
-          <td class="${pnlCls}">${fmtCcy(h.ppl,SYM,true)}</td>
-          <td><span class="signal s-${esc(h.signal)}">${esc(h.signal)}</span></td>
-          <td class="h-rs-cell">
-            <span class="${rsCls}" style="font-size:11px">${h.mansfield_rs!=null?fmt(h.mansfield_rs,{sign:true}):'—'}</span>
-            <div class="h-rs-bar"><div class="h-rs-fill" style="width:${rsPct}%;background:${rsFill}"></div></div>
-          </td>
-          <td title="${h.above_sma50==null?'No data':(h.above_sma50?'Above SMA50':'Below SMA50')}"><span class="h-ind ${smaCls}">${smaArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">SMA</span></td>
-          <td title="${h.macd_bullish==null?'No data':(h.macd_bullish?'MACD bullish':'MACD bearish')}"><span class="h-ind ${macdCls}">${macdArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">MACD</span></td>
-          <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${h.stop_loss!=null?Number(h.stop_loss).toFixed(2):'—'}</td>
-          <td style="font-size:11px;color:var(--muted)">${h.dist_52w_high!=null?fmt(h.dist_52w_high,{sign:true})+'%':'—'}</td>
-        </tr>`;
-
-      const expandRow = hasContent ? `
-        <tr class="h-expand-row" data-ticker="${esc(h.ticker)}" style="display:none">
-          <td colspan="10" style="padding:0">
-            <div class="hc-expand-inner">
-              ${h.analysis ? `<div class="hc-analysis">${esc(h.analysis)}</div>` : ''}
-              ${chartHtml}
-            </div>
-          </td>
-        </tr>` : '';
-
-      return mainRow + expandRow;
+      return `<div class="h-expand-content" data-ticker="${esc(h.ticker)}">
+        ${h.analysis ? `<div class="hc-analysis">${esc(h.analysis)}</div>` : ''}
+        ${chartHtml}
+      </div>`;
     }
 
     // Render list once; filter by show/hide to preserve chart state
@@ -547,8 +553,12 @@
       <th>Signal</th><th>RS</th><th>SMA50</th><th>MACD</th><th>Stop</th><th>52w</th>
     </tr></thead>`;
 
-    function makeTable(holdings) {
-      return `<table class="h-list-table">${THEAD}<tbody>${holdings.map(holdingRow).join('')}</tbody></table>`;
+    // Table + sibling expand divs — keeps chart containers outside the scrollable table
+    function makeSection(holdings) {
+      const rows    = holdings.map(holdingMainRow).join('');
+      const expands = holdings.filter(h => h.ohlcv_daily?.length || h.analysis)
+                              .map(holdingExpandDiv).join('');
+      return `<div class="h-table-wrap"><table class="h-list-table">${THEAD}<tbody>${rows}</tbody></table></div>${expands}`;
     }
 
     function renderList(filter) {
@@ -568,14 +578,14 @@
         if (direct.length) {
           html += `<div class="h-section" data-section="individual">
             <div class="h-section-title">Individual Holdings</div>
-            ${makeTable(direct)}
+            ${makeSection(direct)}
           </div>`;
         }
         if (inPies.length) {
           const pieHtml = Object.entries(pieGroupMap).map(([name, hs]) =>
             `<div class="h-pie-group" data-pie="${esc(name)}">
               <div class="h-pie-name">${esc(name)}</div>
-              ${makeTable(hs)}
+              ${makeSection(hs)}
             </div>`
           ).join('');
           html += `<div class="h-section" data-section="pies">
@@ -586,7 +596,7 @@
         if (etfs.length) {
           html += `<div class="h-section" data-section="etfs">
             <div class="h-section-title">ETFs</div>
-            ${makeTable(etfs)}
+            ${makeSection(etfs)}
           </div>`;
         }
         container.innerHTML = html;
@@ -594,15 +604,15 @@
         listRendered = true;
       }
 
-      // Show/hide rows and their expand partners
+      // Show/hide rows and their sibling expand divs
       container.querySelectorAll('tr.h-row').forEach(row => {
         const t = row.dataset.ticker;
         const h = sorted.find(x => x.ticker === t);
         const show = filter === 'ALL' || h?.signal === filter;
         row.style.display = show ? '' : 'none';
         if (!show) {
-          const exp = container.querySelector(`tr.h-expand-row[data-ticker="${t}"]`);
-          if (exp) { exp.style.display = 'none'; row.classList.remove('h-row-open'); }
+          const exp = container.querySelector(`.h-expand-content[data-ticker="${t}"]`);
+          if (exp) { exp.classList.remove('open'); row.classList.remove('h-row-open'); }
         }
       });
 
@@ -687,17 +697,17 @@
     // ── Row expand listener ───────────────────────────────────────────────────
     function attachRowListeners() {
       document.querySelectorAll('.h-row').forEach(row => {
-        const ticker    = row.dataset.ticker;
-        const expandRow = document.querySelector(`.h-expand-row[data-ticker="${ticker}"]`);
-        if (!expandRow) return;
+        const ticker     = row.dataset.ticker;
+        const expandDiv  = document.querySelector(`.h-expand-content[data-ticker="${ticker}"]`);
+        if (!expandDiv) return;
 
         row.addEventListener('click', () => {
-          const isOpen = expandRow.style.display !== 'none';
+          const isOpen = expandDiv.classList.contains('open');
           if (isOpen) {
-            expandRow.style.display = 'none';
+            expandDiv.classList.remove('open');
             row.classList.remove('h-row-open');
           } else {
-            expandRow.style.display = '';
+            expandDiv.classList.add('open');
             row.classList.add('h-row-open');
             if (!chartInstances[ticker]) {
               setTimeout(() => createChart(ticker), 30);
@@ -707,7 +717,7 @@
           }
         });
 
-        expandRow.addEventListener('click', e => {
+        expandDiv.addEventListener('click', e => {
           e.stopPropagation();
           const btn = e.target.closest('.ctrl-btn');
           if (!btn) return;
@@ -715,16 +725,16 @@
           if (!inst) return;
           if (btn.dataset.period) {
             if (btn.dataset.period === '2Y') {
-              expandRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
-              expandRow.querySelector('[data-candle="weekly"]').classList.add('active');
+              expandDiv.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+              expandDiv.querySelector('[data-candle="weekly"]').classList.add('active');
               inst.candle = 'weekly';
             }
-            expandRow.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+            expandDiv.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             inst.period = btn.dataset.period;
           }
           if (btn.dataset.candle) {
-            expandRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+            expandDiv.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             inst.candle = btn.dataset.candle;
           }
@@ -741,8 +751,16 @@
       const container = document.getElementById('hc-' + safeId);
       if (!container) return;
 
+      // Derive width from the expand-content div (outside the scrollable table)
+      const getW = () => {
+        const parent = container.closest('.h-expand-content') || container.parentElement;
+        return Math.max((parent?.clientWidth || window.innerWidth) - 8, 280);
+      };
+      const chartH = isMobile ? 250 : 300;
+
       const chart = LightweightCharts.createChart(container, {
-        autoSize: true,
+        width:  getW(),
+        height: chartH,
         layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
         grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
         crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
@@ -751,7 +769,10 @@
           borderColor: '#30363d',
           scaleMargins: { top: 0.08, bottom: 0.05 },
         },
-        timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
+        timeScale: {
+          borderColor: '#30363d', timeVisible: true, secondsVisible: false,
+          ...(isMobile ? { barSpacing: 10 } : {}),
+        },
         handleScroll: true,
         handleScale:  true,
       });
@@ -795,6 +816,14 @@
           axisLabelVisible: true,
         });
       }
+
+      // Keep width synced with container on viewport resize
+      const onResize = () => {
+        if (!chartInstances[ticker]) return;
+        chart.applyOptions({ width: getW() });
+        chart.timeScale().fitContent();
+      };
+      window.addEventListener('resize', onResize, { passive: true });
 
       chartInstances[ticker] = {
         chart, candleSeries, volSeries, sma50Series,
