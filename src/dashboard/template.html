@@ -168,6 +168,62 @@
     .bk-row-hc { border-left: 2px solid var(--green); }
 
     .chart-wrap { position: relative; margin-top: 16px; }
+
+    /* ── Tab bar ─────────────────────────────────────────── */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      display: flex;
+      position: sticky;
+      top: 48px; /* sits immediately below the 48px header */
+      z-index: 190;
+    }
+    .tab-btn {
+      padding: 11px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Account stats bar (Tab 2) ───────────────────────── */
+    .acct-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .acct-stat { padding: 14px 20px; border-right: 1px solid var(--border); }
+    .acct-stat:last-child { border-right: none; }
+    .acct-stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .acct-stat-value { font-size: 18px; font-weight: 700; }
+    @media (max-width: 768px) { .acct-bar { grid-template-columns: 1fr 1fr; } }
+
+    /* ── Teaser grid (Tab 1 top picks) ──────────────────── */
+    .teaser-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .teaser-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+    .teaser-ticker { font-family: var(--mono); font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+    .teaser-name { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .teaser-sector { font-size: 11px; color: #444d56; margin-bottom: 6px; }
+    .teaser-stats { display: flex; gap: 12px; font-size: 12px; }
+    .see-all-link { text-align: right; font-size: 12px; }
+    .see-all-link a { color: var(--blue); text-decoration: none; cursor: pointer; }
+    .see-all-link a:hover { text-decoration: underline; }
+    @media (max-width: 768px) { .teaser-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -179,67 +235,102 @@
     </div>
   </header>
 
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="brief">Today's Brief</button>
+    <button class="tab-btn" data-tab="portfolio">My Portfolio</button>
+    <button class="tab-btn" data-tab="opportunities">Opportunities</button>
+    <button class="tab-btn" data-tab="market">Market</button>
+  </nav>
+
   <div class="page">
 
-    <div class="section">
-      <div class="card verdict-card">
-        <div class="card-title">Today's Verdict</div>
-        <p id="verdict-text"></p>
+    <!-- Tab 1: Today's Brief -->
+    <div id="tab-brief" class="tab-panel active">
+      <div class="section">
+        <div class="card verdict-card">
+          <div class="card-title">Today's Verdict</div>
+          <p id="verdict-text"></p>
+        </div>
+      </div>
+      <div class="section row row-2">
+        <div class="card">
+          <div class="card-title">Macro Environment</div>
+          <div class="narrative" id="macro-text"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Sector Rotation</div>
+          <div class="narrative" id="sector-text"></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="card">
+          <div class="card-title">Top Momentum Picks</div>
+          <div class="teaser-grid" id="teaser-grid"></div>
+          <div class="see-all-link"><a href="#" data-goto-tab="opportunities" id="see-all-link">See all opportunities →</a></div>
+        </div>
       </div>
     </div>
 
-    <div class="section row row-sidebar">
-      <div class="card">
-        <div class="card-title">Portfolio</div>
-        <div id="account-stats"></div>
-        <div class="chart-wrap" style="height:230px"><canvas id="sector-chart"></canvas></div>
+    <!-- Tab 2: My Portfolio -->
+    <div id="tab-portfolio" class="tab-panel">
+      <div class="section">
+        <div class="acct-bar" id="account-stats"></div>
       </div>
-      <div class="card">
-        <div class="card-title">Holdings Analysis</div>
-        <div class="filter-bar" id="filter-bar"></div>
-        <div id="holdings-sections"></div>
-      </div>
-    </div>
-
-    <div class="section row row-3">
-      <div class="card">
-        <div class="card-title">Macro Environment</div>
-        <div class="narrative" id="macro-text"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Sector Rotation</div>
-        <div class="narrative" id="sector-text"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Growth Opportunities</div>
-        <div class="narrative" id="opps-text"></div>
+      <div class="section">
+        <div class="card">
+          <div class="card-title">Holdings</div>
+          <div class="filter-bar" id="filter-bar"></div>
+          <div id="holdings-sections"></div>
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="card">
-        <div class="card-title">Momentum Opportunities</div>
-        <table class="stbl">
-          <thead><tr>
-            <th>Ticker</th><th>Company</th><th>Sector</th>
-            <th>Mansfield RS</th><th>Rev Growth</th><th>Score</th>
-          </tr></thead>
-          <tbody id="screener-body"></tbody>
-        </table>
+    <!-- Tab 3: Opportunities -->
+    <div id="tab-opportunities" class="tab-panel">
+      <div class="section">
+        <div class="card verdict-card" style="border-left-color:var(--green)">
+          <div class="card-title">Growth Opportunities</div>
+          <div class="narrative" id="opps-text"></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="card">
+          <div class="card-title">Momentum Opportunities</div>
+          <table class="stbl">
+            <thead><tr>
+              <th>Ticker</th><th>Company</th><th>Sector</th>
+              <th>Mansfield RS</th><th>Rev Growth</th><th>Score</th>
+            </tr></thead>
+            <tbody id="screener-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="section">
+        <div class="card">
+          <div class="card-title">Breakout Watch List</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:12px">S&amp;P 500 stocks forming accumulation bases — early-stage setups scored on 5 signals: Stage&nbsp;1→2 transition, VCP, volume accumulation, RS leading price, and pivot proximity.</p>
+          <table class="stbl">
+            <thead><tr>
+              <th>Ticker</th><th>Company</th><th>Sector</th>
+              <th>Mansfield RS</th><th>Signals</th><th>Score</th>
+            </tr></thead>
+            <tbody id="breakout-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="card">
-        <div class="card-title">Breakout Watch List</div>
-        <p style="color:var(--muted);font-size:12px;margin-bottom:12px">S&amp;P 500 stocks forming accumulation bases — early-stage setups scored on 5 signals: Stage&nbsp;1→2 transition, VCP, volume accumulation, RS leading price, and pivot proximity.</p>
-        <table class="stbl">
-          <thead><tr>
-            <th>Ticker</th><th>Company</th><th>Sector</th>
-            <th>Mansfield RS</th><th>Signals</th><th>Score</th>
-          </tr></thead>
-          <tbody id="breakout-body"></tbody>
-        </table>
+    <!-- Tab 4: Market -->
+    <div id="tab-market" class="tab-panel">
+      <div class="section row row-sidebar">
+        <div class="card">
+          <div class="card-title">Sector Allocation</div>
+          <div class="chart-wrap" style="height:280px"><canvas id="sector-chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Allocation by Sector</div>
+          <div id="sector-table"></div>
+        </div>
       </div>
     </div>
 
@@ -277,31 +368,47 @@
     const acc = DATA.account;
     const SYM = acc.currency === 'GBP' ? '£' : acc.currency + ' ';
     document.getElementById('account-stats').innerHTML = [
-      ['Total Value',    `<span>${fmtCcy(acc.total, SYM)}</span>`],
-      ['Unrealised P&L', `<span class="${acc.unrealized_ppl>=0?'pos':'neg'}">${fmtCcy(acc.unrealized_ppl,SYM,true)} (${fmt(acc.pct_gain,{sign:true})}%)</span>`],
-      ['Realised P&L',   `<span class="${acc.realized_ppl>=0?'pos':'neg'}">${fmtCcy(acc.realized_ppl,SYM,true)}</span>`],
-      ['Positions',      `<span>${acc.n_positions}</span>`],
-    ].map(([l,v]) => `<div class="stat-row"><span class="stat-label">${l}</span><span class="stat-value">${v}</span></div>`).join('');
+      ['Total Value',    fmtCcy(acc.total, SYM),                                                              ''],
+      ['Unrealised P&L', `<span class="${acc.unrealized_ppl>=0?'pos':'neg'}">${fmtCcy(acc.unrealized_ppl,SYM,true)}</span>`, `${fmt(acc.pct_gain,{sign:true})}%`],
+      ['Realised P&L',   `<span class="${acc.realized_ppl>=0?'pos':'neg'}">${fmtCcy(acc.realized_ppl,SYM,true)}</span>`,     ''],
+      ['Positions',      acc.n_positions,                                                                      ''],
+    ].map(([l,v,sub]) =>
+      `<div class="acct-stat">
+        <div class="acct-stat-label">${l}</div>
+        <div class="acct-stat-value">${v}${sub ? `<span style="font-size:12px;font-weight:500;color:var(--muted);margin-left:6px">${sub}</span>` : ''}</div>
+      </div>`
+    ).join('');
 
-    // ── Sector donut ─────────────────────────────────────────────────────────
-    new Chart(document.getElementById('sector-chart'), {
-      type: 'doughnut',
-      data: {
-        labels: DATA.sectors.map(s=>s.label),
-        datasets:[{
-          data: DATA.sectors.map(s=>s.value),
-          backgroundColor: DATA.sectors.map(s=>s.color),
-          borderColor: '#161b22', borderWidth: 2, hoverOffset: 8,
-        }],
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: '60%',
-        plugins: {
-          legend: { position:'bottom', labels:{ color:'#8b949e', font:{size:10}, boxWidth:10, padding:6 }},
-          tooltip: { callbacks: { label: ctx => ` ${SYM}${ctx.raw.toLocaleString('en-GB',{maximumFractionDigits:0})}` }},
+    // ── Sector donut — lazy-created on first visit to Market tab ─────────────
+    let sectorChartCreated = false;
+    function ensureSectorChart() {
+      if (sectorChartCreated) return;
+      sectorChartCreated = true;
+      new Chart(document.getElementById('sector-chart'), {
+        type: 'doughnut',
+        data: {
+          labels: DATA.sectors.map(s => s.label),
+          datasets: [{ data: DATA.sectors.map(s => s.value), backgroundColor: DATA.sectors.map(s => s.color), borderColor: '#161b22', borderWidth: 2, hoverOffset: 8 }],
         },
-      },
-    });
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '60%',
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#8b949e', font: {size:10}, boxWidth: 10, padding: 6 }},
+            tooltip: { callbacks: { label: ctx => ` ${SYM}${ctx.raw.toLocaleString('en-GB', {maximumFractionDigits:0})}` }},
+          },
+        },
+      });
+    }
+
+    // ── Sector table ─────────────────────────────────────────────────────────
+    document.getElementById('sector-table').innerHTML = DATA.sectors.map(s =>
+      `<div class="stat-row">
+        <span class="stat-label" style="display:flex;align-items:center;gap:7px">
+          <span style="display:inline-block;width:9px;height:9px;border-radius:2px;flex-shrink:0;background:${s.color}"></span>${esc(s.label)}
+        </span>
+        <span class="stat-value" style="font-size:13px">${fmtCcy(s.value, SYM)}</span>
+      </div>`
+    ).join('');
 
     // ── Holdings grid ─────────────────────────────────────────────────────────
     const sorted = [...DATA.holdings].sort(
@@ -621,6 +728,23 @@
     document.getElementById('macro-text').innerHTML  = md(DATA.macro_narrative);
     document.getElementById('sector-text').innerHTML = md(DATA.sector_narrative);
     document.getElementById('opps-text').innerHTML   = md(DATA.opportunities);
+
+    // ── Teaser grid (Top Momentum Picks) ─────────────────────────────────────
+    const top3 = (DATA.screener_candidates || []).slice(0, 3);
+    const totalOpps = (DATA.screener_candidates || []).length;
+    document.getElementById('see-all-link').textContent = `See all ${totalOpps} opportunities →`;
+    document.getElementById('teaser-grid').innerHTML = top3.map(c => {
+      const rsColor = c.mansfield_rs >= 0 ? 'var(--green)' : 'var(--red)';
+      return `<div class="teaser-item">
+        <div class="teaser-ticker">${esc(c.ticker)}</div>
+        <div class="teaser-name" title="${esc(c.company_name)}">${esc(c.company_name)}</div>
+        <div class="teaser-sector">${esc(c.sector)}</div>
+        <div class="teaser-stats">
+          <span style="color:${rsColor}">RS ${fmt(c.mansfield_rs,{sign:true})}</span>
+          <span style="color:var(--muted)">Score ${c.composite_score}</span>
+        </div>
+      </div>`;
+    }).join('');
 
     // ── Screener table ───────────────────────────────────────────────────────
     const screenerChartInstances = {};
@@ -942,6 +1066,28 @@
         applyBreakoutChartData(c.ticker);
       });
     });
+
+    // ── Tab switching ─────────────────────────────────────────────────────────
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+      window.scrollTo({top: 0, behavior: 'instant'});
+      if (tabId === 'market') ensureSectorChart();
+      if (tabId === 'portfolio') requestAnimationFrame(() => Object.values(chartInstances).forEach(i => i.chart.timeScale().fitContent()));
+      if (tabId === 'opportunities') requestAnimationFrame(() => {
+        Object.values(screenerChartInstances).forEach(i => i.chart.timeScale().fitContent());
+        Object.values(breakoutChartInstances).forEach(i => i.chart.timeScale().fitContent());
+      });
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn =>
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab))
+    );
+    document.querySelectorAll('[data-goto-tab]').forEach(el =>
+      el.addEventListener('click', e => { e.preventDefault(); switchTab(el.dataset.gotoTab); })
+    );
   </script>
 </body>
 </html>
