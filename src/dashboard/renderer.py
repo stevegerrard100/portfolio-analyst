@@ -10,6 +10,15 @@ log = logging.getLogger(__name__)
 
 _TEMPLATE = Path(__file__).parent / "template.html"
 
+_ACTION_COLORS = {
+    "sell":   "red",
+    "trim":   "red",
+    "watch":  "amber",
+    "add":    "green",
+    "macro":  "amber",
+    "sector": "amber",
+}
+
 _SECTOR_COLORS = [
     "#58a6ff", "#3fb950", "#d29922", "#f85149", "#bc8cff",
     "#79c0ff", "#56d364", "#e3b341", "#ffa657", "#ff7b72",
@@ -263,6 +272,10 @@ def render_dashboard(
         "breakout_candidates":  breakout_candidates,
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
+        "today_actions":        [
+            {**a, "color": _ACTION_COLORS.get(a.get("action_type", ""), "amber")}
+            for a in analysis.get("actions", [])
+        ],
     }
 
     template = _TEMPLATE.read_text(encoding="utf-8")

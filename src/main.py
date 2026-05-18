@@ -111,6 +111,7 @@ def main() -> None:
         macro=macro,
         sector_flows=sector_flows,
         screener=screener,
+        breakout=breakout,
     )
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))

@@ -70,6 +70,22 @@
     .verdict-card { border-left: 3px solid var(--blue); padding: 18px 22px; }
     .verdict-card p { font-size: 15px; line-height: 1.75; }
 
+    /* ── Action Board ────────────────────────────────────── */
+    .action-board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+    .action-board-date { font-size: 14px; font-weight: 600; color: var(--fg); }
+    .action-board-summary { font-size: 11px; color: var(--muted); }
+    .action-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--surface2); }
+    .action-row:last-child { border-bottom: none; }
+    .action-border { width: 3px; flex-shrink: 0; border-radius: 2px; align-self: stretch; min-height: 20px; }
+    .action-badge { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; padding: 2px 5px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; background: transparent; border: 1px solid currentColor; }
+    .action-text { font-size: 13px; line-height: 1.55; color: var(--fg); }
+    .action-color-red   { color: #ef4444; }
+    .action-color-amber { color: #f59e0b; }
+    .action-color-green { color: #22c55e; }
+    .action-border-red   { background: #ef4444; }
+    .action-border-amber { background: #f59e0b; }
+    .action-border-green { background: #22c55e; }
+
     /* ── Account stats ───────────────────────────────────── */
     .stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); }
     .stat-row:last-child { border-bottom: none; }
@@ -282,6 +298,15 @@
 
     <!-- Tab 1: Today's Brief -->
     <div id="tab-brief" class="tab-panel active">
+      <div class="section" id="action-board-section" style="display:none">
+        <div class="card" id="action-board-card">
+          <div class="action-board-header">
+            <div class="action-board-date" id="action-board-date"></div>
+            <div class="action-board-summary" id="action-board-summary"></div>
+          </div>
+          <div id="action-board-rows"></div>
+        </div>
+      </div>
       <div class="section">
         <div class="card verdict-card">
           <div class="card-title">Today's Verdict</div>
@@ -420,6 +445,36 @@
     // ── Header ───────────────────────────────────────────────────────────────
     document.getElementById('hdr-date').textContent = DATA.meta.date_str;
     document.getElementById('hdr-sub').textContent  = `Generated ${DATA.meta.time_str} · ${DATA.meta.model}`;
+
+    // ── Action Board ─────────────────────────────────────────────────────────
+    (function renderActionBoard() {
+      const actions = DATA.today_actions;
+      if (!actions || !actions.length) return;
+
+      document.getElementById('action-board-section').style.display = '';
+
+      document.getElementById('action-board-date').textContent = DATA.meta.date_str;
+
+      const highCount = actions.filter(a => a.priority === 'high').length;
+      const summary = `${actions.length} action${actions.length !== 1 ? 's' : ''} today` +
+        (highCount ? ` · ${highCount} high priority` : '');
+      document.getElementById('action-board-summary').textContent = summary;
+
+      const BADGE_LABEL = {
+        sell: 'SELL', trim: 'TRIM', watch: 'WATCH',
+        add: 'ADD', macro: 'MACRO', sector: 'SECTOR',
+      };
+
+      document.getElementById('action-board-rows').innerHTML = actions.map(a => {
+        const col   = esc(a.color || 'amber');
+        const badge = esc(BADGE_LABEL[a.action_type] || (a.action_type || '').toUpperCase());
+        return `<div class="action-row">
+          <div class="action-border action-border-${col}"></div>
+          <span class="action-badge action-color-${col}">${badge}</span>
+          <span class="action-text">${esc(a.text)}</span>
+        </div>`;
+      }).join('');
+    })();
 
     // ── Verdict ──────────────────────────────────────────────────────────────
     document.getElementById('verdict-text').innerHTML = md(DATA.verdict);
