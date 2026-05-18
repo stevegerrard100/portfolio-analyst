@@ -27,29 +27,99 @@ def _calc_stop_loss(current_price: float, atr: float | None, holding_type: str) 
     return round(current_price - mult * atr, 4)
 
 
+def _macro_pills(macro: dict) -> list[dict]:
+    """Build colour-coded pill dicts from macro series data."""
+    raw = macro.get("series", {})
+    pills = []
+
+    def pill(label: str, value: str, status: str) -> dict:
+        return {"label": label, "value": value, "status": status}
+
+    if "treasury_10y" in raw:
+        v = raw["treasury_10y"]["current"]
+        pills.append(pill("10yr Yield", f"{v:.2f}%",
+                          "green" if v < 3.5 else ("amber" if v < 5.0 else "red")))
+
+    if "treasury_2y" in raw:
+        v = raw["treasury_2y"]["current"]
+        pills.append(pill("2yr Yield", f"{v:.2f}%",
+                          "green" if v < 4.0 else ("amber" if v < 5.0 else "red")))
+
+    yc = macro.get("yield_curve", {})
+    if yc:
+        bps = yc.get("spread_bps", 0)
+        st  = yc.get("status", "flat")
+        sign = "+" if bps >= 0 else ""
+        pills.append(pill("Yield Curve", f"{sign}{bps:.0f} bps",
+                          "green" if st == "positive" else ("amber" if st == "flat" else "red")))
+
+    hy_bps = macro.get("hy_spread_bps")
+    if hy_bps is not None:
+        pills.append(pill("HY Spread", f"{hy_bps:.0f} bps",
+                          "green" if hy_bps < 300 else ("amber" if hy_bps <= 500 else "red")))
+
+    if "fed_funds" in raw:
+        v = raw["fed_funds"]["current"]
+        pills.append(pill("Fed Funds", f"{v:.2f}%",
+                          "green" if v < 3.0 else ("amber" if v < 5.0 else "red")))
+
+    if "vix" in raw:
+        v = raw["vix"]["current"]
+        pills.append(pill("VIX", f"{v:.1f}",
+                          "green" if v < 15 else ("amber" if v < 25 else "red")))
+
+    if "cpi" in raw:
+        cpi   = raw["cpi"]
+        prior = cpi.get("prior_12m", 0)
+        if prior > 0:
+            yoy = round((cpi["current"] / prior - 1) * 100, 1)
+            pills.append(pill("CPI YoY", f"{yoy:.1f}%",
+                              "green" if yoy < 2.5 else ("amber" if yoy < 4.0 else "red")))
+
+    return pills
+
+
+def _sector_heatmap(sector_flows: dict) -> list[dict]:
+    """Build sorted sector heatmap rows from Finviz weekly performance."""
+    rows = []
+    for row in sector_flows.get("finviz_performance", []):
+        chg = row.get("change_1w")
+        if chg is None:
+            continue
+        rows.append({"sector": row.get("sector", ""), "change_1w": round(float(chg), 2)})
+    rows.sort(key=lambda x: x["change_1w"], reverse=True)
+    return rows
+
+
 def render_dashboard(
     analysis: dict,
     portfolio: dict | None = None,
     market_data: dict | None = None,
     screener: dict | None = None,
     breakout: dict | None = None,
+    macro: dict | None = None,
+    sector_flows: dict | None = None,
     output_path: str = "output/index.html",
 ) -> None:
     """
     Render the full dashboard HTML.
 
     Args:
-        analysis:     Output of run_analysis()
-        portfolio:    Output of fetch_portfolio()
-        market_data:  {ticker: {mansfield_rs, stop_loss, macd_bullish, above_sma50, dist_52w_high}}
-        screener:     Output of run_screener()
-        breakout:     Output of run_breakout_screener()
-        output_path:  Destination path for index.html
+        analysis:      Output of run_analysis()
+        portfolio:     Output of fetch_portfolio()
+        market_data:   {ticker: {mansfield_rs, stop_loss, macd_bullish, above_sma50, dist_52w_high}}
+        screener:      Output of run_screener()
+        breakout:      Output of run_breakout_screener()
+        macro:         Output of fetch_macro_data()
+        sector_flows:  Output of fetch_sector_data()
+        output_path:   Destination path for index.html
     """
-    portfolio   = portfolio   or {}
-    market_data = market_data or {}
-    screener    = screener    or {}
-    breakout    = breakout    or {}
+    portfolio    = portfolio    or {}
+    market_data  = market_data  or {}
+    screener     = screener     or {}
+    breakout     = breakout     or {}
+    macro        = macro        or {}
+    sector_flows = sector_flows or {}
 
     account   = portfolio.get("account", {})
     positions = portfolio.get("positions", [])
@@ -191,6 +261,8 @@ def render_dashboard(
         "holdings":             holdings,
         "screener_candidates":  screener_candidates,
         "breakout_candidates":  breakout_candidates,
+        "macro_pills":          _macro_pills(macro),
+        "sector_heatmap":       _sector_heatmap(sector_flows),
     }
 
     template = _TEMPLATE.read_text(encoding="utf-8")

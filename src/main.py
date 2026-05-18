@@ -124,6 +124,8 @@ def main() -> None:
         market_data=market_data,
         screener=screener,
         breakout=breakout,
+        macro=macro,
+        sector_flows=sector_flows,
         output_path=_OUTPUT_HTML,
     )
 

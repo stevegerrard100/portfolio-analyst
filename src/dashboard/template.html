@@ -224,6 +224,21 @@
     .see-all-link a { color: var(--blue); text-decoration: none; cursor: pointer; }
     .see-all-link a:hover { text-decoration: underline; }
     @media (max-width: 768px) { .teaser-grid { grid-template-columns: 1fr; } }
+
+    /* ── Macro pills ─────────────────────────────────────── */
+    .macro-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { display: inline-flex; flex-direction: column; align-items: center; padding: 5px 10px; border-radius: 6px; min-width: 68px; }
+    .pill-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .pill-value { font-size: 13px; font-weight: 700; }
+    .pill-green { background: rgba(63,185,80,0.10); border: 1px solid rgba(63,185,80,0.28); color: var(--green); }
+    .pill-amber { background: rgba(210,153,34,0.10); border: 1px solid rgba(210,153,34,0.28); color: #d29922; }
+    .pill-red   { background: rgba(248,81,73,0.10);  border: 1px solid rgba(248,81,73,0.28);  color: var(--red); }
+
+    /* ── Sector heatmap ──────────────────────────────────── */
+    .sector-heatmap { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; margin-bottom: 14px; }
+    .hm-cell { padding: 7px 6px; border-radius: 5px; text-align: center; }
+    .hm-name { font-size: 10px; color: rgba(201,209,217,0.65); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hm-chg  { font-size: 12px; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -255,10 +270,12 @@
       <div class="section row row-2">
         <div class="card">
           <div class="card-title">Macro Environment</div>
+          <div class="macro-pills" id="macro-pills"></div>
           <div class="narrative" id="macro-text"></div>
         </div>
         <div class="card">
           <div class="card-title">Sector Rotation</div>
+          <div class="sector-heatmap" id="sector-heatmap"></div>
           <div class="narrative" id="sector-text"></div>
         </div>
       </div>
@@ -354,9 +371,10 @@
     }
     function md(text) {
       if (!text) return '';
-      // Strip all disclaimer occurrences; re-add one clean line at the end
-      const hadDisclaimer = /for informational purposes only/i.test(text);
-      let t = text.replace(/for informational purposes only[^.\n]*\.?\n*/gi, '');
+      // Strip entire sentences containing disclaimer phrases, then re-add one clean line
+      const discRe = /[^.!?\n]*(?:informational purposes only|not financial advice)[^.!?\n]*[.!?]?\s*/gi;
+      const hadDisclaimer = discRe.test(text);
+      let t = text.replace(/[^.!?\n]*(?:informational purposes only|not financial advice)[^.!?\n]*[.!?]?\s*/gi, '');
       // HTML-escape
       t = esc(t);
       // Strip ## / ### headings (keep the heading text)
@@ -386,7 +404,7 @@
     document.getElementById('hdr-sub').textContent  = `Generated ${DATA.meta.time_str} · ${DATA.meta.model}`;
 
     // ── Verdict ──────────────────────────────────────────────────────────────
-    document.getElementById('verdict-text').textContent = DATA.verdict;
+    document.getElementById('verdict-text').innerHTML = md(DATA.verdict);
 
     // ── Account stats ─────────────────────────────────────────────────────────
     const acc = DATA.account;
@@ -753,6 +771,50 @@
     document.getElementById('sector-text').innerHTML = md(DATA.sector_narrative);
     document.getElementById('opps-text').innerHTML   = md(firstSentences(DATA.opportunities, 3));
 
+    // ── Macro pills ──────────────────────────────────────────────────────────
+    const pillsEl = document.getElementById('macro-pills');
+    if (pillsEl && DATA.macro_pills && DATA.macro_pills.length) {
+      pillsEl.innerHTML = DATA.macro_pills.map(p =>
+        `<div class="pill pill-${esc(p.status)}">
+          <span class="pill-label">${esc(p.label)}</span>
+          <span class="pill-value">${esc(p.value)}</span>
+        </div>`
+      ).join('');
+    }
+
+    // ── Sector heatmap ───────────────────────────────────────────────────────
+    const hmEl = document.getElementById('sector-heatmap');
+    if (hmEl && DATA.sector_heatmap && DATA.sector_heatmap.length) {
+      const maxAbs = Math.max(...DATA.sector_heatmap.map(s => Math.abs(s.change_1w)), 0.01);
+      hmEl.innerHTML = DATA.sector_heatmap.map(s => {
+        const v = s.change_1w;
+        const alpha = (0.08 + (Math.abs(v) / maxAbs) * 0.28).toFixed(2);
+        const bg    = v >= 0 ? `rgba(63,185,80,${alpha})` : `rgba(248,81,73,${alpha})`;
+        const color = v >= 0 ? 'var(--green)' : 'var(--red)';
+        const short = s.sector.replace('Consumer ', 'C. ').replace(' Services', '').replace(' Estate', '');
+        return `<div class="hm-cell" style="background:${bg}">
+          <div class="hm-name">${esc(short)}</div>
+          <div class="hm-chg" style="color:${color}">${v >= 0 ? '+' : ''}${v.toFixed(1)}%</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Sparkline SVG helper ─────────────────────────────────────────────────
+    function sparklineSVG(ohlcv, w, h) {
+      if (!ohlcv || ohlcv.length < 2) return '';
+      const pts    = ohlcv.slice(-30);
+      const closes = pts.map(d => d.close);
+      const lo = Math.min(...closes), hi = Math.max(...closes);
+      const range = hi - lo || 1;
+      const xs = closes.map((_, i) => ((i / (closes.length - 1)) * (w - 2) + 1).toFixed(1));
+      const ys = closes.map(c => (h - 2 - ((c - lo) / range) * (h - 4)).toFixed(1));
+      const d  = xs.map((x, i) => `${i === 0 ? 'M' : 'L'}${x},${ys[i]}`).join(' ');
+      const up = closes[closes.length - 1] >= closes[0];
+      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="display:block;margin-top:8px">
+        <path d="${d}" fill="none" stroke="${up ? '#3fb950' : '#f85149'}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>`;
+    }
+
     // ── Teaser grid (Top Momentum Picks) ─────────────────────────────────────
     const top3 = (DATA.screener_candidates || []).slice(0, 3);
     const totalOpps = (DATA.screener_candidates || []).length;
@@ -767,6 +829,7 @@
           <span style="color:${rsColor}">RS ${fmt(c.mansfield_rs,{sign:true})}</span>
           <span style="color:var(--muted)">Score ${c.composite_score}</span>
         </div>
+        ${sparklineSVG(c.ohlcv_daily, 160, 44)}
       </div>`;
     }).join('');
 
