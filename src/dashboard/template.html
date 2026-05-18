@@ -447,7 +447,7 @@
     renderGrid('ALL');
 
     // ── TradingView chart state and helpers ───────────────────────────────────
-    const chartInstances = {};  // ticker → {chart, candleSeries, volSeries, rsSeries, period, candle}
+    const chartInstances = {};  // ticker → {chart, candleSeries, volSeries, sma50Series, period, candle}
 
     const PERIOD_MONTHS = { '1M':1, '3M':3, '6M':6, '1Y':12, '2Y':24 };
 
@@ -462,18 +462,28 @@
       return data.filter(pt => pt.time >= startStr);
     }
 
+    function calcSMA(ohlcv, period) {
+      const result = [];
+      for (let i = period - 1; i < ohlcv.length; i++) {
+        let sum = 0;
+        for (let j = i - period + 1; j <= i; j++) sum += ohlcv[j].close;
+        result.push({ time: ohlcv[i].time, value: parseFloat((sum / period).toFixed(4)) });
+      }
+      return result;
+    }
+
     function getChartData(h, period, candle) {
       const useWeekly = candle === 'weekly' || period === '2Y';
       return {
         ohlcv: filterByPeriod(useWeekly ? h.ohlcv_weekly : h.ohlcv_daily, period),
-        mrs:   filterByPeriod(useWeekly ? h.mrs_weekly   : h.mrs_daily,   period),
       };
     }
 
     function applyChartData(ticker) {
       const inst = chartInstances[ticker];
       const h    = DATA.holdings.find(x => x.ticker === ticker);
-      const { ohlcv, mrs } = getChartData(h, inst.period, inst.candle);
+      const { ohlcv } = getChartData(h, inst.period, inst.candle);
+      const smaPeriod = (inst.candle === 'weekly' || inst.period === '2Y') ? 10 : 50;
 
       inst.candleSeries.setData(ohlcv);
       inst.volSeries.setData(ohlcv.map(d => ({
@@ -481,7 +491,7 @@
         value: d.volume,
         color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
       })));
-      inst.rsSeries.setData(mrs);
+      inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
       inst.chart.timeScale().fitContent();
     }
 
@@ -498,13 +508,10 @@
         layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
         grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
         crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
-        leftPriceScale:  {
-          visible: false,
-          scaleMargins: { top: 0.02, bottom: 0.68 },
-        },
+        leftPriceScale:  { visible: false },
         rightPriceScale: {
           borderColor: '#30363d',
-          scaleMargins: { top: 0.32, bottom: 0.05 },
+          scaleMargins: { top: 0.08, bottom: 0.05 },
         },
         timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
         handleScroll: true,
@@ -532,24 +539,15 @@
         visible: false,
       });
 
-      // Mansfield RS line (left scale, top 30% of chart)
-      const rsSeries = chart.addLineSeries({
-        color:              '#58a6ff',
+      // 50-day SMA (yellow, overlaid on candles)
+      const sma50Series = chart.addLineSeries({
+        color:              '#d29922',
         lineWidth:          1,
-        priceScaleId:       'left',
-        title:              'RS',
-        lastValueVisible:   true,
+        priceScaleId:       'right',
+        title:              'SMA50',
+        lastValueVisible:   false,
         priceLineVisible:   false,
         crosshairMarkerVisible: false,
-      });
-
-      // RS zero baseline
-      rsSeries.createPriceLine({
-        price: 0,
-        color: '#444d56',
-        lineWidth: 1,
-        lineStyle: LightweightCharts.LineStyle.Dashed,
-        axisLabelVisible: false,
       });
 
       // Stop loss price line
@@ -565,7 +563,7 @@
       }
 
       chartInstances[ticker] = {
-        chart, candleSeries, volSeries, rsSeries,
+        chart, candleSeries, volSeries, sma50Series,
         period: '3M', candle: 'daily',
       };
 
@@ -628,20 +626,20 @@
       const useWeekly = candle === 'weekly' || period === '2Y';
       return {
         ohlcv: filterByPeriod(useWeekly ? c.ohlcv_weekly : c.ohlcv_daily, period),
-        mrs:   filterByPeriod(useWeekly ? c.mrs_weekly   : c.mrs_daily,   period),
       };
     }
 
     function applyScreenerChartData(ticker) {
       const inst = screenerChartInstances[ticker];
       const c    = DATA.screener_candidates.find(x => x.ticker === ticker);
-      const { ohlcv, mrs } = getScreenerChartData(c, inst.period, inst.candle);
+      const { ohlcv } = getScreenerChartData(c, inst.period, inst.candle);
+      const smaPeriod = (inst.candle === 'weekly' || inst.period === '2Y') ? 10 : 50;
       inst.candleSeries.setData(ohlcv);
       inst.volSeries.setData(ohlcv.map(d => ({
         time: d.time, value: d.volume,
         color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
       })));
-      inst.rsSeries.setData(mrs);
+      inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
       inst.chart.timeScale().fitContent();
     }
 
@@ -657,8 +655,8 @@
         layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
         grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
         crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
-        leftPriceScale:  { visible: false, scaleMargins: { top: 0.02, bottom: 0.68 } },
-        rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.32, bottom: 0.05 } },
+        leftPriceScale:  { visible: false },
+        rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.08, bottom: 0.05 } },
         timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
         handleScroll: true, handleScale: true,
       });
@@ -673,13 +671,14 @@
       const volSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol' });
       chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
 
-      const rsSeries = chart.addLineSeries({
-        color: '#58a6ff', lineWidth: 1, priceScaleId: 'left', title: 'RS',
-        lastValueVisible: true, priceLineVisible: false, crosshairMarkerVisible: false,
-      });
-      rsSeries.createPriceLine({
-        price: 0, color: '#444d56', lineWidth: 1,
-        lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false,
+      const sma50Series = chart.addLineSeries({
+        color:              '#d29922',
+        lineWidth:          1,
+        priceScaleId:       'right',
+        title:              'SMA50',
+        lastValueVisible:   false,
+        priceLineVisible:   false,
+        crosshairMarkerVisible: false,
       });
 
       if (c.stop_loss != null) {
@@ -690,7 +689,7 @@
         });
       }
 
-      screenerChartInstances[ticker] = { chart, candleSeries, volSeries, rsSeries, period: '3M', candle: 'daily' };
+      screenerChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series, period: '3M', candle: 'daily' };
       applyScreenerChartData(ticker);
     }
 
@@ -797,13 +796,13 @@
       if (!inst || !c) return;
       const useWeekly = inst.candle === 'weekly' || inst.period === '2Y';
       const ohlcv = filterByPeriod(useWeekly ? c.ohlcv_weekly : c.ohlcv_daily, inst.period);
-      const mrs   = filterByPeriod(useWeekly ? c.mrs_weekly   : c.mrs_daily,   inst.period);
+      const smaPeriod = useWeekly ? 10 : 50;
       inst.candleSeries.setData(ohlcv);
       inst.volSeries.setData(ohlcv.map(d => ({
         time: d.time, value: d.volume,
         color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
       })));
-      inst.rsSeries.setData(mrs);
+      inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
       inst.chart.timeScale().fitContent();
     }
 
@@ -819,8 +818,8 @@
         layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
         grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
         crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
-        leftPriceScale:  { visible: false, scaleMargins: { top: 0.02, bottom: 0.68 } },
-        rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.32, bottom: 0.05 } },
+        leftPriceScale:  { visible: false },
+        rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.08, bottom: 0.05 } },
         timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
         handleScroll: true, handleScale: true,
       });
@@ -832,13 +831,14 @@
       });
       const volSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol' });
       chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
-      const rsSeries = chart.addLineSeries({
-        color: '#58a6ff', lineWidth: 1, priceScaleId: 'left', title: 'RS',
-        lastValueVisible: true, priceLineVisible: false, crosshairMarkerVisible: false,
-      });
-      rsSeries.createPriceLine({
-        price: 0, color: '#444d56', lineWidth: 1,
-        lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: false,
+      const sma50Series = chart.addLineSeries({
+        color:              '#d29922',
+        lineWidth:          1,
+        priceScaleId:       'right',
+        title:              'SMA50',
+        lastValueVisible:   false,
+        priceLineVisible:   false,
+        crosshairMarkerVisible: false,
       });
       if (c.stop_loss != null) {
         candleSeries.createPriceLine({
@@ -847,7 +847,7 @@
           title: `Stop ${Number(c.stop_loss).toFixed(2)}`, axisLabelVisible: true,
         });
       }
-      breakoutChartInstances[ticker] = { chart, candleSeries, volSeries, rsSeries, period: '3M', candle: 'daily' };
+      breakoutChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series, period: '3M', candle: 'daily' };
       applyBreakoutChartData(ticker);
     }
 

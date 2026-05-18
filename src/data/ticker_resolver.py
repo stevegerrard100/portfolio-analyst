@@ -46,19 +46,16 @@ _TICKER_OVERRIDES: dict[str, str] = {
     "VACQ": "RKLB",   # Vector Acquisition Corp → Rocket Lab USA (Aug 2021 merger)
     "NPA":  "ASTS",   # New Providence Acquisition → AST SpaceMobile (Apr 2021 merger)
     "UTX":  "RTX",    # United Technologies → Raytheon Technologies (Apr 2020 merger)
+    "DMYI": "IONQ",   # dMY Technology IV → IonQ (quantum computing)
+    "XPOA": "QBTS",   # SPAC → D-Wave Quantum Inc.
+    "SNII": "RGTI",   # Supernova Partners II → Rigetti Computing
 }
 
 # ---------------------------------------------------------------------------
-# Known-defunct set — tickers that have no live successor to redirect to.
+# Known-defunct set — tickers confirmed to have no live US-listed successor.
 # These are skipped immediately to avoid repeated failed API lookups.
-# Typical causes: SPAC liquidated, target acquired for cash, or successor
-# itself later delisted (e.g. DMYI → IronSource → acquired by Unity Nov 2022).
 # ---------------------------------------------------------------------------
-_KNOWN_DEFUNCT: frozenset[str] = frozenset({
-    "DMYI",  # dMY Technology IV → IronSource (IS) → acquired by Unity; IS delisted
-    "XPOA",  # SPAC; no confirmed live successor ticker resolved
-    "SNII",  # Supernova Partners II; no confirmed live successor ticker resolved
-})
+_KNOWN_DEFUNCT: frozenset[str] = frozenset()
 
 # Module-level in-process cache (ticker → bare CIK string)
 _cik_map: dict[str, str] | None = None
@@ -186,5 +183,46 @@ def resolve_ticker(ticker: str) -> tuple[str | None, str]:
             _TICKER_OVERRIDES[ticker] = current
             return current, company_name
 
+    # ── 4. Anthropic AI last resort ───────────────────────────────────────────
+    resolved = _resolve_via_ai(ticker, company_name)
+    if resolved and resolved != upper:
+        if _has_yf_data(resolved):
+            log.info("Resolved %s → %s via Anthropic AI (company: %s)", ticker, resolved, company_name)
+            _TICKER_OVERRIDES[ticker] = resolved
+            return resolved, company_name
+        log.debug("AI suggested %s for %s but yfinance returned no data", resolved, ticker)
+
     log.warning("Could not resolve %-10s (%s) — no live successor found", ticker, company_name)
     return None, company_name
+
+
+def _resolve_via_ai(ticker: str, company_name: str) -> str | None:
+    """Ask the Anthropic API to identify the current successor ticker for a defunct symbol."""
+    import os
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return None
+    try:
+        import re
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        msg = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=15,
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"The US stock ticker '{ticker}' ({company_name}) no longer trades. "
+                    f"It may be a SPAC that completed a merger or a company that was renamed. "
+                    f"What is the current active US ticker for its successor? "
+                    f"Reply with ONLY the ticker symbol (e.g. 'AAPL') or 'NONE'."
+                ),
+            }],
+        )
+        result = msg.content[0].text.strip().upper()
+        if re.match(r"^[A-Z]{1,5}(-[A-Z])?$", result) and result != "NONE":
+            return result
+        return None
+    except Exception as exc:
+        log.debug("AI ticker resolution failed for %s: %s", ticker, exc)
+        return None
