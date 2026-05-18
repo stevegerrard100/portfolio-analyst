@@ -353,7 +353,31 @@
       return prefix + ccy + Math.abs(v).toLocaleString('en-GB', {maximumFractionDigits:0});
     }
     function md(text) {
-      return esc(text || '').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+      if (!text) return '';
+      // Strip all disclaimer occurrences; re-add one clean line at the end
+      const hadDisclaimer = /for informational purposes only/i.test(text);
+      let t = text.replace(/for informational purposes only[^.\n]*\.?\n*/gi, '');
+      // HTML-escape
+      t = esc(t);
+      // Strip ## / ### headings (keep the heading text)
+      t = t.replace(/^#{1,3}\s+/gm, '');
+      // Remove --- / *** / ___ horizontal rules
+      t = t.replace(/^[-*_]{3,}\s*$/gm, '');
+      // Strip bold/italic asterisk markers (**text** → text, *text* → text)
+      t = t.replace(/\*\*(.+?)\*\*/g, '$1');
+      t = t.replace(/\*(.+?)\*/g, '$1');
+      // Collapse 3+ blank lines to 2
+      t = t.replace(/\n{3,}/g, '\n\n');
+      // Newlines → <br>
+      t = t.replace(/\n/g, '<br>');
+      if (hadDisclaimer) t += '<br><span style="color:var(--muted);font-size:11px">For informational purposes only.</span>';
+      return t;
+    }
+    // Returns the first n sentences of text (for condensing long narratives)
+    function firstSentences(text, n) {
+      const m = (text || '').match(/[^.!?]*[.!?]+(?:\s|$)/g);
+      if (!m) return text || '';
+      return m.slice(0, n).join('').trim();
     }
     const SIGNAL_ORDER = {ADD:0, WATCH:1, HOLD:2, REDUCE:3, EXIT:4};
 
@@ -727,7 +751,7 @@
     // ── Narrative sections ───────────────────────────────────────────────────
     document.getElementById('macro-text').innerHTML  = md(DATA.macro_narrative);
     document.getElementById('sector-text').innerHTML = md(DATA.sector_narrative);
-    document.getElementById('opps-text').innerHTML   = md(DATA.opportunities);
+    document.getElementById('opps-text').innerHTML   = md(firstSentences(DATA.opportunities, 3));
 
     // ── Teaser grid (Top Momentum Picks) ─────────────────────────────────────
     const top3 = (DATA.screener_candidates || []).slice(0, 3);
