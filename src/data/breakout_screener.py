@@ -22,6 +22,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -178,13 +179,73 @@ def _check_rs_new_high(rs_series: pd.Series, weekly_close: pd.Series) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Signal 5: Pivot proximity
+# Volume profile (HVN/LVN — support and resistance identification)
+# ---------------------------------------------------------------------------
+
+def _volume_profile(df_daily: pd.DataFrame, bins: int = 40) -> dict:
+    """
+    Build a 1-year volume profile using numpy histogram on typical price.
+
+    Each day's volume is assigned to the bin containing its typical price
+    ((High + Low + Close) / 3), giving a distribution of trading activity
+    across the price range.
+
+    Returns:
+        poc:         float — price of the highest-volume bin (Point of Control)
+        supports:    [(price, vol_M)] HVN peaks below current price, closest first
+        resistances: [(price, vol_M)] HVN peaks above current price, closest first
+    """
+    df = df_daily.tail(252).copy()
+    if len(df) < 30:
+        return {"poc": None, "supports": [], "resistances": []}
+
+    current_price = float(df["Close"].iloc[-1])
+    lo = float(df["Low"].min())
+    hi = float(df["High"].max())
+    if hi <= lo:
+        return {"poc": None, "supports": [], "resistances": []}
+
+    typical = (df["High"] + df["Low"] + df["Close"]) / 3
+    bin_edges = np.linspace(lo, hi, bins + 1)
+    bin_vol, _ = np.histogram(typical, bins=bin_edges, weights=df["Volume"])
+    bin_mid = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    poc_idx = int(np.argmax(bin_vol))
+    poc = round(float(bin_mid[poc_idx]), 2)
+
+    # HVN = local peaks at or above the 65th percentile of non-zero volume bins
+    nonzero = bin_vol[bin_vol > 0]
+    if len(nonzero) == 0:
+        return {"poc": poc, "supports": [], "resistances": []}
+    threshold = float(np.percentile(nonzero, 65))
+
+    hvns: list[tuple[float, float]] = []
+    for i in range(1, bins - 1):
+        if (bin_vol[i] >= threshold
+                and bin_vol[i] >= bin_vol[i - 1]
+                and bin_vol[i] >= bin_vol[i + 1]):
+            hvns.append((round(float(bin_mid[i]), 2), float(bin_vol[i])))
+
+    cp = current_price
+    supports    = sorted([h for h in hvns if h[0] < cp * 0.995], key=lambda x: x[0], reverse=True)[:3]
+    resistances = sorted([h for h in hvns if h[0] > cp * 1.005], key=lambda x: x[0])[:3]
+
+    to_m = lambda v: round(v / 1_000_000, 1)
+    return {
+        "poc":         poc,
+        "supports":    [(p, to_m(v)) for p, v in supports],
+        "resistances": [(p, to_m(v)) for p, v in resistances],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Signal 5: Pivot proximity (enhanced with volume profile)
 # ---------------------------------------------------------------------------
 
 def _check_pivot_proximity(df_daily: pd.DataFrame) -> bool:
     """Price is within 2-8% below its 52-week high — approaching but not at resistance."""
-    close   = df_daily["Close"]
-    window  = close.iloc[-252:] if len(close) >= 252 else close
+    close    = df_daily["Close"]
+    window   = close.iloc[-252:] if len(close) >= 252 else close
     high_52w = float(window.max())
     current  = float(close.iloc[-1])
     if high_52w <= 0:
@@ -193,12 +254,25 @@ def _check_pivot_proximity(df_daily: pd.DataFrame) -> bool:
     return -8 <= dist < -1
 
 
+def _check_pivot_proximity_vp(df_daily: pd.DataFrame, vp: dict) -> bool:
+    """
+    Price is within 2-8% below a HVN resistance level from the volume profile,
+    OR within 2-8% below the 52-week high (fallback if no HVN resistances found).
+    """
+    current_price = float(df_daily["Close"].iloc[-1])
+    for res_price, _ in vp.get("resistances", []):
+        dist = (current_price / res_price - 1) * 100
+        if -8 <= dist < -0.5:
+            return True
+    return _check_pivot_proximity(df_daily)
+
+
 # ---------------------------------------------------------------------------
 # Per-ticker deep profile (daily download + indicators)
 # ---------------------------------------------------------------------------
 
 def _breakout_profile(ticker: str) -> dict | None:
-    """Download 2y daily OHLCV, compute indicators. Returns None on failure."""
+    """Download 2y daily OHLCV, compute indicators + volume profile. Returns None on failure."""
     try:
         df = yf.Ticker(ticker).history(period="2y")
         if df.empty or len(df) < 60:
@@ -211,16 +285,18 @@ def _breakout_profile(ticker: str) -> dict | None:
         price   = round(float(df["Close"].iloc[-1]), 2)
         atr_val = df["atr_14"].iloc[-1]
         atr     = round(float(atr_val), 4) if not pd.isna(atr_val) else None
+        vp      = _volume_profile(df)
 
         info = yf.Ticker(ticker).info or {}
         return {
-            "df":           df,
-            "price":        price,
-            "atr_14":       atr,
-            "ohlcv_daily":  _ohlcv_daily_to_json(df),
-            "ohlcv_weekly": _ohlcv_weekly_to_json(df),
-            "company_name": info.get("longName") or info.get("shortName") or ticker,
-            "sector":       info.get("sector") or "?",
+            "df":             df,
+            "price":          price,
+            "atr_14":         atr,
+            "volume_profile": vp,
+            "ohlcv_daily":    _ohlcv_daily_to_json(df),
+            "ohlcv_weekly":   _ohlcv_weekly_to_json(df),
+            "company_name":   info.get("longName") or info.get("shortName") or ticker,
+            "sector":         info.get("sector") or "?",
         }
     except Exception as exc:
         log.debug("Breakout profile failed for %s: %s", ticker, exc)
@@ -231,8 +307,8 @@ def _breakout_profile(ticker: str) -> dict | None:
 # Reasoning
 # ---------------------------------------------------------------------------
 
-def _breakout_reasoning(current_rs: float, signals: dict[str, bool]) -> str:
-    """Plain-English explanation of which signals fired."""
+def _breakout_reasoning(current_rs: float, signals: dict[str, bool], vp: dict) -> str:
+    """Plain-English explanation of which signals fired, enriched with volume profile levels."""
     parts: list[str] = []
 
     if current_rs >= 0:
@@ -250,6 +326,22 @@ def _breakout_reasoning(current_rs: float, signals: dict[str, bool]) -> str:
             f"Mansfield RS of {current_rs:+.1f} — still underperforming the index, "
             f"but showing signs of early-stage accumulation."
         )
+
+    resistances = vp.get("resistances", [])
+    supports    = vp.get("supports", [])
+
+    # Volume profile context line — inserted after the RS intro if space allows
+    if resistances and supports:
+        vp_line = (
+            f"Volume profile shows key resistance at ${resistances[0][0]:.2f} "
+            f"and support at ${supports[0][0]:.2f}."
+        )
+    elif resistances:
+        vp_line = f"Volume profile shows key resistance at ${resistances[0][0]:.2f}."
+    elif supports:
+        vp_line = f"Volume profile shows key support at ${supports[0][0]:.2f}."
+    else:
+        vp_line = None
 
     if signals.get("stage_transition"):
         parts.append(
@@ -273,10 +365,20 @@ def _breakout_reasoning(current_rs: float, signals: dict[str, bool]) -> str:
             "its own prior high — this divergence typically resolves with a breakout."
         )
     if signals.get("pivot_proximity"):
-        parts.append(
-            "The stock is within striking distance of a prior resistance level — "
-            "a strong-volume close above this pivot would confirm the breakout."
-        )
+        if resistances:
+            parts.append(
+                f"The stock is approaching the ${resistances[0][0]:.2f} high-volume resistance "
+                f"node — a strong-volume close above this level would confirm the breakout."
+            )
+        else:
+            parts.append(
+                "The stock is within striking distance of a prior resistance level — "
+                "a strong-volume close above this pivot would confirm the breakout."
+            )
+
+    # Insert the volume profile line as sentence 2 if we have fewer than 3 parts
+    if vp_line and len(parts) < 3:
+        parts.insert(1, vp_line)
 
     return " ".join(parts[:3])
 
@@ -418,10 +520,11 @@ def run_breakout_screener(
                 continue
 
             df = profile["df"]
+            vp = profile["volume_profile"]
 
             s2_vcp     = _check_vcp(df)
             s3_vol_acc = _check_volume_accumulation(df)
-            s5_pivot   = _check_pivot_proximity(df)
+            s5_pivot   = _check_pivot_proximity_vp(df, vp)
 
             # Stage 1→2 confirms if RS crossed AND (price stabilising OR ATR contracting)
             s_price_stab = c["s_price_stab"]
@@ -429,17 +532,17 @@ def run_breakout_screener(
             s1_final     = c["s1_stage"] and (s_price_stab or s_atr_contr)
 
             signals = {
-                "stage_transition":   s1_final,
-                "vcp":                s2_vcp,
-                "volume_accumulation":s3_vol_acc,
-                "rs_new_high":        c["s4_rs_new_high"],
-                "pivot_proximity":    s5_pivot,
+                "stage_transition":    s1_final,
+                "vcp":                 s2_vcp,
+                "volume_accumulation": s3_vol_acc,
+                "rs_new_high":         c["s4_rs_new_high"],
+                "pivot_proximity":     s5_pivot,
             }
             total_score = sum(1 for v in signals.values() if v)
             if total_score == 0:
                 continue
 
-            rs_series      = c["rs_series"]
+            rs_series       = c["rs_series"]
             mrs_weekly_data = _mrs_weekly_to_json(rs_series)
             mrs_daily_data  = _mrs_daily_to_json(rs_series)
 
@@ -449,7 +552,7 @@ def run_breakout_screener(
                 "sector":          profile["sector"],
                 "mansfield_rs":    round(c["current_rs"], 1),
                 "composite_score": total_score,
-                "reasoning":       _breakout_reasoning(c["current_rs"], signals),
+                "reasoning":       _breakout_reasoning(c["current_rs"], signals, vp),
                 "signals":         [k for k, v in signals.items() if v],
                 "stop_loss":       _calc_stop_loss(profile["price"], profile["atr_14"]),
                 "ohlcv_daily":     profile["ohlcv_daily"],

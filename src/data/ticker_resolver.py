@@ -2,15 +2,19 @@
 Resolve defunct or renamed tickers to their current equivalents at runtime.
 
 Resolution strategy (in order):
-  1. yfinance .info — company name + symbol redirect (Yahoo Finance often
-     redirects old SPAC tickers to the merged entity, surfacing the successor
-     symbol in info["symbol"])
-  2. SEC EDGAR submissions API — for tickers found in EDGAR's CIK map, checks
-     whether the CIK now trades under a different ticker (covers renames where
-     the same legal entity changes its exchange symbol)
+  0. _TICKER_OVERRIDES (hardcoded) — instant, no API call.
+     Covers known mergers and renames where the old ticker is permanent.
+  1. _KNOWN_DEFUNCT — tickers with no live successor (SPAC liquidated, or
+     company acquired/delisted without a replacement ticker). Skipped
+     immediately with a warning; no API calls attempted.
+  2. yfinance .info — Yahoo Finance sometimes redirects old SPAC tickers to
+     the merged entity via info["symbol"].
+  3. SEC EDGAR submissions API — for tickers in EDGAR's CIK map, checks
+     whether the legal entity now trades under a different symbol (covers
+     simple renames where the company keeps its SEC registration).
 
-If resolution succeeds, _TICKER_OVERRIDES is updated so callers can map future
-references from old → new without repeating the lookup.
+If resolution succeeds, _TICKER_OVERRIDES is updated in-process so subsequent
+references to the old ticker are resolved instantly.
 
 If resolution fails, callers receive the best company name found so they can
 emit a meaningful warning rather than a bare ticker symbol.
@@ -31,9 +35,30 @@ _SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 _SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 _CIK_CACHE = Path("cache/sec_company_tickers.json")  # shared with screener.py
 
-# Runtime mapping populated by resolve_ticker().
-# Other modules import this dict by reference — mutations are visible everywhere.
-_TICKER_OVERRIDES: dict[str, str] = {}
+# ---------------------------------------------------------------------------
+# Hardcoded override map — populated at module load, no API calls needed.
+# Add entries here whenever a holding's ticker is permanently renamed/merged.
+# Key: old ticker (as reported by T212 or as it appeared before the event).
+# Value: current yfinance-compatible ticker.
+# ---------------------------------------------------------------------------
+_TICKER_OVERRIDES: dict[str, str] = {
+    "IIVI": "COHR",   # II-VI Incorporated → Coherent Corp (Jan 2022 acquisition)
+    "VACQ": "RKLB",   # Vector Acquisition Corp → Rocket Lab USA (Aug 2021 merger)
+    "NPA":  "ASTS",   # New Providence Acquisition → AST SpaceMobile (Apr 2021 merger)
+    "UTX":  "RTX",    # United Technologies → Raytheon Technologies (Apr 2020 merger)
+}
+
+# ---------------------------------------------------------------------------
+# Known-defunct set — tickers that have no live successor to redirect to.
+# These are skipped immediately to avoid repeated failed API lookups.
+# Typical causes: SPAC liquidated, target acquired for cash, or successor
+# itself later delisted (e.g. DMYI → IronSource → acquired by Unity Nov 2022).
+# ---------------------------------------------------------------------------
+_KNOWN_DEFUNCT: frozenset[str] = frozenset({
+    "DMYI",  # dMY Technology IV → IronSource (IS) → acquired by Unity; IS delisted
+    "XPOA",  # SPAC; no confirmed live successor ticker resolved
+    "SNII",  # Supernova Partners II; no confirmed live successor ticker resolved
+})
 
 # Module-level in-process cache (ticker → bare CIK string)
 _cik_map: dict[str, str] | None = None
@@ -108,14 +133,33 @@ def resolve_ticker(ticker: str) -> tuple[str | None, str]:
     """
     Try to find the current active ticker when yfinance returned no data.
 
+    Resolution order:
+      0. Hardcoded _TICKER_OVERRIDES — instant
+      1. _KNOWN_DEFUNCT — skip immediately, no API calls
+      2. yfinance .info redirect (info["symbol"])
+      3. EDGAR CIK → submissions current ticker
+
     Returns:
         (resolved_ticker, company_name)
         resolved_ticker is None if resolution failed.
         company_name is the best human-readable label available (for warnings).
     """
+    upper = ticker.upper()
+
+    # ── 0. Hardcoded override (already applied upstream, but catch stragglers) ─
+    if upper in _TICKER_OVERRIDES:
+        resolved = _TICKER_OVERRIDES[upper]
+        log.info("Resolved %s → %s via hardcoded override", ticker, resolved)
+        return resolved, ticker
+
+    # ── 1. Known defunct — no live successor ──────────────────────────────────
+    if upper in _KNOWN_DEFUNCT:
+        log.warning("Skipping %-10s — known defunct SPAC/merger with no live successor", ticker)
+        return None, ticker
+
     company_name: str = ticker
 
-    # ── 1. yfinance .info ────────────────────────────────────────────────────
+    # ── 2. yfinance .info redirect ────────────────────────────────────────────
     try:
         time.sleep(0.4)
         info = yf.Ticker(ticker).info
@@ -123,18 +167,18 @@ def resolve_ticker(ticker: str) -> tuple[str | None, str]:
         if yf_name:
             company_name = yf_name
         yf_sym = (info.get("symbol") or "").upper().strip()
-        if yf_sym and yf_sym != ticker.upper() and _has_yf_data(yf_sym):
+        if yf_sym and yf_sym != upper and _has_yf_data(yf_sym):
             log.info("Resolved %s → %s via yfinance redirect (%s)", ticker, yf_sym, company_name)
             _TICKER_OVERRIDES[ticker] = yf_sym
             return yf_sym, company_name
     except Exception:
         pass
 
-    # ── 2. EDGAR CIK → submissions current ticker ────────────────────────────
-    cik = _load_cik_map().get(ticker.upper())
+    # ── 3. EDGAR CIK → submissions current ticker ─────────────────────────────
+    cik = _load_cik_map().get(upper)
     if cik:
         current = _submissions_ticker(cik)
-        if current and current != ticker.upper() and _has_yf_data(current):
+        if current and current != upper and _has_yf_data(current):
             log.info(
                 "Resolved %s → %s via EDGAR CIK rename (CIK %s, %s)",
                 ticker, current, cik, company_name,
@@ -142,4 +186,5 @@ def resolve_ticker(ticker: str) -> tuple[str | None, str]:
             _TICKER_OVERRIDES[ticker] = current
             return current, company_name
 
+    log.warning("Could not resolve %-10s (%s) — no live successor found", ticker, company_name)
     return None, company_name
