@@ -13,6 +13,7 @@ All functions accept pre-fetched data dicts and return strings or lists.
 No data fetching is done here.
 """
 
+import json
 import logging
 import re
 from datetime import datetime
@@ -340,7 +341,111 @@ starting with the ticker and company name in bold (using **TICKER — Name**).""
 
 
 # ---------------------------------------------------------------------------
-# 5. Today's Verdict
+# 5. Today's Actions  (called after 1-4; verdict synthesises all six outputs)
+# ---------------------------------------------------------------------------
+
+def todays_actions(
+    holdings_analysis: list[dict],
+    breakout: dict | None,
+    macro: dict | None,
+    sector_flows: dict | None,
+) -> list[dict]:
+    """
+    Generate a prioritised action board from all pipeline signals.
+
+    Returns a list of dicts: [{priority, action_type, text}]
+    ordered high → medium → low, filtered to genuinely relevant actions only.
+    """
+    # ── Holdings signals ───────────────────────────────────────────────────
+    signal_lines = []
+    for h in holdings_analysis:
+        sig = h.get("signal", "HOLD")
+        if sig in ("REDUCE", "EXIT", "ADD", "WATCH"):
+            signal_lines.append(
+                f"  {h['ticker']} [{sig}]: {h.get('analysis', '')[:120]}"
+            )
+
+    # ── High-conviction breakout candidates ────────────────────────────────
+    breakout_lines = []
+    for c in (breakout or {}).get("candidates", [])[:15]:
+        signals = c.get("signals", [])
+        if ("stage_transition" in signals
+                and ("vcp" in signals or "volume_accumulation" in signals)):
+            breakout_lines.append(
+                f"  {c['ticker']} (score {c.get('composite_score',0)}): "
+                f"{c.get('reasoning','')[:120]}"
+            )
+
+    # ── Macro snapshot ─────────────────────────────────────────────────────
+    yc     = (macro or {}).get("yield_curve", {})
+    hy_bps = (macro or {}).get("hy_spread_bps")
+    vix_v  = (macro or {}).get("series", {}).get("vix", {}).get("current")
+    macro_lines = [
+        f"  Yield curve: {yc.get('status','unknown')} ({yc.get('spread_bps','?')} bps)",
+        f"  HY spread: {hy_bps} bps" if hy_bps else "  HY spread: n/a",
+        f"  VIX: {vix_v}" if vix_v else "  VIX: n/a",
+        f"  Rate trajectory: {(macro or {}).get('rate_trajectory','unknown')}",
+        f"  HY regime: {(macro or {}).get('hy_regime','unknown')}",
+    ]
+
+    # ── Sector rotation ────────────────────────────────────────────────────
+    sector_lines = []
+    for row in (sector_flows or {}).get("finviz_performance", []):
+        chg = row.get("change_1w")
+        if chg is not None and abs(float(chg)) >= 1.5:
+            direction = "leading" if float(chg) > 0 else "lagging"
+            sector_lines.append(
+                f"  {row.get('sector','?')}: {float(chg):+.1f}% this week ({direction})"
+            )
+
+    prompt = f"""You are reviewing a portfolio investor's daily signals. Based on the data below, generate a prioritised action board.
+
+HOLDING SIGNALS (non-HOLD only):
+{chr(10).join(signal_lines) if signal_lines else '  (none)'}
+
+HIGH-CONVICTION BREAKOUT CANDIDATES (stage transition + VCP/accumulation):
+{chr(10).join(breakout_lines) if breakout_lines else '  (none)'}
+
+MACRO ENVIRONMENT:
+{chr(10).join(macro_lines)}
+
+SECTOR ROTATION (weekly moves ≥ 1.5%):
+{chr(10).join(sector_lines) if sector_lines else '  (no strong moves)'}
+
+Return a JSON array only — no prose, no markdown, no code fences. Each item:
+{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"watch"|"add"|"macro"|"sector", "text": "<one sentence, direct but not alarmist>"}}
+
+Rules:
+- Include only actions that are genuinely relevant today — omit noise
+- "sell" = EXIT signal; "trim" = REDUCE signal or extended position; "add" = strong ADD signal or breakout setup; "watch" = WATCH signal or borderline setup; "macro" = macro-regime alert; "sector" = sector rotation alert
+- Order by priority descending (high first)
+- One sentence per action — specific, naming the ticker or sector
+- Do not include disclaimers or preamble"""
+
+    try:
+        raw = _call(prompt, max_tokens=800)
+        # Strip accidental markdown fences
+        raw = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
+        actions = json.loads(raw)
+        if not isinstance(actions, list):
+            actions = []
+        # Validate and clean each item
+        valid = []
+        for item in actions:
+            if isinstance(item, dict) and item.get("text"):
+                valid.append({
+                    "priority":    item.get("priority", "medium"),
+                    "action_type": item.get("action_type", "watch"),
+                    "text":        str(item["text"]).strip(),
+                })
+        return valid
+    except Exception as exc:
+        log.error("todays_actions failed: %s", exc)
+        return []
+
+
+# ---------------------------------------------------------------------------
+# 6. Today's Verdict
 # ---------------------------------------------------------------------------
 
 def todays_verdict(
@@ -418,9 +523,10 @@ def run_analysis(
     macro: dict | None = None,
     sector_flows: dict | None = None,
     screener: dict | None = None,
+    breakout: dict | None = None,
 ) -> dict:
     """
-    Run all five Claude analysis prompts and return a unified result dict.
+    Run all six Claude analysis prompts and return a unified result dict.
 
     Args:
         portfolio:    Output of fetch_portfolio()
@@ -433,7 +539,7 @@ def run_analysis(
     All optional inputs default to {} / None — analysis degrades gracefully
     to whatever data is available.
     """
-    log.info("Claude analysis: starting five-prompt pipeline (model=%s)", MODEL)
+    log.info("Claude analysis: starting six-prompt pipeline (model=%s)", MODEL)
 
     # 1 & 2 — independent
     log.info("Claude: macro narrative...")
@@ -455,7 +561,12 @@ def run_analysis(
     log.info("Claude: growth opportunities...")
     opps_text = growth_opportunities(screener or {}, portfolio_sectors, macro)
 
-    # 5 — synthesises 1-4
+    # 5 — uses holdings + breakout + macro + sector signals
+    log.info("Claude: today's actions...")
+    actions = todays_actions(holdings, breakout, macro, sector_flows)
+    log.info("Today's actions: %d items", len(actions))
+
+    # 6 — synthesises 1-4
     log.info("Claude: today's verdict...")
     verdict = todays_verdict(
         portfolio,
@@ -473,6 +584,7 @@ def run_analysis(
         "sector_narrative":   sector_text,
         "holdings_analysis":  holdings,
         "opportunities":      opps_text,
+        "actions":            actions,
         "verdict":            verdict,
         "generated_at":       datetime.now().isoformat(),
         "model":              MODEL,
