@@ -13,10 +13,9 @@ _TEMPLATE = Path(__file__).parent / "template.html"
 _ACTION_COLORS = {
     "sell":   "red",
     "trim":   "red",
-    "watch":  "amber",
     "add":    "green",
-    "macro":  "amber",
-    "sector": "amber",
+    "buy":    "green",
+    "danger": "red",
 }
 
 _SECTOR_COLORS = [

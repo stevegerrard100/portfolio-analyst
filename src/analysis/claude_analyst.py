@@ -388,39 +388,36 @@ def todays_actions(
         f"  HY regime: {(macro or {}).get('hy_regime','unknown')}",
     ]
 
-    # ── Sector rotation ────────────────────────────────────────────────────
-    sector_lines = []
-    for row in (sector_flows or {}).get("finviz_performance", []):
-        chg = row.get("change_1w")
-        if chg is not None and abs(float(chg)) >= 1.5:
-            direction = "leading" if float(chg) > 0 else "lagging"
-            sector_lines.append(
-                f"  {row.get('sector','?')}: {float(chg):+.1f}% this week ({direction})"
-            )
-
-    prompt = f"""You are reviewing a portfolio investor's daily signals. Based on the data below, generate a prioritised action board.
+    prompt = f"""You are reviewing a portfolio investor's daily signals. Return a JSON action board — no prose, no markdown, no code fences.
 
 HOLDING SIGNALS (non-HOLD only):
 {chr(10).join(signal_lines) if signal_lines else '  (none)'}
 
-HIGH-CONVICTION BREAKOUT CANDIDATES (stage transition + VCP/accumulation):
+HIGH-CONVICTION BREAKOUT CANDIDATES (stage transition + VCP/accumulation confirmed):
 {chr(10).join(breakout_lines) if breakout_lines else '  (none)'}
 
 MACRO ENVIRONMENT:
 {chr(10).join(macro_lines)}
 
-SECTOR ROTATION (weekly moves ≥ 1.5%):
-{chr(10).join(sector_lines) if sector_lines else '  (no strong moves)'}
+---
 
-Return a JSON array only — no prose, no markdown, no code fences. Each item:
-{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"watch"|"add"|"macro"|"sector", "text": "<one sentence, direct but not alarmist>"}}
+Output a JSON array. Each item:
+{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"add"|"buy"|"danger", "text": "<one sentence>"}}
 
-Rules:
-- Include only actions that are genuinely relevant today — omit noise
-- "sell" = EXIT signal; "trim" = REDUCE signal or extended position; "add" = strong ADD signal or breakout setup; "watch" = WATCH signal or borderline setup; "macro" = macro-regime alert; "sector" = sector rotation alert
-- Order by priority descending (high first)
-- One sentence per action — specific, naming the ticker or sector
-- Do not include disclaimers or preamble"""
+ACTION TYPES — include only these five, nothing else:
+- "sell"   — position is broken: stop loss breached, thesis failed, or EXIT signal with clear evidence. priority: high
+- "trim"   — position is significantly overextended, risk/reward has shifted, or sizing is too large given current weakness. priority: medium
+- "add"    — strong momentum or a fundamentally strong holding pulling back to support with ADD signal. priority: low
+- "buy"    — new high-conviction breakout entry from the breakout screener (stage transition + VCP/accumulation confirmed). priority: low
+- "danger" — macro warning ONLY IF: VIX > 25, OR HY spread > 500 bps, OR yield curve sharply inverted, OR 3+ macro indicators simultaneously red. Surface one prominent warning that risk-off conditions are developing. priority: high
+
+STRICT EXCLUSION RULES — do not output any item that:
+- Concludes "keep watching", "monitor", or "no action needed today"
+- Is a sector rotation observation
+- Is a general portfolio comment without a named ticker or macro indicator
+
+OUTPUT ORDER: danger first (if present), then sell, then trim, then buy/add.
+MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and give a concrete reason. No disclaimers."""
 
     try:
         raw = _call(prompt, max_tokens=2000)
@@ -430,12 +427,16 @@ Rules:
         if not isinstance(actions, list):
             actions = []
         # Validate and clean each item
+        allowed_types = {"sell", "trim", "add", "buy", "danger"}
         valid = []
         for item in actions:
             if isinstance(item, dict) and item.get("text"):
+                atype = item.get("action_type", "add")
+                if atype not in allowed_types:
+                    continue
                 valid.append({
                     "priority":    item.get("priority", "medium"),
-                    "action_type": item.get("action_type", "watch"),
+                    "action_type": atype,
                     "text":        str(item["text"]).strip(),
                 })
         return valid
