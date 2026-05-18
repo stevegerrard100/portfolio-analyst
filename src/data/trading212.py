@@ -461,6 +461,7 @@ def _enrich_position(pos: dict, sectors: dict) -> dict:
     """Add sector / holding-type / pie-label metadata to a raw T212 position."""
     t212_ticker  = pos.get("ticker", "")
     ticker       = normalise_ticker(t212_ticker)
+    log.debug("_enrich_position: %s → normalised %s", t212_ticker, ticker)
     ticker       = _apply_merger_overrides(ticker)  # IONQ, QBTS, RGTI etc.
     sector       = sectors["ticker_to_sector"].get(ticker, "Unknown")
     holding_type = sectors["ticker_to_holding_type"].get(ticker, "medium")
@@ -524,8 +525,12 @@ def _apply_merger_overrides(ticker: str) -> str:
     """Return the resolved ticker if it appears in ticker_resolver._TICKER_OVERRIDES."""
     try:
         from src.data.ticker_resolver import _TICKER_OVERRIDES
-        return _TICKER_OVERRIDES.get(ticker, ticker)
-    except Exception:
+        resolved = _TICKER_OVERRIDES.get(ticker, ticker)
+        if resolved != ticker:
+            log.info("_apply_merger_overrides: %s → %s", ticker, resolved)
+        return resolved
+    except Exception as exc:
+        log.warning("_apply_merger_overrides: import failed for %s — %s", ticker, exc)
         return ticker
 
 
