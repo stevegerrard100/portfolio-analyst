@@ -3,6 +3,7 @@
 import logging
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 
 import finnhub
@@ -186,13 +187,26 @@ def fetch_all_fundamentals(tickers: list[str]) -> dict[str, dict]:
     client = _client()
     results: dict[str, dict] = {}
 
-    for ticker in tickers:
-        log.info("Fetching fundamentals for %s", ticker)
-        yf_data, _ = _fetch_yf_info(ticker)
-        fh_basic = _finnhub_basic(ticker, client)
-        insider = _finnhub_insider(ticker, client)
-        earnings = _finnhub_earnings(ticker, client)
+    # yfinance has no rate limit — fetch all tickers in parallel
+    yf_data_map: dict[str, dict] = {}
+    workers = min(8, len(tickers)) if tickers else 1
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        future_to_ticker = {ex.submit(_fetch_yf_info, t): t for t in tickers}
+        for future in as_completed(future_to_ticker):
+            t = future_to_ticker[future]
+            try:
+                parsed, _ = future.result()
+                yf_data_map[t] = parsed
+            except Exception as exc:
+                log.error("yfinance fundamentals failed for %s: %s", t, exc)
+                yf_data_map[t] = {}
 
-        results[ticker] = {**yf_data, **fh_basic, **insider, **earnings}
+    # Finnhub has a 60-calls/minute free-tier limit — must remain sequential
+    for ticker in tickers:
+        log.info("Fetching Finnhub fundamentals for %s", ticker)
+        fh_basic = _finnhub_basic(ticker, client)
+        insider  = _finnhub_insider(ticker, client)
+        earnings = _finnhub_earnings(ticker, client)
+        results[ticker] = {**yf_data_map.get(ticker, {}), **fh_basic, **insider, **earnings}
 
     return results

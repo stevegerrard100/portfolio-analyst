@@ -30,6 +30,8 @@ BASE_LIVE = "https://live.trading212.com/api/v0"
 
 CACHE_DIR = Path("cache")
 CACHE_FILE = CACHE_DIR / "last_portfolio.json"
+PIE_CACHE  = CACHE_DIR / "pie_positions.json"
+PIE_CACHE_HOURS = 4
 SECTORS_FILE = Path("config/sectors.json")
 
 # Read-only endpoints — order-placement endpoints intentionally absent.
@@ -459,6 +461,7 @@ def _enrich_position(pos: dict, sectors: dict) -> dict:
     """Add sector / holding-type / pie-label metadata to a raw T212 position."""
     t212_ticker  = pos.get("ticker", "")
     ticker       = normalise_ticker(t212_ticker)
+    ticker       = _apply_merger_overrides(ticker)  # IONQ, QBTS, RGTI etc.
     sector       = sectors["ticker_to_sector"].get(ticker, "Unknown")
     holding_type = sectors["ticker_to_holding_type"].get(ticker, "medium")
     pie_label    = sectors["pie_labels"].get(sector, sector)
@@ -514,6 +517,19 @@ def _parse_order_history(raw_items: list) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Merger/rename override helper (applies ticker_resolver overrides at runtime)
+# ---------------------------------------------------------------------------
+
+def _apply_merger_overrides(ticker: str) -> str:
+    """Return the resolved ticker if it appears in ticker_resolver._TICKER_OVERRIDES."""
+    try:
+        from src.data.ticker_resolver import _TICKER_OVERRIDES
+        return _TICKER_OVERRIDES.get(ticker, ticker)
+    except Exception:
+        return ticker
+
+
+# ---------------------------------------------------------------------------
 # Cache helpers
 # ---------------------------------------------------------------------------
 
@@ -534,10 +550,46 @@ def load_last_known_portfolio() -> dict | None:
         with open(CACHE_FILE) as f:
             data = json.load(f)
         log.warning("Using cached portfolio (fetched %s)", data.get("fetched_at", "?"))
+        # Re-apply merger overrides in case _TICKER_OVERRIDES changed since cache was written
+        try:
+            from src.data.ticker_resolver import _TICKER_OVERRIDES
+            for pos in data.get("positions", []):
+                orig = pos.get("ticker", "")
+                if orig in _TICKER_OVERRIDES:
+                    pos["ticker"] = _TICKER_OVERRIDES[orig]
+        except Exception:
+            pass
         return data
     except Exception as exc:
         log.error("Cache read failed: %s", exc)
         return None
+
+
+def _load_pie_cache() -> list[dict] | None:
+    """Return cached raw pie positions if the cache is less than PIE_CACHE_HOURS old."""
+    if not PIE_CACHE.exists():
+        return None
+    try:
+        age_h = (
+            datetime.now() - datetime.fromtimestamp(PIE_CACHE.stat().st_mtime)
+        ).total_seconds() / 3600
+        if age_h >= PIE_CACHE_HOURS:
+            return None
+        with open(PIE_CACHE) as f:
+            data = json.load(f)
+        log.info("T212: using cached pie positions (%.1fh old, skipping rate-limited fetch)", age_h)
+        return data
+    except Exception:
+        return None
+
+
+def _save_pie_cache(positions: list[dict]) -> None:
+    CACHE_DIR.mkdir(exist_ok=True)
+    try:
+        with open(PIE_CACHE, "w") as f:
+            json.dump(positions, f, indent=2)
+    except Exception as exc:
+        log.warning("Pie cache write failed: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -600,7 +652,10 @@ def fetch_portfolio(use_live: bool = True, allow_mock: bool = False) -> dict:
         raw_positions = client.get_positions()
 
         log.info("T212: fetching pie positions...")
-        raw_pie_positions = [p for p in client.get_pie_positions() if float(p.get("quantity", 0)) > 0]
+        raw_pie_positions = _load_pie_cache()
+        if raw_pie_positions is None:
+            raw_pie_positions = [p for p in client.get_pie_positions() if float(p.get("quantity", 0)) > 0]
+            _save_pie_cache(raw_pie_positions)
         if raw_pie_positions:
             raw_positions = _merge_raw_positions(raw_positions, raw_pie_positions)
             log.info("T212: merged — %d total positions from pies", len(raw_positions))

@@ -18,7 +18,6 @@ Cache: 8h TTL (same policy as the growth screener).
 
 import json
 import logging
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -307,55 +306,68 @@ def _breakout_profile(ticker: str) -> dict | None:
 # Reasoning
 # ---------------------------------------------------------------------------
 
-def _enrich_reasoning_via_ai(
-    ticker: str,
-    company_name: str,
-    sector: str,
-    current_rs: float,
-    signals: dict[str, bool],
-    vp: dict,
-) -> str | None:
+def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
     """
-    Call the Anthropic API to generate enriched plain-English reasoning that includes
-    company context, sector/macro tailwinds, and a buy-setup assessment.
-    Returns None on any failure so the caller can fall back to technical reasoning.
+    Single Claude API call to generate reasoning for all breakout candidates.
+    Returns {ticker: reasoning_text}; tickers absent from result fall back to technical reasoning.
     """
-    import os
+    import os, re
     api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return None
+    if not api_key or not candidates:
+        return {}
     try:
         import anthropic
-        fired = [k.replace("_", " ") for k, v in signals.items() if v]
-        resistances = vp.get("resistances", [])
-        supports    = vp.get("supports", [])
-        vp_str = ""
-        if resistances:
-            vp_str += f"Key resistance: ${resistances[0][0]:.2f}. "
-        if supports:
-            vp_str += f"Key support: ${supports[0][0]:.2f}."
+        lines: list[str] = []
+        for c in candidates:
+            fired = [k.replace("_", " ") for k, v in c["signals"].items() if v]
+            vp    = c["volume_profile"]
+            res   = vp.get("resistances", [])
+            sup   = vp.get("supports", [])
+            vp_parts: list[str] = []
+            if res:
+                vp_parts.append(f"resistance ${res[0][0]:.2f}")
+            if sup:
+                vp_parts.append(f"support ${sup[0][0]:.2f}")
+            vp_str = ", ".join(vp_parts)
+            lines.append(
+                f"###{c['ticker']}\n"
+                f"{c['company_name']} | {c['sector']} | RS {c['current_rs']:+.1f} | "
+                f"signals: {', '.join(fired) or 'none'}"
+                + (f" | {vp_str}" if vp_str else "")
+            )
 
         prompt = (
-            f"Stock: {ticker} — {company_name} (Sector: {sector})\n"
-            f"Mansfield RS vs S&P 500: {current_rs:+.1f}\n"
-            f"Active breakout signals: {', '.join(fired) if fired else 'none'}\n"
-            f"{vp_str}\n\n"
-            f"Write exactly 3 concise plain-English sentences (no bullet points, no markdown, no bold):\n"
-            f"1. What {company_name} does and why its sector is currently favourable.\n"
-            f"2. A specific catalyst or tailwind that could drive a breakout move.\n"
-            f"3. A direct buy-setup assessment — compelling, speculative, or needs more "
-            f"confirmation — referencing the signals and price levels above."
+            "For each stock below, write exactly 3 concise plain-English sentences "
+            "(no bullets, no markdown, no bold). "
+            "Sentences: 1) what the company does and why its sector is currently favourable; "
+            "2) a specific catalyst or tailwind that could drive a breakout move; "
+            "3) a direct buy-setup assessment (compelling / speculative / needs more confirmation) "
+            "referencing the signals and price levels.\n\n"
+            "Format: respond with ###TICKER on its own line, then the 3 sentences on the next line. "
+            "Do not add any other text between entries.\n\n"
+            + "\n\n".join(lines)
         )
+
         client = anthropic.Anthropic(api_key=api_key)
         msg = client.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=220,
+            max_tokens=220 * len(candidates),
             messages=[{"role": "user", "content": prompt}],
         )
-        return msg.content[0].text.strip()
+        response_text = msg.content[0].text
+        result: dict[str, str] = {}
+        blocks = re.findall(
+            r"###([A-Z]{1,5})\n(.+?)(?=\n###[A-Z]|\Z)", response_text, re.DOTALL
+        )
+        for ticker, text in blocks:
+            result[ticker] = text.strip()
+        log.info(
+            "Batch AI reasoning: %d/%d candidates enriched", len(result), len(candidates)
+        )
+        return result
     except Exception as exc:
-        log.debug("AI reasoning enrichment failed for %s: %s", ticker, exc)
-        return None
+        log.debug("Batch AI reasoning failed: %s", exc)
+        return {}
 
 
 def _breakout_reasoning(current_rs: float, signals: dict[str, bool], vp: dict) -> str:
@@ -561,7 +573,7 @@ def run_breakout_screener(
 
     # ── Step 5: Daily analysis ────────────────────────────────────────────────
     log.info("Fetching daily data for %d candidates...", len(top_for_daily))
-    final_candidates: list[dict] = []
+    pre_candidates: list[dict] = []
 
     for c in top_for_daily:
         ticker = c["ticker"]
@@ -593,38 +605,49 @@ def run_breakout_screener(
             if total_score == 0:
                 continue
 
-            rs_series       = c["rs_series"]
-            mrs_weekly_data = _mrs_weekly_to_json(rs_series)
-            mrs_daily_data  = _mrs_daily_to_json(rs_series)
-
-            technical_reasoning = _breakout_reasoning(c["current_rs"], signals, vp)
-            ai_reasoning = _enrich_reasoning_via_ai(
-                ticker, profile["company_name"], profile["sector"],
-                c["current_rs"], signals, vp,
-            )
-            reasoning = ai_reasoning or technical_reasoning
-
-            final_candidates.append({
-                "ticker":          ticker,
-                "company_name":    profile["company_name"],
-                "sector":          profile["sector"],
-                "mansfield_rs":    round(c["current_rs"], 1),
-                "composite_score": total_score,
-                "reasoning":       reasoning,
-                "signals":         [k for k, v in signals.items() if v],
-                "stop_loss":       _calc_stop_loss(profile["price"], profile["atr_14"]),
-                "ohlcv_daily":     profile["ohlcv_daily"],
-                "ohlcv_weekly":    profile["ohlcv_weekly"],
-                "mrs_daily":       mrs_daily_data,
-                "mrs_weekly":      mrs_weekly_data,
+            rs_series = c["rs_series"]
+            pre_candidates.append({
+                "ticker":               ticker,
+                "company_name":         profile["company_name"],
+                "sector":               profile["sector"],
+                "current_rs":           c["current_rs"],
+                "signals":              signals,
+                "volume_profile":       vp,
+                "technical_reasoning":  _breakout_reasoning(c["current_rs"], signals, vp),
+                "composite_score":      total_score,
+                "stop_loss":            _calc_stop_loss(profile["price"], profile["atr_14"]),
+                "ohlcv_daily":          profile["ohlcv_daily"],
+                "ohlcv_weekly":         profile["ohlcv_weekly"],
+                "mrs_daily":            _mrs_daily_to_json(rs_series),
+                "mrs_weekly":           _mrs_weekly_to_json(rs_series),
             })
-            time.sleep(0.3)
 
         except Exception as exc:
             log.debug("Daily analysis failed for %s: %s", ticker, exc)
             continue
 
-    log.info("Breakout screener: %d qualified candidates", len(final_candidates))
+    log.info("Breakout screener: %d qualified candidates (pre-dedup)", len(pre_candidates))
+
+    # Batch AI reasoning — single Claude call for all candidates
+    ai_reasonings = _batch_enrich_reasoning_via_ai(pre_candidates)
+
+    final_candidates: list[dict] = []
+    for c in pre_candidates:
+        ticker = c["ticker"]
+        final_candidates.append({
+            "ticker":          ticker,
+            "company_name":    c["company_name"],
+            "sector":          c["sector"],
+            "mansfield_rs":    round(c["current_rs"], 1),
+            "composite_score": c["composite_score"],
+            "reasoning":       ai_reasonings.get(ticker) or c["technical_reasoning"],
+            "signals":         [k for k, v in c["signals"].items() if v],
+            "stop_loss":       c["stop_loss"],
+            "ohlcv_daily":     c["ohlcv_daily"],
+            "ohlcv_weekly":    c["ohlcv_weekly"],
+            "mrs_daily":       c["mrs_daily"],
+            "mrs_weekly":      c["mrs_weekly"],
+        })
 
     # ── CIK dedup (same policy as growth screener) ────────────────────────────
     cik_map   = _load_cik_map()

@@ -208,18 +208,25 @@ def _resolve_via_ai(ticker: str, company_name: str) -> str | None:
         client = anthropic.Anthropic(api_key=api_key)
         msg = client.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=15,
+            max_tokens=10,
+            system=(
+                "You are a stock ticker lookup service. "
+                "Reply with ONLY a valid US ticker symbol (1-5 uppercase letters, optionally -A/-B class suffix) "
+                "or the word NONE. No explanation, no punctuation, no extra text."
+            ),
             messages=[{
                 "role": "user",
                 "content": (
-                    f"The US stock ticker '{ticker}' ({company_name}) no longer trades. "
-                    f"It may be a SPAC that completed a merger or a company that was renamed. "
-                    f"What is the current active US ticker for its successor? "
-                    f"Reply with ONLY the ticker symbol (e.g. 'AAPL') or 'NONE'."
+                    f"The US stock ticker '{ticker}' ({company_name}) no longer trades on US exchanges. "
+                    f"It was likely a SPAC that completed a merger, or a company that was renamed or acquired. "
+                    f"What is the current active US-listed ticker for its successor entity? "
+                    f"Reply with ONLY the ticker symbol or NONE."
                 ),
             }],
         )
-        result = msg.content[0].text.strip().upper()
+        # Strip whitespace and any stray punctuation before validating
+        raw = msg.content[0].text.strip().upper()
+        result = re.sub(r"[^A-Z\-]", "", raw)
         if re.match(r"^[A-Z]{1,5}(-[A-Z])?$", result) and result != "NONE":
             return result
         return None
