@@ -190,6 +190,7 @@ def fetch_all_fundamentals(tickers: list[str]) -> dict[str, dict]:
     # yfinance has no rate limit — fetch all tickers in parallel
     yf_data_map: dict[str, dict] = {}
     workers = min(8, len(tickers)) if tickers else 1
+    log.info("Fundamentals: fetching yfinance data for %d tickers with %d workers", len(tickers), workers)
     with ThreadPoolExecutor(max_workers=workers) as ex:
         future_to_ticker = {ex.submit(_fetch_yf_info, t): t for t in tickers}
         for future in as_completed(future_to_ticker):

@@ -306,6 +306,9 @@ def _breakout_profile(ticker: str) -> dict | None:
 # Reasoning
 # ---------------------------------------------------------------------------
 
+_MAX_TOKENS_OUTPUT = 8192  # claude-sonnet-4-6 hard cap
+
+
 def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
     """
     Single Claude API call to generate reasoning for all breakout candidates.
@@ -315,6 +318,7 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key or not candidates:
         return {}
+    log.info("Batch AI reasoning: sending %d candidates in one request", len(candidates))
     try:
         import anthropic
         lines: list[str] = []
@@ -348,16 +352,19 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
             + "\n\n".join(lines)
         )
 
+        # Cap at the model output limit — 220 tokens × N candidates can exceed 8 192 for large screens
+        max_tokens = min(_MAX_TOKENS_OUTPUT, 220 * len(candidates))
         client = anthropic.Anthropic(api_key=api_key)
         msg = client.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=220 * len(candidates),
+            max_tokens=max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
         response_text = msg.content[0].text
         result: dict[str, str] = {}
+        # Match ###TICKER blocks; allow one or more blank lines between entries
         blocks = re.findall(
-            r"###([A-Z]{1,5})\n(.+?)(?=\n###[A-Z]|\Z)", response_text, re.DOTALL
+            r"###([A-Z]{1,5})\n(.+?)(?=\n+###[A-Z]|\Z)", response_text, re.DOTALL
         )
         for ticker, text in blocks:
             result[ticker] = text.strip()
@@ -366,7 +373,7 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
         )
         return result
     except Exception as exc:
-        log.debug("Batch AI reasoning failed: %s", exc)
+        log.warning("Batch AI reasoning failed: %s", exc)
         return {}
 
 
