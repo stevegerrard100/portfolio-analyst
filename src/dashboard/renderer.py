@@ -140,6 +140,11 @@ def render_dashboard(
     # --- Breakout Watch List (top 15) ---
     breakout_candidates = []
     for c in breakout.get("candidates", [])[:15]:
+        signals = c.get("signals", [])
+        high_conviction = (
+            "stage_transition" in signals
+            and ("vcp" in signals or "volume_accumulation" in signals)
+        )
         breakout_candidates.append({
             "ticker":          c["ticker"],
             "company_name":    c.get("company_name") or c["ticker"],
@@ -147,7 +152,8 @@ def render_dashboard(
             "mansfield_rs":    round(float(c.get("mansfield_rs", 0)), 1),
             "composite_score": int(c.get("composite_score", 0)),
             "reasoning":       c.get("reasoning", ""),
-            "signals":         c.get("signals", []),
+            "signals":         signals,
+            "high_conviction": high_conviction,
             "stop_loss":       c.get("stop_loss"),
             "ohlcv_daily":     c.get("ohlcv_daily"),
             "ohlcv_weekly":    c.get("ohlcv_weekly"),

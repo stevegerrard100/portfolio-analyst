@@ -23,6 +23,8 @@ from pathlib import Path
 
 import requests
 
+from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
+
 log = logging.getLogger(__name__)
 
 BASE_DEMO = "https://demo.trading212.com/api/v0"
@@ -522,16 +524,11 @@ def _parse_order_history(raw_items: list) -> list:
 # ---------------------------------------------------------------------------
 
 def _apply_merger_overrides(ticker: str) -> str:
-    """Return the resolved ticker if it appears in ticker_resolver._TICKER_OVERRIDES."""
-    try:
-        from src.data.ticker_resolver import _TICKER_OVERRIDES
-        resolved = _TICKER_OVERRIDES.get(ticker, ticker)
-        if resolved != ticker:
-            log.info("_apply_merger_overrides: %s → %s", ticker, resolved)
-        return resolved
-    except Exception as exc:
-        log.warning("_apply_merger_overrides: import failed for %s — %s", ticker, exc)
-        return ticker
+    """Return the resolved ticker if it appears in _MERGER_OVERRIDES (ticker_resolver map)."""
+    resolved = _MERGER_OVERRIDES.get(ticker, ticker)
+    if resolved != ticker:
+        log.info("_apply_merger_overrides: %s → %s", ticker, resolved)
+    return resolved
 
 
 # ---------------------------------------------------------------------------
@@ -555,15 +552,11 @@ def load_last_known_portfolio() -> dict | None:
         with open(CACHE_FILE) as f:
             data = json.load(f)
         log.warning("Using cached portfolio (fetched %s)", data.get("fetched_at", "?"))
-        # Re-apply merger overrides in case _TICKER_OVERRIDES changed since cache was written
-        try:
-            from src.data.ticker_resolver import _TICKER_OVERRIDES
-            for pos in data.get("positions", []):
-                orig = pos.get("ticker", "")
-                if orig in _TICKER_OVERRIDES:
-                    pos["ticker"] = _TICKER_OVERRIDES[orig]
-        except Exception:
-            pass
+        # Re-apply merger overrides in case overrides changed since cache was written
+        for pos in data.get("positions", []):
+            orig = pos.get("ticker", "")
+            if orig in _MERGER_OVERRIDES:
+                pos["ticker"] = _MERGER_OVERRIDES[orig]
         return data
     except Exception as exc:
         log.error("Cache read failed: %s", exc)

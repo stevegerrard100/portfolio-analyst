@@ -42,9 +42,12 @@ def main() -> None:
     # ── 1. Portfolio ──────────────────────────────────────────────────────────
     _step(1, 9, "Trading 212 portfolio")
     from src.data.trading212 import fetch_portfolio
+    from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
     portfolio = fetch_portfolio()
     positions = portfolio.get("positions", [])
-    portfolio_tickers = [p["ticker"] for p in positions]
+    # Apply merger overrides explicitly — ensures resolved tickers (IONQ, QBTS…) reach
+    # all downstream steps even if _enrich_position's override path failed silently.
+    portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
     log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
     # ── 2. Market data ────────────────────────────────────────────────────────
