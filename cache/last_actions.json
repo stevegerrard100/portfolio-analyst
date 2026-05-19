@@ -3,42 +3,30 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 51% in your portfolio and 72% off its yearly high with shrinking revenue and no path to profitability \u2014 exit this position now before further losses compound."
-  },
-  {
-    "id": "EL-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Est\u00e9e Lauder is down over 34% from its yearly high with shrinking revenue and deteriorating fundamentals \u2014 reduce your position to cut ongoing risk."
+    "text": "RGTI is down over 51% with revenue actually declining and trading 72% below its yearly high \u2014 the thesis is broken and this position should be closed."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is down nearly 40% in your portfolio and 60% off its yearly high with no profitability in sight \u2014 trim this speculative position to limit further downside exposure."
+    "text": "QBTS is down 40% and 60% below its yearly high with no earnings or revenue to justify holding full size \u2014 reduce exposure meaningfully."
   },
   {
     "id": "AVAV-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "AeroVironment is down 37% in your portfolio and 61% off its yearly high with three consecutive earnings misses \u2014 trim this position as the risk/reward has clearly shifted against you."
+    "text": "AeroVironment is down 38%, has missed earnings three times in a row, and carries high short interest near 20% \u2014 trim this position until the trend reverses."
   },
   {
     "id": "GORO-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Gold Royalty Corp is down 32.5% and trading near its yearly low with three consecutive earnings misses \u2014 reduce this position as the thesis is not holding up."
-  },
-  {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Microsoft is showing the only confirmed bullish momentum signal (MACD crossover) among major holdings and has strong underlying fundamentals \u2014 this is a good opportunity to add to your position."
+    "text": "Gold Royalty is just 0.4% from its yearly low with three consecutive earnings misses and a 30% loss \u2014 reduce this position before it reaches a new low."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "American Electric Power has a confirmed stage transition and VCP breakout pattern, with a strong structural tailwind from rising electricity demand \u2014 this is a high-conviction new entry point."
+    "text": "American Electric Power has confirmed a stage transition and VCP breakout pattern, with a strong tailwind from rising electricity demand \u2014 this is a high-conviction new entry."
   }
 ]
