@@ -1,6 +1,9 @@
 .env
 output/
 cache/
+# These two files are managed outside normal git flow and must not be auto-staged
+cache/dismissed_actions.json
+cache/last_actions.json
 __pycache__/
 *.pyc
 *.pyo

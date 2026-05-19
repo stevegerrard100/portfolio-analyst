@@ -6,6 +6,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+_CACHE_DIR = Path(__file__).parent / ".." / ".." / "cache"
+
 log = logging.getLogger(__name__)
 
 _TEMPLATE = Path(__file__).parent / "template.html"
@@ -97,6 +99,31 @@ def _sector_heatmap(sector_flows: dict) -> list[dict]:
         rows.append({"sector": row.get("sector", ""), "change_1w": round(float(chg), 2)})
     rows.sort(key=lambda x: x["change_1w"], reverse=True)
     return rows
+
+
+def _build_today_actions(raw_actions: list[dict], market_data: dict) -> list[dict]:
+    """Enrich raw actions with color, is_new, and current_price."""
+    # Load yesterday's action IDs for is_new badge
+    yesterday_ids: set[str] = set()
+    last_path = _CACHE_DIR / "last_actions.json"
+    if last_path.exists():
+        try:
+            yesterday_ids = {a["id"] for a in json.loads(last_path.read_text(encoding="utf-8")) if a.get("id")}
+        except Exception:
+            pass
+
+    result = []
+    for a in raw_actions:
+        action_id = a.get("id", "")
+        ticker    = a.get("ticker", "")
+        mkt       = market_data.get(ticker, {})
+        result.append({
+            **a,
+            "color":         _ACTION_COLORS.get(a.get("action_type", ""), "amber"),
+            "is_new":        action_id not in yesterday_ids,
+            "current_price": mkt.get("current_price"),
+        })
+    return result
 
 
 def render_dashboard(
@@ -271,10 +298,8 @@ def render_dashboard(
         "breakout_candidates":  breakout_candidates,
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
-        "today_actions":        [
-            {**a, "color": _ACTION_COLORS.get(a.get("action_type", ""), "amber")}
-            for a in analysis.get("actions", [])
-        ],
+        "today_actions":        _build_today_actions(analysis.get("actions", []), market_data or {}),
+        "gh_contents_pat":      os.environ.get("GH_CONTENTS_PAT", ""),
     }
 
     template = _TEMPLATE.read_text(encoding="utf-8")
