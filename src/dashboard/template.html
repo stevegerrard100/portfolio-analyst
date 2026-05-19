@@ -530,7 +530,31 @@
       document.addEventListener('click', () => {
         document.querySelectorAll('.snooze-menu').forEach(m => { m.style.display = 'none'; });
       });
+
+      // Hide rows that were snoozed in a previous browser session (localStorage)
+      const activeDismissals = _lsPrune();
+      Object.keys(activeDismissals).forEach(dismissedId => {
+        const row = document.getElementById(`action-${dismissedId}`);
+        if (row) row.style.display = 'none';
+      });
     })();
+
+    // ── localStorage helpers for client-side dismissal persistence ─────────────
+    const LS_KEY = 'portfolioAnalyst_dismissed';
+    function _lsDismissed() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+    }
+    function _lsSave(map) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(map)); } catch {}
+    }
+    function _lsPrune() {
+      // Remove entries whose snooze period has expired
+      const today = new Date().toISOString().split('T')[0];
+      const map = _lsDismissed();
+      const pruned = Object.fromEntries(Object.entries(map).filter(([, v]) => v >= today));
+      _lsSave(pruned);
+      return pruned;
+    }
 
     // ── Dismiss action (via Netlify function — PAT never exposed to browser) ──
     async function dismissAction(id, days) {
@@ -541,6 +565,17 @@
         body: JSON.stringify({ id, days, snoozed_price: action ? action.current_price : null }),
       });
       if (!res.ok) throw new Error(`Dismiss failed: ${res.status}`);
+
+      // Persist snooze_until from server response so the row stays hidden on refresh
+      const data = await res.json().catch(() => ({}));
+      const snoozeUntil = data.snoozed_until || (
+        days === 0 ? '9999-12-31'
+                   : new Date(Date.now() + days * 86400000).toISOString().split('T')[0]
+      );
+      const map = _lsDismissed();
+      map[id] = snoozeUntil;
+      _lsSave(map);
+
       const row = document.getElementById(`action-${id}`);
       if (row) { row.style.transition = 'opacity 0.3s'; row.style.opacity = '0'; setTimeout(() => { row.style.display = 'none'; }, 300); }
     }

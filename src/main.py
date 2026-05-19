@@ -116,9 +116,13 @@ def main() -> None:
             _all = json.loads(_dismissed_path.read_text(encoding="utf-8"))
             _today = date.today().isoformat()
             dismissed_entries = [e for e in _all if e.get("snoozed_until", "") >= _today]
-            log.info("Dismissals: %d active (of %d total)", len(dismissed_entries), len(_all))
+            log.info("Dismissals: %d active (of %d total) — IDs: %s",
+                     len(dismissed_entries), len(_all),
+                     [e["id"] for e in dismissed_entries] or "none")
         except Exception as exc:
             log.warning("Could not read dismissed_actions.json: %s", exc)
+    else:
+        log.info("Dismissals: cache/dismissed_actions.json not found — no active dismissals")
 
     from src.analysis.claude_analyst import run_analysis
     analysis = run_analysis(
