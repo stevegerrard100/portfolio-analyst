@@ -1,26 +1,26 @@
 [
   {
-    "id": "AVAV-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "AVAV is down 38% with three consecutive earnings misses and high short interest \u2014 the business is losing credibility and the position should be closed."
-  },
-  {
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "EL is down 26% and trading well below its 50-day average with no clear recovery catalyst \u2014 reduce the position to limit further damage."
+    "text": "EL is down over 36% from its yearly high with shrinking revenue and rising short seller pressure \u2014 reduce your position size now to limit further damage."
+  },
+  {
+    "id": "AVAV-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "AVAV is down 37.5% in your portfolio and has missed earnings three times in a row \u2014 trim this position until there is clear evidence the business is back on track."
   },
   {
     "id": "GORO-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GORO is down 31% and has missed earnings three times in a row \u2014 persistent underperformance against gold itself makes this a position worth cutting back."
+    "text": "GORO has missed earnings three times recently and is down 29% in your portfolio \u2014 repeated execution failures make this a trim candidate even if gold remains supportive."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "AEP has confirmed a stage transition with VCP accumulation and offers a high-conviction entry as a regulated utility benefiting from grid expansion demand."
+    "text": "AEP has a confirmed stage transition and VCP accumulation pattern, and utilities are directly benefiting from power-hungry AI infrastructure demand \u2014 this is a high-conviction new entry."
   }
 ]
