@@ -34,11 +34,15 @@ Step 4  fetch_macro_data()        FRED rates, spreads, yield curve
 Step 5  fetch_all_fundamentals()  Finnhub basic/insider/earnings + yfinance FCF
 Step 6  run_screener()            S&P 500 growth screen (8h cached)
 Step 7  run_breakout_screener()   S&P 500 accumulation/breakout screen (8h cached)
-Step 8  run_analysis()            Claude 5-prompt pipeline
+Step 8  run_analysis()            Claude 6-prompt pipeline
 Step 9  render_dashboard()        Assemble output/index.html from template
 ```
 
-Each step returns a plain dict. Steps are independent except that Step 8 receives the outputs of Steps 1–6, and Step 9 receives all outputs.
+Each step returns a plain dict. Steps are independent except that Step 8 receives the outputs of Steps 1–7, and Step 9 receives all outputs.
+
+At the start of Step 8, before calling Claude, `main.py` reads `cache/dismissed_actions.json` (if it exists) and filters to active dismissals (those whose `snoozed_until` date is today or future). These are passed to `run_analysis()` so `todays_actions()` can suppress snoozed items.
+
+At the end of Step 9, `main.py` writes today's final actions list to `cache/last_actions.json` for use by the next run's `is_new` badge logic.
 
 ---
 
@@ -48,7 +52,7 @@ Each step returns a plain dict. Steps are independent except that Step 8 receive
 src/
   main.py                     Entry point; orchestrates all 9 steps
   analysis/
-    claude_analyst.py         Five Claude prompts + run_analysis() orchestrator
+    claude_analyst.py         Six Claude prompts + run_analysis() orchestrator
   dashboard/
     renderer.py               Builds the data dict; injects into template
     template.html             Self-contained dark-mode SPA (no build step)
@@ -64,15 +68,25 @@ src/
     breakout_screener.py      S&P 500 accumulation/breakout screen (5-signal)
     institutional.py          (unused in main pipeline; available for extension)
 
+netlify/
+  functions/
+    dismiss-action.js         Serverless function: snooze an Action Board row
+
+netlify.toml                  Points Netlify build to netlify/functions/
+
 config/
   sectors.json                Ticker → sector, ticker → holding_type, pie labels
 
-cache/                        Written at runtime, gitignored
+cache/                        Written at runtime, gitignored except where noted
   last_portfolio.json         T212 portfolio snapshot (fallback if API down)
-  pie_positions.json          Raw T212 pie positions (4h TTL — skips rate-limited fetch)
+  pie_positions.json          Raw T212 pie positions (4h TTL)
   screener.json               Screener results (8h TTL)
   breakout_screener.json      Breakout screener results (8h TTL)
   sec_company_tickers.json    EDGAR CIK map (7-day TTL)
+  last_actions.json           Today's final actions list (force-added to git by CI)
+  dismissed_actions.json      Snoozed action IDs with expiry dates (written by
+                              Netlify function via GitHub Contents API; force-added
+                              by Netlify function, never by CI)
 
 output/
   index.html                  Generated dashboard
@@ -136,8 +150,13 @@ docs/
 ### Anthropic Claude
 - **Key**: `ANTHROPIC_API_KEY`
 - **Model**: `claude-sonnet-4-6`
-- Five prompts per run for main analysis (see §4.1). Breakout screener uses one additional batched call for candidate reasoning (see §4.7).
-- Total token usage (main pipeline): ~3,000–5,000 input + ~2,000–3,500 output per run.
+- Six prompts per run for main analysis (see §4.1). Breakout screener uses one additional batched call for candidate reasoning (see §4.7).
+- Total token usage (main pipeline): ~4,000–7,000 input + ~3,000–5,000 output per run.
+
+### GitHub Contents API (via Netlify function)
+- Used only for action dismissals. The Netlify function reads and writes `cache/dismissed_actions.json` directly to the `main` branch via `PUT /repos/{owner}/{repo}/contents/{path}`.
+- Auth: fine-grained PAT (`GH_CONTENTS_PAT`) stored as a Netlify environment variable — **never embedded in the dashboard HTML**.
+- The PAT requires: Repository access → `stevegerrard100/portfolio-analyst`, Permissions → Contents → Read and write.
 
 ---
 
@@ -145,7 +164,7 @@ docs/
 
 ### 4.1 `src/analysis/claude_analyst.py`
 
-Five-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor persona):
+Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor persona):
 
 | # | Function | Input | Output | max_tokens |
 |---|----------|-------|--------|-----------|
@@ -153,11 +172,28 @@ Five-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor pe
 | 2 | `sector_rotation_narrative` | Finviz perf + ETF RS | 1–2 paragraphs | 350 |
 | 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis}]` | max(2000, n×120) |
 | 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 |
-| 5 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 |
+| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector | `[{priority, action_type, text, id}]` JSON | 2000 |
+| 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 |
 
-Prompts 1 and 2 run first (independent of each other). Prompt 3 is independent of 1 and 2. Prompt 4 uses the macro summary for context. Prompt 5 synthesises all four.
+Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–4.
 
-**Holdings parser**: Claude returns one line per holding in the format `[TICKER] SIGNAL — assessment`. The regex `r"^\[([A-Z0-9.\-]+)\]\s+([A-Z]+)\s*[—–\-]+\s*(.+?)(?=^\[[A-Z0-9]|\Z)"` parses this. Signals: `HOLD / WATCH / REDUCE / ADD / EXIT`. Any unparsed holding gets a `HOLD` placeholder.
+**Holdings parser**: Claude returns one line per holding: `[TICKER] SIGNAL — assessment`. Signals: `HOLD / WATCH / REDUCE / ADD / EXIT`. Any unparsed holding gets a `HOLD` placeholder.
+
+**`todays_actions()` — action types and rules:**
+
+| action_type | Trigger condition | priority |
+|-------------|------------------|---------|
+| `sell` | EXIT signal, stop loss breached, thesis failed | high |
+| `trim` | REDUCE signal, overextended position, sizing risk | medium |
+| `add` | Strong ADD signal, pullback to support | low |
+| `buy` | High-conviction breakout from screener (stage transition + VCP/accumulation) | low |
+| `danger` | VIX > 25 OR HY spread > 500bps OR sharp yield curve inversion OR 3+ macro indicators simultaneously red | high |
+
+Strict exclusions: no "keep watching" / "monitor" items, no sector rotation observations, no general portfolio comments. Maximum 8 items. Output order: danger → sell → trim → buy/add.
+
+Each action has an `id` field (`{ticker}-{action_type}`, e.g. `RGTI-sell`) used for dismissal keying. Actions matching `dismissed_entries` IDs are filtered out before being returned. Critical override: a dismissed action is reinstated (marked `priority: "critical"`) if the position has fallen a further 15% from the `snoozed_price` or the stop loss has been breached.
+
+The function returns a JSON array. The validator drops any item whose `action_type` is not in `{sell, trim, add, buy, danger}`.
 
 ### 4.2 `src/data/trading212.py`
 
@@ -170,9 +206,9 @@ Hard overrides in `_TICKER_OVERRIDES` at the top of the file handle renames and 
 
 **Pie cache**: Before fetching pie positions from T212, `fetch_portfolio()` checks `cache/pie_positions.json`. If the file exists and is less than 4 hours old, it's used directly. This avoids the 30s-per-pie rate limit during repeated local runs.
 
-**Position merging**: `_merge_raw_positions()` aggregates direct + pie positions by ticker (same stock may appear in multiple pies). If a position dict is missing a `ticker` key, it logs a warning and skips rather than crashing.
+**Position merging**: `_merge_raw_positions()` aggregates direct + pie positions by ticker. If a position dict is missing a `ticker` key, it logs a warning and skips.
 
-**Fallback cache**: If the T212 API is unreachable, `fetch_portfolio()` falls back to `cache/last_portfolio.json`. The pipeline continues with stale data rather than failing entirely.
+**Fallback cache**: If the T212 API is unreachable, `fetch_portfolio()` falls back to `cache/last_portfolio.json`.
 
 ### 4.3 `src/data/market_data.py`
 
@@ -193,54 +229,52 @@ Computed weekly; stored as both weekly (raw) and daily (linearly interpolated) s
 - `mrs_daily`: Mansfield RS interpolated to daily frequency, last 365 days
 - `mrs_weekly`: raw weekly Mansfield RS, last 104 weeks
 
-**Defunct ticker handling**: When `process_ticker()` returns `None`, `fetch_market_data()` calls `resolve_ticker()` from `ticker_resolver.py` and retries with the resolved ticker. If resolution fails, a warning is logged with the best company name found.
+**Defunct ticker handling**: When `process_ticker()` returns `None`, `fetch_market_data()` calls `resolve_ticker()` from `ticker_resolver.py` and retries with the resolved ticker.
 
 ### 4.4 `src/data/ticker_resolver.py`
 
 Dynamic resolution for defunct or renamed tickers. Called only when yfinance returns no data for a ticker.
 
-**Strategy 1 — yfinance redirect**: `yf.Ticker(old).info["symbol"]` sometimes returns the successor ticker (Yahoo Finance redirects old SPAC tickers to merged entities). If the symbol differs and has data, that's the resolution.
+**Strategy 1 — yfinance redirect**: `yf.Ticker(old).info["symbol"]` sometimes returns the successor ticker.
 
-**Strategy 2 — EDGAR CIK rename**: If the ticker appears in EDGAR's company_tickers.json, fetches the CIK's current submissions to check whether the same legal entity now trades under a different symbol.
+**Strategy 2 — EDGAR CIK rename**: If the ticker appears in EDGAR's company_tickers.json, fetches the CIK's current submissions to check for a new symbol.
 
-**Strategy 3 — Claude AI fallback**: `_resolve_via_ai(ticker, company_name)` calls Claude with a strict system prompt that forces a ticker-only response. Uses `max_tokens=10` and strips non-alpha characters from the response. Returns `None` if the response doesn't match `[A-Z]{1,5}(-[A-Z])?`.
+**Strategy 3 — Claude AI fallback**: `_resolve_via_ai(ticker, company_name)` calls Claude with `max_tokens=10`. Returns `None` if the response doesn't match `[A-Z]{1,5}(-[A-Z])?`.
 
-`_TICKER_OVERRIDES: dict[str, str]` is a module-level dict that accumulates resolved mappings for the lifetime of the process. It is imported by reference into `trading212.py` and `main.py` using the alias `_MERGER_OVERRIDES`. Any ticker resolved during `fetch_market_data()` is immediately available to all other modules via this shared dict.
+`_TICKER_OVERRIDES: dict[str, str]` is a module-level dict that accumulates resolved mappings. Imported by `trading212.py` and `main.py` at module level as `_MERGER_OVERRIDES`.
 
-**Hard-coded overrides** (pre-populated at import time): DMYI→IONQ, XPOA→QBTS, SNII→RGTI, IIVI→COHR, VACQ→RKLB, NPA→ASTS, UTX→RTX.
+**Hard-coded overrides**: DMYI→IONQ, XPOA→QBTS, SNII→RGTI, IIVI→COHR, VACQ→RKLB, NPA→ASTS, UTX→RTX.
 
 ### 4.5 `src/data/screener.py`
 
 Three-pass S&P 500 growth screen. Results cached for 8 hours (`cache/screener.json`).
 
-**Pass 1**: Download Mansfield RS for all ~500 S&P constituents. Filter: RS > 0 AND direction rising. Typically reduces to ~120–150 candidates.
+**Pass 1**: RS > 0 AND direction rising. Typically ~120–150 survivors.
 
-**Pass 2**: For each Pass-1 survivor, download 2y daily OHLCV + fundamentals (revenue growth, P/S ratio). Compute composite score: weighted sum of RS score, revenue growth, and P/S ratio. Also capture `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly` for chart embedding. Compute `reasoning` string (2–3 sentences) from screener data.
+**Pass 2**: OHLCV + fundamentals. Composite score from RS, revenue growth, P/S ratio. Captures chart data and reasoning.
 
-**Pass 3**: CIK-based deduplication. GOOG and GOOGL have the same CIK — only the higher-RS ticker advances.
+**Pass 3**: CIK-based deduplication (GOOG/GOOGL share a CIK; higher-RS ticker wins).
 
-Portfolio tickers are excluded from the screener output (already owned).
+Portfolio tickers are excluded from output.
 
 ### 4.6 `src/data/breakout_screener.py`
 
 Five-signal accumulation and early breakout screen over the S&P 500. Results cached for 8 hours (`cache/breakout_screener.json`).
 
-**Five signals scored per candidate:**
-1. `stage_transition` — transitioning from Stage 1 base to Stage 2 uptrend (RS acceleration + price above SMA50)
-2. `vcp` — Volatility Contraction Pattern: series of narrowing price swings indicating institutional accumulation
-3. `volume_accumulation` — above-average volume on up days vs down days over 20 sessions
-4. `rs_leading_price` — Mansfield RS making new highs before price (leads the breakout)
-5. `pivot_proximity` — price within 5% of recent consolidation high (near the buy point)
+**Five signals:**
+1. `stage_transition` — RS acceleration + price above SMA50
+2. `vcp` — Volatility Contraction Pattern
+3. `volume_accumulation` — above-average volume on up days
+4. `rs_leading_price` — RS making new highs before price
+5. `pivot_proximity` — within 5% of consolidation high
 
-Composite score = count of signals present (0–5).
+Composite score = signal count (0–5).
 
-**AI reasoning**: All candidates are enriched in a **single batched Claude API call**. The prompt sends all candidates as `###TICKER\n<context>` delimited blocks and requests one-sentence reasoning per ticker. Response is parsed with `re.findall(r"###([A-Z]{1,5})\n(.+?)(?=\n+###[A-Z]|\Z)", ...)`. Falls back to a technical description if the ticker is absent from the batch response. `max_tokens` is capped at 8,192 (model hard limit): `min(8192, 220 * len(candidates))`.
+**AI reasoning**: Single batched Claude API call. `max_tokens = min(8192, 220 * len(candidates))`.
 
-**High-conviction flag**: A candidate is marked `high_conviction = True` if it has both `stage_transition` AND (`vcp` OR `volume_accumulation`) signals. These are displayed with a green "High Conviction" badge and a green left border in the Breakout Watch List table.
+**High-conviction flag**: `stage_transition` AND (`vcp` OR `volume_accumulation`).
 
 ### 4.7 `src/data/fundamentals.py`
-
-Per-holding fundamentals fetched from two sources:
 
 | Field | Source |
 |-------|--------|
@@ -252,9 +286,7 @@ Per-holding fundamentals fetched from two sources:
 | Insider sentiment (MSPR, 90-day) | Finnhub insider transactions |
 | Earnings surprises (last 4) | Finnhub company earnings |
 
-yfinance calls are parallelised with `ThreadPoolExecutor(max_workers=min(8, n_tickers))`. Finnhub calls are sequential with 1.0s sleep between each (free tier: 60 req/min).
-
-Finnhub MSPR > 0 = net insider buying; < 0 = net selling.
+yfinance calls: `ThreadPoolExecutor(max_workers=min(8, n_tickers))`. Finnhub: sequential, 1.0s sleep.
 
 ### 4.8 `src/data/macro.py`
 
@@ -262,27 +294,21 @@ Fetches 7 FRED series. Derives:
 - **Yield curve status**: `positive` (>50bps), `flat` (0–50bps), `inverted` (<0bps)
 - **HY regime**: `tight` (<300bps), `normal` (300–500bps), `stress` (>500bps)
 - **Rate trajectory**: `easing` / `on hold` / `tightening` (based on 12m Fed Funds change)
-- **Credit stress flag**: True if HY spread > 500bps (used to downgrade opportunity signals)
-
-The full `series` dict (including `current`, `prior_3m`, `prior_12m`, `change_12m` per series) is passed to `render_dashboard()` and used by `_macro_pills()` to generate colour-coded display values.
+- **Credit stress flag**: True if HY spread > 500bps
 
 ### 4.9 `src/data/sector_flows.py`
 
 Two inputs → one output dict:
+1. **Finviz sector performance** — 11 S&P sectors: 1d/1w/1m/3m/6m/1y
+2. **SPDR ETF Mansfield RS** — from pre-fetched `market_data` dict. Rotation signals: `early_rotation`, `momentum_building`, `rotation_peaking`.
 
-1. **Finviz sector performance** — scrapes 11 S&P sectors: 1d/1w/1m/3m/6m/1y performance
-2. **SPDR ETF Mansfield RS** — extracted from pre-fetched `market_data` dict (no extra downloads). Computes rotation signals per ETF:
-   - `early_rotation`: RS 5d > 0, 20d < 0 (momentum just turning positive)
-   - `momentum_building`: RS 5d > 20d > 60d (acceleration)
-   - `rotation_peaking`: RS 5d < 0 but 20d > 0 (momentum fading)
-
-Also computes a **portfolio alignment score** — what percentage of held sectors have positive Mansfield RS. The `finviz_performance` list (weekly returns per sector) is passed to `render_dashboard()` and used by `_sector_heatmap()` to generate the heatmap grid.
+Also computes a **portfolio alignment score**. The `finviz_performance` list drives the Today's Brief sector heatmap.
 
 ### 4.10 `src/dashboard/renderer.py`
 
-Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`. Key additions beyond basic account/holdings data:
+Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`.
 
-**`_macro_pills(macro)`** — converts FRED series data into a list of `{label, value, status}` dicts where `status` is `green`, `amber`, or `red`. Thresholds:
+**`_macro_pills(macro)`** — converts FRED series data into `{label, value, status}` dicts:
 
 | Pill | Green | Amber | Red |
 |------|-------|-------|-----|
@@ -294,11 +320,13 @@ Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`.
 | VIX | < 15 | 15–25 | > 25 |
 | CPI YoY | < 2.5% | 2.5–4% | > 4% |
 
-**`_sector_heatmap(sector_flows)`** — converts Finviz weekly returns into `{sector, change_1w}` list sorted best→worst.
+**`_sector_heatmap(sector_flows)`** — weekly returns → sorted `{sector, change_1w}` list.
 
-**Stop loss**: `current_price - (multiplier × ATR14)`. Multipliers: `long_term` = 3.0×, `medium` = 2.5×, `short_term` = 1.5×.
+**`_build_today_actions(raw_actions, market_data)`** — adds `color` field to each action (`sell/trim/danger → "red"`, `add/buy → "green"`). Also computes `is_new` flag by comparing each action's `id` against `cache/last_actions.json` from the previous run.
 
-**Breakout candidates**: includes `high_conviction` flag (True if `stage_transition` AND `vcp`/`volume_accumulation` both present).
+**`dismiss_url`** — embedded into the data dict from the `NETLIFY_DISMISS_URL` environment variable. If the env var is not set (e.g. local runs), the value is an empty string and all snooze buttons are hidden in the dashboard.
+
+**`_ACTION_COLORS`**: `sell → red`, `trim → red`, `add → green`, `buy → green`, `danger → red`.
 
 Full function signature:
 ```python
@@ -308,6 +336,19 @@ def render_dashboard(
     output_path="output/index.html"
 ) -> None
 ```
+
+Log line at the top of `render_dashboard()` confirms the value of `NETLIFY_DISMISS_URL` for debugging CI runs.
+
+### 4.11 `netlify/functions/dismiss-action.js`
+
+Serverless POST handler deployed to Netlify. Accepts `{id, days, snoozed_price?}` from the browser, updates `cache/dismissed_actions.json` in the GitHub repo via the Contents API, and returns `{ok: true, id, snoozed_until}`.
+
+The PAT (`GH_CONTENTS_PAT`) lives only in Netlify's environment — it is never embedded in the dashboard HTML.
+
+CORS headers (`Access-Control-Allow-Origin: *`) allow cross-origin calls from the GitHub Pages domain. Handles `OPTIONS` preflight.
+
+**Setup required** (Netlify → Site settings → Environment variables):
+- `GH_CONTENTS_PAT` — fine-grained PAT, Contents read+write on this repo only
 
 ---
 
@@ -323,6 +364,10 @@ Set as GitHub Actions secrets and locally in `.env`:
 | `ANTHROPIC_API_KEY` | claude_analyst.py, ticker_resolver.py | Claude API access |
 | `FINNHUB_API_KEY` | fundamentals.py | Finnhub fundamentals |
 | `FRED_API_KEY` | macro.py | FRED macro series |
+| `NETLIFY_DISMISS_URL` | renderer.py | Full URL of dismiss-action Netlify function |
+| `GH_CONTENTS_PAT` | Netlify env only (not in CI) | Fine-grained PAT for dismissed_actions.json writes |
+
+`NETLIFY_DISMISS_URL` example: `https://your-site.netlify.app/.netlify/functions/dismiss-action`. If not set, `dismiss_url` in the dashboard data is an empty string and all snooze buttons are hidden.
 
 ### `config/sectors.json`
 
@@ -361,10 +406,11 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 ### Tab Layout (3 tabs)
 
 **Tab 1 — Today's Brief** (default landing tab):
+- **Action Board** card — appears first, hidden entirely if `today_actions` is empty. See Action Board section below.
 - **Today's Verdict** card — Claude's one-paragraph overall assessment
-- **Macro Environment** card — 7 colour-coded data pills (10yr/2yr yield, yield curve, HY spread, Fed Funds, VIX, CPI YoY) above the macro narrative text
-- **Sector Rotation** card — 11-sector heatmap grid (green/red, intensity proportional to weekly return magnitude) above the sector narrative text
-- **Top Momentum Picks** — top 3 screener candidates as teaser cards with 30-day SVG sparkline price charts and a "See all N opportunities →" link to Tab 3
+- **Macro Environment** card — 7 colour-coded data pills above the macro narrative text
+- **Sector Rotation** card — 11-sector heatmap grid above the sector narrative text
+- **Top Momentum Picks** — top 3 screener candidates as teaser cards with 30-day SVG sparkline charts and a "See all N opportunities →" link to Tab 3
 
 **Tab 2 — My Portfolio**:
 - **Sector Allocation** — donut chart (Chart.js) + allocation table, lazy-initialised on first portfolio tab visit
@@ -377,75 +423,91 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 - **Momentum Opportunities** table — top 10 screener candidates with expandable chart rows
 - **Breakout Watch List** table — top 15 breakout candidates with expandable chart rows; high-conviction picks highlighted green
 
+### Action Board
+
+The Action Board card appears at the top of Tab 1 whenever `DATA.today_actions` is non-empty.
+
+**Card structure:**
+- Header row: left-aligned date (`DATA.meta.date_str`), right-aligned summary ("N actions today · M high priority")
+- One row per action, with a 3px coloured left border (red/green), an action-type badge (SELL / TRIM / ADD / BUY / DANGER), optional badges, and the Claude-written sentence
+
+**Badges:**
+- `NEW` (blue) — shown if `action.is_new` is true (action's `id` was absent from yesterday's `cache/last_actions.json`)
+- `⚠ CRITICAL` (pulsing red) — shown if `action.priority === "critical"` (reinstated dismissed action where the position has fallen further or stop loss was breached). Critical actions have no snooze button.
+
+**Snooze button (⏰):**
+- Shown only if `DATA.dismiss_url` is non-empty and the action is not CRITICAL
+- Dropdown options: 7 days / 30 days / 90 days / Permanently
+- On selection, POSTs `{id, days, snoozed_price}` to `DATA.dismiss_url` (the Netlify function)
+- On success, reads `snoozed_until` from the response, writes `{id: snoozed_until}` to `localStorage` under key `portfolioAnalyst_dismissed`, then fades the row out
+- On page refresh: `renderActionBoard()` calls `_lsPrune()` to remove expired entries, then hides any row whose `id` is in the active localStorage map — **before the user sees the row**. This is the persistence mechanism for same-day refreshes. Server-side filtering via `dismissed_actions.json` applies from the next morning's pipeline run onward.
+
+**Border and badge colours:**
+- `sell`, `trim`, `danger` → red (`#ef4444`)
+- `add`, `buy` → green (`#22c55e`)
+
 ### Holdings List
 
 Each holding is a `<tr class="h-row">` in a `<table class="h-list-table">`. Columns: Ticker, Sector, P&L%, P&L£, Signal badge, RS score + inline 2px bar, SMA50 arrow, MACD arrow, Stop loss price, 52w distance from high.
 
-Clicking a row expands a sibling `<div class="h-expand-content">` (rendered **outside** the scrollable table wrapper) containing the Claude analysis text and a candlestick chart. This placement prevents the chart from inheriting the table's horizontal overflow width.
+Clicking a row expands a sibling `<div class="h-expand-content">` (rendered **outside** the scrollable table wrapper) containing the Claude analysis text and a candlestick chart.
 
 Three subsections: **Individual Holdings**, **Pie Holdings** (grouped by pie name), **ETFs**.
 
-Filter buttons toggle row visibility with `display: none` rather than recreating DOM — preserves chart instances across filter changes.
+Filter buttons toggle row visibility with `display: none` — preserves chart instances across filter changes.
 
 ### Charts
 
-TradingView Lightweight Charts v4.1.3 (CDN: `cdn.jsdelivr.net`). Three series per chart:
-- Candlestick (right price scale)
-- Volume histogram (custom `'vol'` scale, bottom 15%)
-- SMA50 line (yellow, overlaid on candles)
+TradingView Lightweight Charts v4.1.3 (CDN). Three series per chart: candlestick, volume histogram, SMA50 line. Stop loss as a dashed horizontal price line.
 
-Stop loss rendered as a dashed horizontal price line.
+**Holdings charts** use explicit `width`/`height` computed from the expand-content div's `clientWidth`. A `resize` event listener updates chart width on viewport changes.
 
-**Holdings charts** use explicit `width`/`height` (not `autoSize`) computed from the expand-content div's `clientWidth`. A `resize` event listener updates chart width on viewport changes. Period selector forces weekly candles when `2Y` is selected.
+**Screener/breakout charts** use `autoSize: true`.
 
-**Screener/breakout charts** use `autoSize: true` (their containers are in regular divs, not scrollable tables, so ResizeObserver works correctly).
-
-Chart instances are cached in `chartInstances` (holdings), `screenerChartInstances`, and `breakoutChartInstances` dicts. First open initialises; subsequent opens call `fitContent()`.
+Chart instances cached in `chartInstances`, `screenerChartInstances`, `breakoutChartInstances`.
 
 ### Mobile Support
 
-`isMobile` is detected at page load: `UA matches /Mobi|Android|iPhone|iPad|iPod/i` OR `window.innerWidth < 768`. On mobile:
-- Holdings charts use `height: 250px` and `barSpacing: 10` (wider candles for touch)
-- Chart control buttons stack vertically via `@media (max-width: 768px)`
-- Rightmost table columns (SMA50, MACD, Stop, 52w) are hidden via CSS media query to keep the table readable
+`isMobile`: UA matches `/Mobi|Android|iPhone|iPad|iPod/i` OR `window.innerWidth < 768`. On mobile: 250px chart height, wider bar spacing, chart controls stack vertically, rightmost holdings columns hidden.
 
 ### Markdown Stripping
 
-The `md(text)` JavaScript function processes all Claude-generated narrative text before display:
-1. Strips entire sentences containing "informational purposes only" or "not financial advice" (sentence-level regex, not word-level), then re-adds one clean footer line per section
-2. Strips `## / ###` heading markers (keeps the text)
-3. Removes `---` / `***` / `___` horizontal rules
-4. Strips `**bold**` and `*italic*` asterisk markers
+`md(text)` processes all Claude narrative text:
+1. Strips entire sentences containing "informational purposes only" or "not financial advice" (sentence-level regex), re-adds one clean footer line per section
+2. Strips `##/###` heading markers (keeps text)
+3. Removes horizontal rules
+4. Strips `**bold**` and `*italic*` markers
 
-The `firstSentences(text, n)` helper truncates the opportunities narrative to 3 sentences for the Tab 3 intro card.
+`firstSentences(text, n)` truncates the opportunities intro to 3 sentences.
 
 ### Sector Donut
 
-Chart.js v4 (CDN). Lazy-initialised on first visit to the My Portfolio tab via `ensureSectorChart()`. The 14-colour palette in `renderer.py` (`_SECTOR_COLORS`) matches the donut legend.
+Chart.js v4 (CDN). Lazy-initialised on first My Portfolio tab visit via `ensureSectorChart()`.
 
 ---
 
 ## 7. CI/CD
 
 `.github/workflows/analyse.yml` triggers on:
-- **Schedule**: `0 7 * * 1-5` (07:00 UTC, Monday–Friday)
-- **`workflow_dispatch`**: manual trigger from the GitHub Actions UI
+- **Schedule**: `0 6 * * 1-5` and `0 7 * * 1-5` (covers BST and GMT)
+- **`workflow_dispatch`**: manual trigger
 
 Steps:
 1. Checkout repo
 2. Set up Python 3.11
 3. Cache pip packages (keyed on `requirements.txt` hash)
 4. Install dependencies
-5. Run `python -m src.main` (must use `-m`, not `python src/main.py`, to set sys.path correctly)
-6. Deploy `./output/` to GitHub Pages at `{repo}/markets/` via `peaceiris/actions-gh-pages@v4`
+5. **Run analysis pipeline** — `python -m src.main` with secrets: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`
+6. **Persist actions cache** — `git add -f cache/last_actions.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, push with `--force-with-lease`. The `-f` flag is required because `cache/` is in `.gitignore`.
+7. **Deploy to GitHub Pages** — `peaceiris/actions-gh-pages@v4`, publishes `./output/` to `{repo}/markets/`, `keep_files: true`
 
-Secrets required in the repository: `T212_API_KEY`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`. `GITHUB_TOKEN` is provided automatically.
+`timeout-minutes: 120` covers T212 pie fetches (32s/pie) and the screener (45+ min).
 
-`timeout-minutes: 120` — necessary because T212 pie fetches (32s/pie) plus the screener (45+ min for full S&P run) can exceed 60 minutes.
+**`cache/dismissed_actions.json`** is NOT written by CI. It is written by the Netlify function directly to the repo via the GitHub Contents API whenever a user snoozes an action. CI reads it on the next run.
 
-The deploy step uses `keep_files: true` so previously published files are not deleted on each push.
+**`cache/last_actions.json`** is written at the end of `src/main.py` and committed by the Persist actions cache step. It is used by the next run to compute `is_new` badges.
 
-Note: the `cache/` directory is **not** persisted between GitHub Actions runs. The screener and breakout screener always run fresh in CI. The pie cache only helps local development.
+Secrets required: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`. `GITHUB_TOKEN` is provided automatically.
 
 ---
 
@@ -453,39 +515,50 @@ Note: the `cache/` directory is **not** persisted between GitHub Actions runs. T
 
 ### Read-Only T212
 
-**The system must never place, modify, or cancel any orders.** `trading212.py` only calls GET endpoints. The order-placement endpoints (`POST /equity/orders`, etc.) are intentionally absent from the file. This constraint must be preserved in any future changes.
+**The system must never place, modify, or cancel any orders.** `trading212.py` only calls GET endpoints. This constraint must be preserved in any future changes.
 
 ### SEC EDGAR User-Agent
 
-Every request to `*.sec.gov` must include `User-Agent: portfolio-analyst contact@stevegerrard.org`. SEC will block requests without a valid User-Agent. This header is defined as `_HEADERS` in both `screener.py` and `ticker_resolver.py`.
+Every request to `*.sec.gov` must include `User-Agent: portfolio-analyst contact@stevegerrard.org`.
 
 ### Python Module Invocation
 
-The pipeline must be run as `python -m src.main`, not `python src/main.py`. Running the file directly adds `src/` to `sys.path`, breaking all `from src.data...` absolute imports. The GitHub Actions workflow uses `-m`.
+Must be run as `python -m src.main`, not `python src/main.py`. Running the file directly breaks all `from src.data...` absolute imports.
 
 ### Ticker Override Import — Must Be Module-Level
 
-The import of `_TICKER_OVERRIDES` from `ticker_resolver` into `trading212.py` and `main.py` must happen at module level:
 ```python
 from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
 ```
-If this import is placed inside a function (e.g. inside `_apply_merger_overrides()`), Python's `except Exception: return ticker` pattern will silently catch any import errors and return the original broken ticker. This was a past source of bugs where DMYI, XPOA, SNII etc. passed through unresolved.
+Must be at module level in `trading212.py` and `main.py`. Inside a function, Python's `except Exception: return ticker` will silently catch import errors.
 
 ### Breakout AI Batch Call — Token Cap
 
-`breakout_screener.py` sends all candidates in one Claude API call. `max_tokens` is capped at `min(8192, 220 * len(candidates))`. The model hard limit is 8,192 output tokens for `claude-sonnet-4-6`. Exceeding it silently returns an empty batch response (the error is caught and logged as a warning). With 37 candidates at 220 tokens each = 8,140, the cap just fits. If the candidate count grows significantly, reduce the per-candidate token budget.
-
-### Screener and Breakout Cache
-
-Both screeners are expensive. Results cached for 8 hours. In GitHub Actions there is no persistent cache — both run fresh every morning. If you want to persist them in CI, add `cache/screener.json` and `cache/breakout_screener.json` to an `actions/cache` step.
+`max_tokens = min(8192, 220 * len(candidates))`. The model hard limit is 8,192 output tokens. With 37 candidates the cap just fits. If candidate count grows significantly, reduce the per-candidate budget.
 
 ### Holdings Charts Outside the Scrollable Table
 
-Expand content for each holding row is rendered as a `<div class="h-expand-content">` placed **after** the `<div class="h-table-wrap">` that wraps the data table, not inside the table as a `<td>`. This is the fix for chart overflow: a `<td colspan="N">` inside a horizontally-scrolling table inherits the table's full overflow width, causing TradingView charts to render at that width and bleed off-screen. The expand div is a sibling of the table wrapper, so it takes the card's width instead.
+Expand content is a `<div class="h-expand-content">` sibling of the table wrapper, not inside `<td>`. This prevents TradingView charts from inheriting the table's full overflow width.
 
 ### Sector Donut — Lazy Init on Hidden Canvas
 
-`new Chart(canvas)` called while the canvas has `display:none` (tab not active) produces a zero-size chart. `ensureSectorChart()` is guarded by a `sectorChartCreated` flag and called only when the My Portfolio tab is first activated.
+`new Chart(canvas)` on a hidden canvas produces a zero-size chart. Guarded by `sectorChartCreated` flag, initialised only when My Portfolio tab is first activated.
+
+### Action Dismissal — Client-Side vs Server-Side
+
+The static HTML has all actions baked into `DATA.today_actions` at render time. Server-side filtering (via `dismissed_actions.json` in `main.py`) only applies on the next morning's pipeline run. For same-day refresh persistence, dismissals are also written to `localStorage` (`portfolioAnalyst_dismissed` key, value `{id: snoozed_until}`). On page load, `_lsPrune()` removes expired entries, and any active dismissed ID has its row hidden before it becomes visible.
+
+### PAT Never in HTML
+
+The GitHub Contents API PAT (`GH_CONTENTS_PAT`) is stored only in Netlify's environment. The dashboard embeds only a `dismiss_url` pointing to the Netlify function. The function handles all GitHub API calls server-side.
+
+### `[skip ci]` in Dismiss Commit Messages
+
+The Netlify function's commit message for updating `dismissed_actions.json` includes `[skip ci]` to prevent triggering a new pipeline run. Similarly, the CI step that commits `last_actions.json` uses `[skip ci]`.
+
+### `cache/` in `.gitignore` — Force-Add for Tracked Files
+
+`cache/` is gitignored. `cache/last_actions.json` is committed by CI using `git add -f`. `cache/dismissed_actions.json` is committed by the Netlify function via the GitHub Contents API (which bypasses `.gitignore`). Neither file should be added to the whitelist in `.gitignore` — force-add in CI is intentional.
 
 ---
 
@@ -499,36 +572,41 @@ Expand content for each holding row is rendered as a `<div class="h-expand-conte
 | FRED | 120 req/min | No sleep needed |
 | Finviz | No stated limit | Single request per run |
 | SEC EDGAR | 10 req/s | 0.3s sleep in `ticker_resolver.py` |
+| GitHub Contents API | 5,000 req/hr (PAT) | One call per snooze — no concern |
 
 **Typical step durations** (approximate):
-- Step 1 (T212 portfolio): 5–15 min depending on pie count; 0 min if pie cache is warm
+- Step 1 (T212 portfolio): 5–15 min; 0 if pie cache warm
 - Step 2 (market data): 2–5 min
 - Steps 3–4 (sector + macro): ~1 min
-- Step 5 (fundamentals): ~3 min (yfinance parallel; 3 Finnhub calls × 1s × n holdings)
-- Step 6 (screener): 45–75 min (cold); 0 min if cached
-- Step 7 (breakout screener): 10–20 min (cold); 0 min if cached
-- Step 8 (Claude analysis): ~30s (5 API calls + 1 batch breakout call)
+- Step 5 (fundamentals): ~3 min
+- Step 6 (screener): 45–75 min cold; 0 if cached
+- Step 7 (breakout screener): 10–20 min cold; 0 if cached
+- Step 8 (Claude analysis): ~45s (6 API calls + 1 batch breakout call)
 - Step 9 (render): <1s
 
 ---
 
 ## 10. Known Quirks
 
-**T212 ticker format**: T212's internal identifiers are not standard tickers. `normalise_ticker()` handles most cases via regex, but edge cases require entries in the `_TICKER_OVERRIDES` dict at the top of `trading212.py`. The current overrides include BRK-B, BRK-A, BF-B, META (was FB), X (was TWTR), AVAV (double-underscore), FP.PA (TotalEnergies on Euronext Paris), and post-merger SPACs.
+**T212 ticker format**: Edge cases require entries in `_TICKER_OVERRIDES` in `trading212.py`. Current overrides include BRK-B, BRK-A, BF-B, META, X, AVAV, FP.PA, and post-merger SPACs.
 
-**Finviz column inconsistency**: The `Perf Week` column returns percentage strings (`"-3.50%"`) while other performance columns return decimal fractions (`-0.035`). `_parse_perf_col()` detects the format by checking for `%` in the string value.
+**Finviz column inconsistency**: `Perf Week` returns `"-3.50%"` strings; other columns return decimal fractions. `_parse_perf_col()` normalises both.
 
-**yfinance weekly resampling**: `df.resample("W")` anchors to Sunday. When aligning the ticker's weekly series with SPY's weekly series for Mansfield RS, `reindex(..., method="ffill")` fills any gaps.
+**yfinance weekly resampling**: `df.resample("W")` anchors to Sunday. `reindex(..., method="ffill")` fills gaps when aligning with SPY.
 
-**Mansfield RS sign convention**: Positive = outperforming SPY over 52 weeks. Zero crossing upward = early momentum signal. Values of 20+ indicate strong sustained outperformance.
+**Mansfield RS sign convention**: Positive = outperforming SPY over 52 weeks.
 
-**Holdings parser token budget**: `max_tokens = max(2000, len(positions) * 120)`. With 40 holdings this is 4,800 tokens. If Claude truncates mid-response, increase the multiplier. Any position whose ticker doesn't appear in the parsed output gets a `HOLD` placeholder.
+**Holdings parser token budget**: `max(2000, n * 120)` tokens. With 40 holdings = 4,800. If Claude truncates mid-response, increase the multiplier.
 
-**Dead SPAC positions**: The system may hold defunct SPAC tickers from pre-merger investments. The hard-coded overrides in `ticker_resolver._TICKER_OVERRIDES` resolve known cases at import time. For new cases, add to the dict at the top of `ticker_resolver.py`. If dynamic resolution fails, the ticker is skipped with a warning that includes the company name for manual investigation.
+**Dead SPAC positions**: Add new cases to `ticker_resolver._TICKER_OVERRIDES` at the top of the file.
 
-**CPI YoY calculation**: FRED's `CPIAUCSL` series is an index level (~310–320), not a percentage. The YoY inflation rate is computed in `_macro_pills()` as `(current / prior_12m - 1) * 100`, not from the `change_12m` field directly.
+**CPI YoY calculation**: FRED's `CPIAUCSL` is an index level, not a percentage. YoY computed as `(current / prior_12m - 1) * 100`.
 
-**`md()` disclaimer regex is sentence-level**: The regex `[^.!?\n]*(?:informational purposes only|not financial advice)[^.!?\n]*[.!?]?\s*` captures the entire sentence containing a disclaimer phrase. This prevents orphaned fragments like "This is" when Claude wraps the phrase in bold markdown that gets stripped mid-sentence.
+**`md()` disclaimer regex is sentence-level**: `[^.!?\n]*(?:informational purposes only|not financial advice)[^.!?\n]*[.!?]?\s*` captures the entire surrounding sentence to prevent orphaned fragments.
+
+**Action dismissals on first snooze**: `cache/dismissed_actions.json` does not exist until the first user snooze. `main.py` logs "not found — no active dismissals" for this case. The Netlify function creates the file on first write.
+
+**Netlify function CORS**: The `Access-Control-Allow-Origin: *` header is intentionally broad because the calling origin (GitHub Pages domain) varies. If this is a concern, restrict to `https://stevegerrard100.github.io`.
 
 ---
 
@@ -543,35 +621,41 @@ Expand content for each holding row is rendered as a `<div class="h-expand-conte
 
 ### Adding a new Claude prompt
 
-Add a function to `claude_analyst.py` following the pattern of the existing five. Call it from `run_analysis()` and include its output in the returned dict. Update `renderer.py` to pass the new field through to the template, and add a corresponding section to `template.html`.
+Add a function to `claude_analyst.py` following the existing pattern. Call it from `run_analysis()` and include its output in the returned dict. Update `renderer.py` to pass the new field through, and add a section to `template.html`. Update the prompt count in the `run_analysis()` docstring and `main.py` step label.
+
+### Adding a new action type
+
+1. Add the type to the `todays_actions()` prompt text in `claude_analyst.py`
+2. Add it to the `allowed_types` set in the validator
+3. Add it to `_ACTION_COLORS` in `renderer.py`
+4. Add its badge label to `BADGE_LABEL` in `template.html`
 
 ### Adding a new ticker override (T212 format or SPAC merger)
 
-For T212 identifier quirks, add to `_TICKER_OVERRIDES` in `src/data/trading212.py`.
-
-For post-merger SPAC resolution, add to `_TICKER_OVERRIDES` at the top of `src/data/ticker_resolver.py`. This dict is imported by `trading212.py` and `main.py` at module level, so adding it here propagates everywhere automatically.
+For T212 identifier quirks: add to `_TICKER_OVERRIDES` in `src/data/trading212.py`.
+For post-merger SPAC resolution: add to `_TICKER_OVERRIDES` in `src/data/ticker_resolver.py`.
 
 ### Adding a new sector or holding type
 
-Edit `config/sectors.json`. No code changes needed. Sector names must match the `SECTOR_TO_ETF` mapping in `sector_flows.py` if you want alignment scoring for that sector.
+Edit `config/sectors.json`. No code changes needed. Sector names must match `SECTOR_TO_ETF` in `sector_flows.py` for alignment scoring.
 
 ### Changing the screener criteria
 
-The composite score weights and pass-1 filters are in `screener.py`. The `_disqualifiers()` function defines negative screens (high short interest, earnings flags, etc.). The 8-hour cache means changes take effect on the next cold run.
+Composite score weights and pass-1 filters are in `screener.py`. `_disqualifiers()` defines negative screens. 8h cache means changes take effect on the next cold run.
 
 ### Changing breakout signal thresholds
 
-Signal detection logic is in `breakout_screener.py`. Each of the five signals has its own function (`_stage_transition()`, `_vcp()`, etc.) and can be tuned independently. The high-conviction badge in `renderer.py` checks `signals` list membership — update both if you rename a signal key.
+Each signal has its own function in `breakout_screener.py`. If you rename a signal key, update the high-conviction check in both `renderer.py` and `template.html`.
 
 ### Running locally
 
 ```bash
 cp .env.example .env
-# Fill in .env with real keys
+# Fill in .env — NETLIFY_DISMISS_URL is optional for local runs (snooze buttons hidden if unset)
 
 pip install -r requirements.txt
 python -m src.main
 open output/index.html
 ```
 
-The screener and breakout screener caches at `cache/screener.json` and `cache/breakout_screener.json` are reused across local runs. Delete them to force a fresh run. The T212 pie cache at `cache/pie_positions.json` is valid for 4 hours — delete it to force a fresh T212 fetch.
+Delete `cache/screener.json` and `cache/breakout_screener.json` to force a fresh screen. Delete `cache/pie_positions.json` to force a fresh T212 fetch.
