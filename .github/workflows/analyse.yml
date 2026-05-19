@@ -35,7 +35,8 @@ jobs:
           T212_API_SECRET:   ${{ secrets.T212_API_SECRET }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FINNHUB_API_KEY:   ${{ secrets.FINNHUB_API_KEY }}
-          FRED_API_KEY:      ${{ secrets.FRED_API_KEY }}
+          FRED_API_KEY:         ${{ secrets.FRED_API_KEY }}
+          NETLIFY_DISMISS_URL:  ${{ secrets.NETLIFY_DISMISS_URL }}
         run: python -m src.main
 
       - name: Persist actions cache
