@@ -469,7 +469,7 @@
       document.getElementById('action-board-summary').textContent = summary;
 
       const BADGE_LABEL = { sell: 'SELL', trim: 'TRIM', add: 'ADD', buy: 'BUY', danger: 'DANGER' };
-      const hasPat = !!(DATA.gh_contents_pat);
+      const hasPat = !!(DATA.dismiss_url);
 
       document.getElementById('action-board-rows').innerHTML = actions.map(a => {
         const col        = esc(a.color || 'amber');
@@ -532,44 +532,15 @@
       });
     })();
 
-    // ── Dismiss action (GitHub Contents API) ─────────────────────────────────
+    // ── Dismiss action (via Netlify function — PAT never exposed to browser) ──
     async function dismissAction(id, days) {
-      const snoozeUntil = days === 0 ? '9999-12-31' :
-        new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
-
-      // Attach snoozed_price from action data so pipeline can check critical override
       const action = (DATA.today_actions || []).find(a => a.id === id);
-      const snoozedPrice = action ? action.current_price : null;
-
-      const API = 'https://api.github.com/repos/stevegerrard100/portfolio-analyst/contents/cache/dismissed_actions.json';
-      const headers = {
-        Authorization: `Bearer ${DATA.gh_contents_pat}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      };
-
-      // 1. GET current file to obtain SHA
-      let dismissed = [], sha = null;
-      const getRes = await fetch(API, { headers });
-      if (getRes.ok) {
-        const file = await getRes.json();
-        sha = file.sha;
-        dismissed = JSON.parse(atob(file.content.replace(/\s/g, '')));
-      }
-
-      // 2. Upsert entry
-      dismissed = dismissed.filter(d => d.id !== id);
-      const entry = { id, snoozed_until: snoozeUntil, snoozed_at: new Date().toISOString().split('T')[0] };
-      if (snoozedPrice != null) entry.snoozed_price = snoozedPrice;
-      dismissed.push(entry);
-
-      // 3. PUT updated file
-      const body = { message: `Snooze action ${id} until ${snoozeUntil}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(dismissed, null, 2)))) };
-      if (sha) body.sha = sha;
-      const putRes = await fetch(API, { method: 'PUT', headers, body: JSON.stringify(body) });
-      if (!putRes.ok) throw new Error(`GitHub API PUT failed: ${putRes.status}`);
-
-      // 4. Hide the row
+      const res = await fetch(DATA.dismiss_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, days, snoozed_price: action ? action.current_price : null }),
+      });
+      if (!res.ok) throw new Error(`Dismiss failed: ${res.status}`);
       const row = document.getElementById(`action-${id}`);
       if (row) { row.style.transition = 'opacity 0.3s'; row.style.opacity = '0'; setTimeout(() => { row.style.display = 'none'; }, 300); }
     }
