@@ -55,3 +55,30 @@ src/
 ├── dashboard/      # HTML renderer and template
 └── main.py         # Orchestrator
 ```
+
+## Setting up cron-job.org as a reliable daily trigger
+
+### 1. Create a GitHub Personal Access Token
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Click **Generate new token (classic)**
+3. Give it a name: `portfolio-analyst-cron`
+4. Tick the **workflow** scope only
+5. Click **Generate token** and copy it immediately
+
+### 2. Create the cronjob at cron-job.org
+1. Create a free account at [cron-job.org](https://cron-job.org)
+2. Click **Create cronjob**
+3. Fill in:
+   - **Title**: Portfolio Analyst Daily Run
+   - **URL**: `https://api.github.com/repos/stevegerrard100/portfolio-analyst/actions/workflows/analyse.yml/dispatches`
+   - **Method**: POST
+   - **Headers**:
+     - `Authorization: Bearer YOUR_GITHUB_PAT`
+     - `Accept: application/vnd.github+json`
+   - **Body**: `{"ref":"main"}`
+   - **Schedule**: 07:05 UTC, Monday–Friday
+
+4. Click **Create**
+
+### 3. Verify
+After the first scheduled run, check the Actions tab on GitHub — it will show as triggered by the `workflow_dispatch` event rather than `schedule`.
