@@ -299,7 +299,7 @@ def render_dashboard(
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
         "today_actions":        _build_today_actions(analysis.get("actions", []), market_data or {}),
-        "gh_contents_pat":      os.environ.get("GH_CONTENTS_PAT", ""),
+        "dismiss_url":          os.environ.get("NETLIFY_DISMISS_URL", ""),
     }
 
     template = _TEMPLATE.read_text(encoding="utf-8")
