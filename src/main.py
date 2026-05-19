@@ -12,9 +12,12 @@ Step sequence:
   9. render_dashboard       Static HTML → output/index.html
 """
 
+import json
 import logging
 import os
 import time
+from datetime import date
+from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,6 +28,7 @@ log = logging.getLogger(__name__)
 
 _OUTPUT_DIR  = os.path.join(os.path.dirname(__file__), "..", "output")
 _OUTPUT_HTML = os.path.join(_OUTPUT_DIR, "index.html")
+_CACHE_DIR   = Path(__file__).parent / ".." / "cache"
 
 
 def _step(n: int, total: int, label: str) -> None:
@@ -102,7 +106,20 @@ def main() -> None:
              breakout.get("universe_size", 0))
 
     # ── 8. Claude analysis ────────────────────────────────────────────────────
-    _step(8, 9, "Claude analysis (5-prompt pipeline)")
+    _step(8, 9, "Claude analysis (6-prompt pipeline)")
+
+    # Read active dismissals so todays_actions() can filter them
+    dismissed_entries: list[dict] = []
+    _dismissed_path = _CACHE_DIR / "dismissed_actions.json"
+    if _dismissed_path.exists():
+        try:
+            _all = json.loads(_dismissed_path.read_text(encoding="utf-8"))
+            _today = date.today().isoformat()
+            dismissed_entries = [e for e in _all if e.get("snoozed_until", "") >= _today]
+            log.info("Dismissals: %d active (of %d total)", len(dismissed_entries), len(_all))
+        except Exception as exc:
+            log.warning("Could not read dismissed_actions.json: %s", exc)
+
     from src.analysis.claude_analyst import run_analysis
     analysis = run_analysis(
         portfolio=portfolio,
@@ -112,6 +129,7 @@ def main() -> None:
         sector_flows=sector_flows,
         screener=screener,
         breakout=breakout,
+        dismissed_entries=dismissed_entries,
     )
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))
@@ -129,6 +147,21 @@ def main() -> None:
         sector_flows=sector_flows,
         output_path=_OUTPUT_HTML,
     )
+
+    # Persist today's actions so tomorrow's run can compute is_new badges
+    _last_path = _CACHE_DIR / "last_actions.json"
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _last_actions = [
+            {"id": a["id"], "action_type": a["action_type"],
+             "priority": a["priority"], "text": a["text"]}
+            for a in analysis.get("actions", [])
+            if a.get("id")
+        ]
+        _last_path.write_text(json.dumps(_last_actions, indent=2), encoding="utf-8")
+        log.info("Persisted %d actions → %s", len(_last_actions), _last_path)
+    except Exception as exc:
+        log.warning("Could not write last_actions.json: %s", exc)
 
     elapsed = time.time() - t0
     log.info("━" * 60)

@@ -349,12 +349,17 @@ def todays_actions(
     breakout: dict | None,
     macro: dict | None,
     sector_flows: dict | None,
+    dismissed_entries: list[dict] | None = None,
+    market_data: dict | None = None,
 ) -> list[dict]:
     """
     Generate a prioritised action board from all pipeline signals.
 
-    Returns a list of dicts: [{priority, action_type, text}]
-    ordered high → medium → low, filtered to genuinely relevant actions only.
+    Returns a list of dicts: [{id, priority, action_type, ticker, text}]
+    ordered danger → sell → trim → buy/add.
+
+    Dismissed actions (from cache/dismissed_actions.json) are filtered out
+    unless the critical override fires: position down ≥15% since snooze.
     """
     # ── Holdings signals ───────────────────────────────────────────────────
     signal_lines = []
@@ -402,7 +407,7 @@ MACRO ENVIRONMENT:
 ---
 
 Output a JSON array. Each item:
-{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"add"|"buy"|"danger", "text": "<one sentence>"}}
+{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"add"|"buy"|"danger", "ticker": "<ticker symbol, e.g. RGTI — use 'macro' for danger items>", "text": "<one sentence>"}}
 
 ACTION TYPES — include only these five, nothing else:
 - "sell"   — position is broken: stop loss breached, thesis failed, or EXIT signal with clear evidence. priority: high
@@ -419,6 +424,15 @@ STRICT EXCLUSION RULES — do not output any item that:
 OUTPUT ORDER: danger first (if present), then sell, then trim, then buy/add.
 MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and give a concrete reason. No disclaimers."""
 
+    # Build dismissal lookup: id → entry (with snoozed_price if available)
+    dismissed_map: dict[str, dict] = {}
+    for entry in (dismissed_entries or []):
+        eid = entry.get("id")
+        if eid:
+            dismissed_map[eid] = entry
+
+    mkt = market_data or {}
+
     try:
         raw = _call(prompt, max_tokens=2000)
         # Strip accidental markdown fences
@@ -426,20 +440,48 @@ MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and 
         actions = json.loads(raw)
         if not isinstance(actions, list):
             actions = []
-        # Validate and clean each item
+
         allowed_types = {"sell", "trim", "add", "buy", "danger"}
         valid = []
         for item in actions:
-            if isinstance(item, dict) and item.get("text"):
-                atype = item.get("action_type", "add")
-                if atype not in allowed_types:
-                    continue
-                valid.append({
-                    "priority":    item.get("priority", "medium"),
-                    "action_type": atype,
-                    "text":        str(item["text"]).strip(),
-                })
+            if not isinstance(item, dict) or not item.get("text"):
+                continue
+            atype = item.get("action_type", "add")
+            if atype not in allowed_types:
+                continue
+
+            ticker = str(item.get("ticker") or ("macro" if atype == "danger" else "")).upper().strip()
+            if not ticker:
+                continue
+
+            action_id = f"{ticker}-{atype}"
+            priority  = item.get("priority", "medium")
+            text      = str(item["text"]).strip()
+
+            # Check if this action is dismissed
+            if action_id in dismissed_map:
+                entry = dismissed_map[action_id]
+                # Critical override: position down ≥15% since snooze
+                snoozed_price = entry.get("snoozed_price")
+                current_price = mkt.get(ticker, {}).get("current_price")
+                is_critical = (
+                    snoozed_price and current_price
+                    and float(current_price) < float(snoozed_price) * 0.85
+                )
+                if not is_critical:
+                    continue  # filtered — dismissed and no override
+                priority = "critical"
+
+            valid.append({
+                "id":          action_id,
+                "priority":    priority,
+                "action_type": atype,
+                "ticker":      ticker,
+                "text":        text,
+            })
+
         return valid
+
     except Exception as exc:
         log.error("todays_actions failed: %s", exc)
         return []
@@ -525,6 +567,7 @@ def run_analysis(
     sector_flows: dict | None = None,
     screener: dict | None = None,
     breakout: dict | None = None,
+    dismissed_entries: list[dict] | None = None,
 ) -> dict:
     """
     Run all six Claude analysis prompts and return a unified result dict.
@@ -564,7 +607,11 @@ def run_analysis(
 
     # 5 — uses holdings + breakout + macro + sector signals
     log.info("Claude: today's actions...")
-    actions = todays_actions(holdings, breakout, macro, sector_flows)
+    actions = todays_actions(
+        holdings, breakout, macro, sector_flows,
+        dismissed_entries=dismissed_entries,
+        market_data=market_data,
+    )
     log.info("Today's actions: %d items", len(actions))
 
     # 6 — synthesises 1-4

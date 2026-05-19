@@ -78,13 +78,22 @@
     .action-row:last-child { border-bottom: none; }
     .action-border { width: 3px; flex-shrink: 0; border-radius: 2px; align-self: stretch; min-height: 20px; }
     .action-badge { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; padding: 2px 5px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; background: transparent; border: 1px solid currentColor; }
-    .action-text { font-size: 13px; line-height: 1.55; color: var(--fg); }
+    .action-badge-new { font-size: 9px; font-weight: 800; letter-spacing: 0.06em; padding: 2px 5px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; color: #3b82f6; border: 1px solid #3b82f6; background: #0c1e3a; }
+    .action-badge-critical { font-size: 9px; font-weight: 800; letter-spacing: 0.06em; padding: 2px 5px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; color: #ef4444; border: 1px solid #ef4444; background: #2a0b0b; animation: pulse-critical 1.4s ease-in-out infinite; }
+    @keyframes pulse-critical { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .action-text { font-size: 13px; line-height: 1.55; color: var(--fg); flex: 1; }
     .action-color-red   { color: #ef4444; }
     .action-color-amber { color: #f59e0b; }
     .action-color-green { color: #22c55e; }
     .action-border-red   { background: #ef4444; }
     .action-border-amber { background: #f59e0b; }
     .action-border-green { background: #22c55e; }
+    .snooze-wrap { position: relative; flex-shrink: 0; margin-top: 1px; }
+    .snooze-btn { background: none; border: none; cursor: pointer; font-size: 13px; padding: 0 2px; opacity: 0.45; line-height: 1; transition: opacity 0.15s; }
+    .snooze-btn:hover { opacity: 1; }
+    .snooze-menu { position: absolute; right: 0; top: 100%; z-index: 99; background: #1c2128; border: 1px solid var(--border); border-radius: 6px; min-width: 130px; box-shadow: 0 4px 16px rgba(0,0,0,0.5); overflow: hidden; margin-top: 4px; }
+    .snooze-item { padding: 8px 12px; font-size: 12px; color: var(--fg); cursor: pointer; white-space: nowrap; }
+    .snooze-item:hover { background: var(--surface2); }
 
     /* ── Account stats ───────────────────────────────────── */
     .stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); }
@@ -452,28 +461,118 @@
       if (!actions || !actions.length) return;
 
       document.getElementById('action-board-section').style.display = '';
-
       document.getElementById('action-board-date').textContent = DATA.meta.date_str;
 
-      const highCount = actions.filter(a => a.priority === 'high').length;
+      const highCount = actions.filter(a => a.priority === 'high' || a.priority === 'critical').length;
       const summary = `${actions.length} action${actions.length !== 1 ? 's' : ''} today` +
         (highCount ? ` · ${highCount} high priority` : '');
       document.getElementById('action-board-summary').textContent = summary;
 
-      const BADGE_LABEL = {
-        sell: 'SELL', trim: 'TRIM', add: 'ADD', buy: 'BUY', danger: 'DANGER',
-      };
+      const BADGE_LABEL = { sell: 'SELL', trim: 'TRIM', add: 'ADD', buy: 'BUY', danger: 'DANGER' };
+      const hasPat = !!(DATA.gh_contents_pat);
 
       document.getElementById('action-board-rows').innerHTML = actions.map(a => {
-        const col   = esc(a.color || 'amber');
-        const badge = esc(BADGE_LABEL[a.action_type] || (a.action_type || '').toUpperCase());
-        return `<div class="action-row">
+        const col        = esc(a.color || 'amber');
+        const badge      = BADGE_LABEL[a.action_type] || (a.action_type || '').toUpperCase();
+        const isCritical = a.priority === 'critical';
+        const canSnooze  = hasPat && !isCritical;
+        const id         = esc(a.id || '');
+        return `<div class="action-row" id="action-${id}">
           <div class="action-border action-border-${col}"></div>
-          <span class="action-badge action-color-${col}">${badge}</span>
+          <span class="action-badge action-color-${col}">${esc(badge)}</span>
+          ${a.is_new ? '<span class="action-badge-new">NEW</span>' : ''}
+          ${isCritical ? '<span class="action-badge-critical">⚠ CRITICAL</span>' : ''}
           <span class="action-text">${esc(a.text)}</span>
+          ${canSnooze ? `<div class="snooze-wrap" data-action-id="${id}">
+            <button class="snooze-btn" title="Snooze this action">⏰</button>
+            <div class="snooze-menu" style="display:none">
+              <div class="snooze-item" data-days="7">7 days</div>
+              <div class="snooze-item" data-days="30">30 days</div>
+              <div class="snooze-item" data-days="90">90 days</div>
+              <div class="snooze-item" data-days="0">Permanently</div>
+            </div>
+          </div>` : ''}
         </div>`;
       }).join('');
+
+      // Snooze toggle
+      document.querySelectorAll('.snooze-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const menu = btn.nextElementSibling;
+          document.querySelectorAll('.snooze-menu').forEach(m => { if (m !== menu) m.style.display = 'none'; });
+          menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        });
+      });
+
+      // Snooze item selection
+      document.querySelectorAll('.snooze-item').forEach(item => {
+        item.addEventListener('click', async e => {
+          e.stopPropagation();
+          const wrap = item.closest('.snooze-wrap');
+          const actionId = wrap.dataset.actionId;
+          const days = parseInt(item.dataset.days, 10);
+          const btn  = wrap.querySelector('.snooze-btn');
+          item.closest('.snooze-menu').style.display = 'none';
+          btn.textContent = '⏳';
+          btn.disabled = true;
+          try {
+            await dismissAction(actionId, days);
+          } catch(err) {
+            console.error('Snooze failed:', err);
+            btn.textContent = '⏰';
+            btn.disabled = false;
+          }
+        });
+      });
+
+      // Close menus on outside click
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.snooze-menu').forEach(m => { m.style.display = 'none'; });
+      });
     })();
+
+    // ── Dismiss action (GitHub Contents API) ─────────────────────────────────
+    async function dismissAction(id, days) {
+      const snoozeUntil = days === 0 ? '9999-12-31' :
+        new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
+
+      // Attach snoozed_price from action data so pipeline can check critical override
+      const action = (DATA.today_actions || []).find(a => a.id === id);
+      const snoozedPrice = action ? action.current_price : null;
+
+      const API = 'https://api.github.com/repos/stevegerrard100/portfolio-analyst/contents/cache/dismissed_actions.json';
+      const headers = {
+        Authorization: `Bearer ${DATA.gh_contents_pat}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      };
+
+      // 1. GET current file to obtain SHA
+      let dismissed = [], sha = null;
+      const getRes = await fetch(API, { headers });
+      if (getRes.ok) {
+        const file = await getRes.json();
+        sha = file.sha;
+        dismissed = JSON.parse(atob(file.content.replace(/\s/g, '')));
+      }
+
+      // 2. Upsert entry
+      dismissed = dismissed.filter(d => d.id !== id);
+      const entry = { id, snoozed_until: snoozeUntil, snoozed_at: new Date().toISOString().split('T')[0] };
+      if (snoozedPrice != null) entry.snoozed_price = snoozedPrice;
+      dismissed.push(entry);
+
+      // 3. PUT updated file
+      const body = { message: `Snooze action ${id} until ${snoozeUntil}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(dismissed, null, 2)))) };
+      if (sha) body.sha = sha;
+      const putRes = await fetch(API, { method: 'PUT', headers, body: JSON.stringify(body) });
+      if (!putRes.ok) throw new Error(`GitHub API PUT failed: ${putRes.status}`);
+
+      // 4. Hide the row
+      const row = document.getElementById(`action-${id}`);
+      if (row) { row.style.transition = 'opacity 0.3s'; row.style.opacity = '0'; setTimeout(() => { row.style.display = 'none'; }, 300); }
+    }
 
     // ── Verdict ──────────────────────────────────────────────────────────────
     document.getElementById('verdict-text').innerHTML = md(DATA.verdict);
