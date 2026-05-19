@@ -1,32 +1,26 @@
 [
   {
-    "id": "RGTI-sell",
+    "id": "AVAV-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down over 51% with revenue actually declining and trading 72% below its yearly high \u2014 the thesis is broken and this position should be closed."
+    "text": "AVAV is down 38% with three consecutive earnings misses and high short interest \u2014 the business is losing credibility and the position should be closed."
   },
   {
-    "id": "QBTS-trim",
+    "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is down 40% and 60% below its yearly high with no earnings or revenue to justify holding full size \u2014 reduce exposure meaningfully."
-  },
-  {
-    "id": "AVAV-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "AeroVironment is down 38%, has missed earnings three times in a row, and carries high short interest near 20% \u2014 trim this position until the trend reverses."
+    "text": "EL is down 26% and trading well below its 50-day average with no clear recovery catalyst \u2014 reduce the position to limit further damage."
   },
   {
     "id": "GORO-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Gold Royalty is just 0.4% from its yearly low with three consecutive earnings misses and a 30% loss \u2014 reduce this position before it reaches a new low."
+    "text": "GORO is down 31% and has missed earnings three times in a row \u2014 persistent underperformance against gold itself makes this a position worth cutting back."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "American Electric Power has confirmed a stage transition and VCP breakout pattern, with a strong tailwind from rising electricity demand \u2014 this is a high-conviction new entry."
+    "text": "AEP has confirmed a stage transition with VCP accumulation and offers a high-conviction entry as a regulated utility benefiting from grid expansion demand."
   }
 ]
