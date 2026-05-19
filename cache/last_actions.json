@@ -3,24 +3,24 @@
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "EL is down over 36% from its yearly high with shrinking revenue and rising short seller pressure \u2014 reduce your position size now to limit further damage."
+    "text": "EL is 36% below its 52-week high with shrinking revenue and deteriorating fundamentals \u2014 reduce exposure to limit further damage."
   },
   {
-    "id": "AVAV-trim",
+    "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "AVAV is down 37.5% in your portfolio and has missed earnings three times in a row \u2014 trim this position until there is clear evidence the business is back on track."
+    "text": "KTOS carries a 29.5% loss and sits 58.7% off its 52-week high \u2014 the drawdown is too deep for a medium-term holding and sizing should be reduced."
   },
   {
-    "id": "GORO-trim",
+    "id": "TSLA-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GORO has missed earnings three times recently and is down 29% in your portfolio \u2014 repeated execution failures make this a trim candidate even if gold remains supportive."
+    "text": "TSLA has shrinking revenue (-2.9%), two recent earnings misses, and a stretched valuation \u2014 trim to reduce risk in a position where the fundamentals don't support the price."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "AEP has a confirmed stage transition and VCP accumulation pattern, and utilities are directly benefiting from power-hungry AI infrastructure demand \u2014 this is a high-conviction new entry."
+    "text": "AEP has confirmed a stage transition with a VCP/accumulation pattern, benefits directly from the easing rate environment, and offers a high-conviction breakout entry today."
   }
 ]
