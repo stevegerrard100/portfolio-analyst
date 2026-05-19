@@ -3,36 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 50% and 70% below its 52-week high with revenue declining and cash burning \u2014 the thesis has completely broken down and this position should be closed."
+    "text": "RGTI is down 51% in your portfolio and 72% off its yearly high with shrinking revenue and no path to profitability \u2014 exit this position now before further losses compound."
+  },
+  {
+    "id": "EL-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Est\u00e9e Lauder is down over 34% from its yearly high with shrinking revenue and deteriorating fundamentals \u2014 reduce your position to cut ongoing risk."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is down 38% and 57% below its 52-week high with missed earnings and ongoing cash burn \u2014 reduce the position now to limit further damage while the thesis is still uncertain."
+    "text": "QBTS is down nearly 40% in your portfolio and 60% off its yearly high with no profitability in sight \u2014 trim this speculative position to limit further downside exposure."
   },
   {
     "id": "AVAV-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "AVAV is down 37% and 61% below its 52-week high \u2014 one of the weakest performers in the portfolio and the risk/reward no longer justifies current sizing."
+    "text": "AeroVironment is down 37% in your portfolio and 61% off its yearly high with three consecutive earnings misses \u2014 trim this position as the risk/reward has clearly shifted against you."
   },
   {
     "id": "GORO-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GORO is down 32%, 29% off its 52-week high, and has missed earnings three times \u2014 cut the position to reduce exposure to a consistently underperforming holding."
+    "text": "Gold Royalty Corp is down 32.5% and trading near its yearly low with three consecutive earnings misses \u2014 reduce this position as the thesis is not holding up."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Microsoft is showing the only confirmed bullish momentum signal (MACD crossover) among major holdings and has strong underlying fundamentals \u2014 this is a good opportunity to add to your position."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "AEP has confirmed a stage transition with VCP/accumulation patterns in a supportive rate-easing environment that historically favours regulated utilities \u2014 this is a high-conviction new entry."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "MU has the strongest fundamental setup in the portfolio with 49% revenue growth and a below-market valuation \u2014 adding here builds on a position with a clear and intact thesis."
+    "text": "American Electric Power has a confirmed stage transition and VCP breakout pattern, with a strong structural tailwind from rising electricity demand \u2014 this is a high-conviction new entry point."
   }
 ]
