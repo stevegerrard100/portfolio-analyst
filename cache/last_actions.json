@@ -1,0 +1,44 @@
+[
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "RGTI is down nearly 50% on your position, 70% off its yearly high, revenue is falling, and the EXIT signal is confirmed \u2014 this position needs to be closed now."
+  },
+  {
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "QBTS is down 37%, nearly 58% off its yearly high, losing money and burning cash \u2014 reduce your position size significantly to limit further damage."
+  },
+  {
+    "id": "AVAV-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "AVAV is down nearly 37% on your position and over 60% below its yearly high, a deep sustained decline that warrants cutting your exposure now."
+  },
+  {
+    "id": "TSLA-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "TSLA's revenue is shrinking while you're paying a PE of 163 \u2014 the price no longer reflects business reality and trimming reduces a disproportionate risk in your portfolio."
+  },
+  {
+    "id": "KTOS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "KTOS is down 33% and more than 58% off its yearly high \u2014 this level of drawdown signals the original thesis is under serious pressure and sizing should be reduced."
+  },
+  {
+    "id": "AEP-buy",
+    "action_type": "buy",
+    "priority": "low",
+    "text": "AEP has confirmed a stage transition and VCP breakout pattern \u2014 a regulated utility with stable cash flows entering a technical breakout in an easing rate environment is a high-conviction entry."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META has strong revenue growth, solid cash generation, and a PE under 17 \u2014 if it pulls back to a clear support level, this is one of the strongest risk/reward opportunities in your current holdings."
+  }
+]
