@@ -149,6 +149,7 @@ def render_dashboard(
         sector_flows:  Output of fetch_sector_data()
         output_path:   Destination path for index.html
     """
+    log.info("NETLIFY_DISMISS_URL: %s", os.environ.get("NETLIFY_DISMISS_URL", "NOT SET"))
     portfolio    = portfolio    or {}
     market_data  = market_data  or {}
     screener     = screener     or {}
