@@ -10,5 +10,10 @@
     "snoozed_until": "2026-05-26",
     "snoozed_at": "2026-05-19",
     "snoozed_price": 15.6
+  },
+  {
+    "id": "AEP-buy",
+    "snoozed_until": "2026-05-27",
+    "snoozed_at": "2026-05-20"
   }
 ]
