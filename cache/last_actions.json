@@ -1,26 +1,32 @@
 [
   {
-    "id": "EL-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "EL is 36% below its 52-week high with shrinking revenue and deteriorating fundamentals \u2014 reduce exposure to limit further damage."
-  },
-  {
-    "id": "KTOS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "KTOS carries a 29.5% loss and sits 58.7% off its 52-week high \u2014 the drawdown is too deep for a medium-term holding and sizing should be reduced."
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "SGLP.L is effectively worthless \u2014 a relative strength reading of -99 and a price 99% below its 52-week high signals a complete breakdown; exit this position immediately."
   },
   {
     "id": "TSLA-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "TSLA has shrinking revenue (-2.9%), two recent earnings misses, and a stretched valuation \u2014 trim to reduce risk in a position where the fundamentals don't support the price."
+    "text": "TSLA's PE of 161 prices in perfection while the business faces real headwinds \u2014 trim to a size you are comfortable holding through significant further downside."
+  },
+  {
+    "id": "LPTH-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "LPTH has gained 26% for you but has missed earnings four consecutive times \u2014 bank some of that gain now before the next disappointment erases it."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META is attractively valued at a PE under 17 with 22% revenue growth and strong cash generation \u2014 any further pullback is an opportunity to increase your position."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "AEP has confirmed a stage transition with a VCP/accumulation pattern, benefits directly from the easing rate environment, and offers a high-conviction breakout entry today."
+    "text": "AEP has confirmed a high-conviction stage transition and VCP breakout pattern \u2014 this is a new entry opportunity in a large, stable US utility with strong technical structure."
   }
 ]
