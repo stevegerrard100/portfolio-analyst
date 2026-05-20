@@ -1,32 +1,38 @@
 [
   {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "SGLP.L is effectively worthless \u2014 a relative strength reading of -99 and a price 99% below its 52-week high signals a complete breakdown; exit this position immediately."
-  },
-  {
     "id": "TSLA-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "TSLA's PE of 161 prices in perfection while the business faces real headwinds \u2014 trim to a size you are comfortable holding through significant further downside."
+    "text": "Reduce TSLA exposure \u2014 you're paying 165 times earnings while revenue growth is slowing, which is a risk/reward imbalance that is hard to justify at current sizing."
   },
   {
-    "id": "LPTH-trim",
+    "id": "AAPL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "LPTH has gained 26% for you but has missed earnings four consecutive times \u2014 bank some of that gain now before the next disappointment erases it."
+    "text": "Trim AAPL into strength \u2014 you're up 14% and at the 52-week high, but meaningful insider selling is a signal worth respecting by locking in some of that gain."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "META is attractively valued at a PE under 17 with 22% revenue growth and strong cash generation \u2014 any further pullback is an opportunity to increase your position."
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Reduce IONQ to a smaller speculative allocation \u2014 it's losing money, burning cash, and the risk profile is too large for a position with no clear path to profitability."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "AEP has confirmed a high-conviction stage transition and VCP breakout pattern \u2014 this is a new entry opportunity in a large, stable US utility with strong technical structure."
+    "text": "Open a position in AEP \u2014 it has confirmed a high-conviction stage breakout with VCP accumulation, and as a large regulated utility it fits well in an easing rate environment with tight credit spreads."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to META on any pullback \u2014 22% revenue growth, a PE of just 16.7, and strong free cash flow make it one of the most fundamentally sound positions in the portfolio."
+  },
+  {
+    "id": "LPTH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to LPTH \u2014 it's up nearly 20%, above its 50-day average, with a bullish MACD signal confirming positive momentum behind the move."
   }
 ]
