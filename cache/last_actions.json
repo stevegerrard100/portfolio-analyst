@@ -1,38 +1,20 @@
 [
   {
-    "id": "TSLA-trim",
+    "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Reduce TSLA exposure \u2014 you're paying 165 times earnings while revenue growth is slowing, which is a risk/reward imbalance that is hard to justify at current sizing."
+    "text": "Est\u00e9e Lauder is down a third from its high with shrinking sales and no clear recovery catalyst \u2014 reduce your position to limit downside exposure."
   },
   {
-    "id": "AAPL-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim AAPL into strength \u2014 you're up 14% and at the 52-week high, but meaningful insider selling is a signal worth respecting by locking in some of that gain."
-  },
-  {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Reduce IONQ to a smaller speculative allocation \u2014 it's losing money, burning cash, and the risk profile is too large for a position with no clear path to profitability."
+    "text": "Despite eye-catching revenue growth, Ondas is loss-making with high short interest and deteriorating fundamentals \u2014 reduce the position before weakness deepens."
   },
   {
     "id": "AEP-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "Open a position in AEP \u2014 it has confirmed a high-conviction stage breakout with VCP accumulation, and as a large regulated utility it fits well in an easing rate environment with tight credit spreads."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to META on any pullback \u2014 22% revenue growth, a PE of just 16.7, and strong free cash flow make it one of the most fundamentally sound positions in the portfolio."
-  },
-  {
-    "id": "LPTH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to LPTH \u2014 it's up nearly 20%, above its 50-day average, with a bullish MACD signal confirming positive momentum behind the move."
+    "text": "American Electric Power has confirmed a stage transition with VCP accumulation and benefits from sector tailwinds in regulated utilities \u2014 this is a high-conviction new entry."
   }
 ]
