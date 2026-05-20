@@ -995,7 +995,7 @@
     // ── Narrative sections ───────────────────────────────────────────────────
     document.getElementById('macro-text').innerHTML  = md(DATA.macro_narrative);
     document.getElementById('sector-text').innerHTML = md(DATA.sector_narrative);
-    document.getElementById('opps-text').innerHTML   = md(firstSentences(DATA.opportunities, 3));
+    document.getElementById('opps-text').innerHTML   = md(DATA.opportunities);
 
     // ── Macro pills ──────────────────────────────────────────────────────────
     const pillsEl = document.getElementById('macro-pills');
