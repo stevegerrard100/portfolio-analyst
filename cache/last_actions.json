@@ -1,32 +1,44 @@
 [
   {
-    "id": "ONDS-sell",
+    "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "ONDS has an explicit EXIT signal \u2014 down 16%, sitting 35% below its 52-week high with failed thesis indicators; close this position now."
+    "text": "QBTS has no profits, negative cash flow, 16% short interest, and is down 43% from its high \u2014 this speculative bet isn't working and should be closed."
   },
   {
-    "id": "TSLA-trim",
+    "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Tesla's revenue is actually shrinking yet the stock carries an extreme valuation \u2014 trim your position to reduce exposure to a deteriorating fundamental story before sentiment catches up."
+    "text": "EL is down 16% with shrinking revenues and sits 34% off its high \u2014 trim this losing position to reduce further downside risk."
   },
   {
-    "id": "IONQ-trim",
+    "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IonQ is deeply unprofitable with a negative 285% profit margin; trim this speculative position to manage downside risk in the quantum computing theme you are already overexposed to via QBTS and RGTI."
+    "text": "NCLP.L is your weakest ETF at -10% with bearish momentum below its 50-day average \u2014 trim to free up capital for stronger positions."
   },
   {
-    "id": "AAPL-trim",
+    "id": "VST-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Apple is at its 52-week high but carries a PE of 31.6 with slowing growth \u2014 trim a portion here to lock in gains at peak valuation before any growth disappointment reprices the stock."
+    "text": "VST is 31% off its high with three consecutive earnings misses and weak relative strength \u2014 reduce exposure until the trend stabilizes."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
+    "id": "SILG.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "SILG.L is down 13% and your worst precious metals holding while you already own GDX.L and GDXJ.L \u2014 trim this overlapping, underperforming position."
+  },
+  {
+    "id": "VTR-buy",
+    "action_type": "buy",
     "priority": "low",
-    "text": "Meta shows 22% revenue growth, a low PE of 16.6, and a consistent earnings beat streak \u2014 the recent pullback offers a quality entry point to add to this fundamentally strong position."
+    "text": "VTR scores a perfect 5.0 as a healthcare REIT breakout candidate with confirmed accumulation, and the easing rate environment directly benefits rate-sensitive real estate."
+  },
+  {
+    "id": "WMB-buy",
+    "action_type": "buy",
+    "priority": "low",
+    "text": "WMB scores a perfect 5.0 with a confirmed stage transition in natural gas infrastructure, offering steady cash flows and defensive characteristics in the current environment."
   }
 ]
