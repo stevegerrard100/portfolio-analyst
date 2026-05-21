@@ -3,30 +3,30 @@
     "id": "ONDS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "ONDS is down 16%, sitting 35% below its 52-week high with deteriorating momentum and no clear recovery catalyst \u2014 exit this position."
-  },
-  {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "IONQ is speculative, loss-making, and cash is being burned \u2014 reduce your position size to limit exposure if this story doesn't play out."
+    "text": "ONDS has an explicit EXIT signal \u2014 down 16%, sitting 35% below its 52-week high with failed thesis indicators; close this position now."
   },
   {
     "id": "TSLA-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Tesla is flat on your position but revenue growth has stalled and the valuation remains stretched \u2014 reduce exposure while the stock is near breakeven."
+    "text": "Tesla's revenue is actually shrinking yet the stock carries an extreme valuation \u2014 trim your position to reduce exposure to a deteriorating fundamental story before sentiment catches up."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IonQ is deeply unprofitable with a negative 285% profit margin; trim this speculative position to manage downside risk in the quantum computing theme you are already overexposed to via QBTS and RGTI."
   },
   {
     "id": "AAPL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Apple is at its 52-week high and up 15.3% for you, but at a PE of 31.6 the upside is limited from here \u2014 take some profit while it's at peak strength."
+    "text": "Apple is at its 52-week high but carries a PE of 31.6 with slowing growth \u2014 trim a portion here to lock in gains at peak valuation before any growth disappointment reprices the stock."
   },
   {
-    "id": "BE-add",
+    "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Bloom Energy is at its 52-week high with 37% revenue growth and consistent earnings beats \u2014 strong momentum makes this a candidate to add to on any small pullback."
+    "text": "Meta shows 22% revenue growth, a low PE of 16.6, and a consistent earnings beat streak \u2014 the recent pullback offers a quality entry point to add to this fundamentally strong position."
   }
 ]
