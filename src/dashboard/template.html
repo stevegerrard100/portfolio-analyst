@@ -390,11 +390,13 @@
       <div class="section">
         <div class="card">
           <div class="card-title">Breakout Watch List</div>
-          <p style="color:var(--muted);font-size:12px;margin-bottom:12px">S&amp;P 500 stocks forming accumulation bases — early-stage setups scored on 5 signals: Stage&nbsp;1→2 transition, VCP, volume accumulation, RS leading price, and pivot proximity.</p>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:12px">S&amp;P 500 stocks forming accumulation bases — weighted score out of 10: Stage&nbsp;1→2 (2pts), RS&nbsp;Leading (2pts), VCP (1.5pts), Vol&nbsp;Acc (1pt), Pivot&nbsp;Proximity (1pt) + base quality bonus. High Conviction requires score&nbsp;≥&nbsp;7 in a bull market.</p>
+          <div id="bk-regime-banner" style="display:none;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-size:12px;font-weight:600"></div>
           <table class="stbl">
             <thead><tr>
               <th>Ticker</th><th>Company</th><th>Sector</th>
-              <th>Mansfield RS</th><th>Signals</th><th>Score</th>
+              <th>Mansfield RS</th><th>Signals</th><th>Score /10</th>
+              <th>Base Wks</th><th>Depth %</th>
             </tr></thead>
             <tbody id="breakout-body"></tbody>
           </table>
@@ -1226,9 +1228,30 @@
       stage_transition:    'Stage 1→2',
       vcp:                 'VCP',
       volume_accumulation: 'Vol Acc',
-      rs_new_high:         'RS↑High',
+      rs_leading:          'RS↑Lead',
       pivot_proximity:     'Pivot',
     };
+
+    // R8: Regime warning banner
+    (function() {
+      const regime = DATA.breakout_regime || 'bull';
+      const banner = document.getElementById('bk-regime-banner');
+      if (!banner) return;
+      if (regime === 'bear') {
+        banner.style.display = 'block';
+        banner.style.background = 'rgba(248,81,73,0.15)';
+        banner.style.border = '1px solid rgba(248,81,73,0.4)';
+        banner.style.color = 'var(--red)';
+        banner.textContent = '⚠ Bear Market Regime — High Conviction signals suppressed. SPY is below its 200-day SMA or VIX/HY spread at extreme levels. Extra caution advised.';
+      } else if (regime === 'caution') {
+        banner.style.display = 'block';
+        banner.style.background = 'rgba(210,153,34,0.12)';
+        banner.style.border = '1px solid rgba(210,153,34,0.35)';
+        banner.style.color = 'var(--yellow,#d29922)';
+        banner.textContent = '⚡ Caution Regime — Mixed market conditions. VIX elevated or HY spreads widening. Position sizing should be conservative.';
+      }
+      // bull: no banner shown
+    })();
 
     function applyBreakoutChartData(ticker) {
       const inst = breakoutChartInstances[ticker];
@@ -1302,6 +1325,9 @@
 
       const hcBadge  = c.high_conviction ? `<span class="bk-hc-badge">High Conviction</span>` : '';
 
+      const baseWks  = c.base_weeks  != null ? String(c.base_weeks) + 'w' : '—';
+      const depthPct = c.base_depth_pct != null ? fmt(c.base_depth_pct, {dp:1}) + '%' : '—';
+
       const mainRow = document.createElement('tr');
       mainRow.className = 's-row' + (c.high_conviction ? ' bk-row-hc' : '');
       mainRow.dataset.ticker = c.ticker;
@@ -1311,7 +1337,9 @@
         <td style="color:var(--muted);font-size:12px">${esc(c.sector)}</td>
         <td>${rsCol}</td>
         <td>${badges}</td>
-        <td style="font-weight:700;color:var(--blue)">${c.composite_score}/5</td>
+        <td style="font-weight:700;color:var(--blue)">${c.composite_score}/10</td>
+        <td style="color:var(--muted);font-size:12px">${baseWks}</td>
+        <td style="color:var(--muted);font-size:12px">${depthPct}</td>
       `;
 
       const chartControls = hasChart ? `
@@ -1334,7 +1362,7 @@
       detailRow.className = 's-detail';
       detailRow.dataset.ticker = c.ticker;
       detailRow.style.display = 'none';
-      detailRow.innerHTML = `<td colspan="6"><div class="s-detail-inner">
+      detailRow.innerHTML = `<td colspan="8"><div class="s-detail-inner">
         ${c.reasoning ? `<p class="s-reasoning">${esc(c.reasoning)}</p>` : ''}
         ${chartControls}
       </div></td>`;

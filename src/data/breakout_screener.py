@@ -2,23 +2,33 @@
 Breakout Watch List screener — S&P 500 universe.
 
 Identifies stocks forming accumulation bases before a potential breakout.
-Five signals, each scored 0/1 (max score = 5):
+Five signals with weighted composite score out of 10:
 
-  1. Stage 1→2 transition — RS crossed above 0 from below in last 4 weeks,
-     confirming with price stabilisation or ATR contraction.
-  2. VCP (Volatility Contraction Pattern) — progressively smaller price swings
-     with declining volume over rolling 20-day windows.
-  3. Volume accumulation — multiple high-volume up-days during a flat base.
-  4. RS line new high before price — RS near its 52-week high while price is
-     still more than 5% below its own 52-week high.
-  5. Pivot proximity — price within 2-8% below a clear resistance level.
+  1. Stage 1→2 transition — price above rising 150-day SMA + RS crossed above zero (2.0 pts)
+  2. VCP (Volatility Contraction Pattern) — progressive swing narrowing with
+     volume dry-up in final contraction (1.5 pts)
+  3. Volume accumulation — up-day vol / down-day vol ratio ≥ 1.5x over 20 sessions (1.0 pts)
+  4. RS leading price — RS near its 52-week high while price still below its own (2.0 pts)
+  5. Pivot proximity — price within 5% below to 0.5% above Base Pivot High (1.0 pts)
+
+  Base quality bonus: +0.5 pts when base ≥ 6 weeks with depth ≤ 30%
+
+Market regime: bull / caution / bear (SPY 200d SMA + VIX + HY credit spread).
+High Conviction: score ≥ 7.0 AND rs_leading AND stage_transition AND non-bear regime.
+
+Gate sequence (R1): yfinance signals first → Finnhub earnings gate last (saves API quota).
 
 Cache: 8h TTL (same policy as the growth screener).
+
+⚠️  Delete cache/breakout_screener.json before the next run after upgrading —
+    the old cache has composite_score /5 and lacks regime / base_stats fields.
 """
 
 import json
 import logging
-from datetime import datetime
+import os
+import time
+from datetime import datetime, date, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -49,56 +59,114 @@ def _calc_stop_loss(price: float, atr: float | None) -> float | None:
 
 
 # ---------------------------------------------------------------------------
-# Signal 1: Stage 1→2 transition
+# R2: Base Pivot High
 # ---------------------------------------------------------------------------
 
-def _check_stage_12_transition(rs_series: pd.Series) -> bool:
-    """RS crossed from negative (< -3) to above 0 within the last 5 weekly bars."""
-    if len(rs_series) < 8:
+def _compute_base_pivot_high(weekly_close: pd.Series) -> float | None:
+    """
+    Highest weekly close within the 6-26 week lookback window.
+    This is the pivot/resistance level the stock is basing under.
+    """
+    n = len(weekly_close)
+    if n < 6:
+        return None
+    window = weekly_close.iloc[-26:] if n >= 26 else weekly_close
+    return float(window.max())
+
+
+# ---------------------------------------------------------------------------
+# R11: Base statistics
+# ---------------------------------------------------------------------------
+
+def _compute_base_stats(weekly_close: pd.Series, bph: float | None) -> dict:
+    """
+    Compute base formation statistics surfaced in the Breakout Watch List table.
+
+    Returns:
+        base_weeks:      int   — weeks since the BPH was set (base length)
+        base_depth_pct:  float — how far price fell from BPH to base low (%)
+        base_tightness:  float — weekly close std-dev / mean in the base (lower = tighter)
+    """
+    n = len(weekly_close)
+    if n < 8 or bph is None or bph <= 0:
+        return {"base_weeks": None, "base_depth_pct": None, "base_tightness": None}
+
+    window  = weekly_close.iloc[-26:] if n >= 26 else weekly_close
+    # Find the week closest to the BPH
+    bph_idx = int((window - bph).abs().argmin())
+    base_window = window.iloc[bph_idx:]
+
+    base_weeks = len(base_window)
+    if base_weeks < 2:
+        return {"base_weeks": base_weeks, "base_depth_pct": None, "base_tightness": None}
+
+    base_low       = float(base_window.min())
+    base_depth_pct = round((bph - base_low) / bph * 100, 1)
+
+    mean_close     = float(base_window.mean())
+    std_close      = float(base_window.std())
+    base_tightness = round(std_close / mean_close, 4) if mean_close > 0 else None
+
+    return {
+        "base_weeks":     base_weeks,
+        "base_depth_pct": base_depth_pct,
+        "base_tightness": base_tightness,
+    }
+
+
+# ---------------------------------------------------------------------------
+# R4 (signal 1): Stage 1→2 transition — 150-day SMA + positive slope + RS cross
+# ---------------------------------------------------------------------------
+
+def _check_stage_transition_150d(df_daily: pd.DataFrame, rs_series: pd.Series) -> bool:
+    """
+    Stage 1→2 transition (Weinstein):
+    - Price above the 150-day SMA (≈ 30-week MA)
+    - 150-day SMA has positive slope (today > 20 trading days ago)
+    - RS crossed from negative to above 0 within the last 5 weekly bars
+    """
+    if len(df_daily) < 160:
+        return False
+
+    close   = df_daily["Close"]
+    sma150  = close.rolling(150).mean()
+
+    current_sma = sma150.iloc[-1]
+    prior_sma   = sma150.iloc[-21] if len(sma150) > 21 else sma150.iloc[0]
+    current_px  = float(close.iloc[-1])
+
+    if pd.isna(current_sma) or pd.isna(prior_sma):
+        return False
+    if current_px <= float(current_sma):
+        return False
+    if float(current_sma) <= float(prior_sma):   # SMA must be rising
+        return False
+
+    # RS crossed above 0 in last 5 weekly bars
+    if len(rs_series) < 6:
         return False
     recent = rs_series.iloc[-5:]
-    crossed = any(prev < 0 <= curr for prev, curr in zip(recent.iloc[:-1], recent.iloc[1:]))
-    if not crossed:
-        return False
-    # Confirm it was meaningfully negative before the cross (not just noise)
-    prior = rs_series.iloc[-12:-5]
-    return any(v < -3 for v in prior)
-
-
-def _check_price_stabilising(weekly_close: pd.Series) -> bool:
-    """Price high-low range in last 8 weeks < 80% of range in prior 8 weeks."""
-    if len(weekly_close) < 16:
-        return False
-    recent_rng = float(weekly_close.iloc[-8:].max() - weekly_close.iloc[-8:].min())
-    prior_rng  = float(weekly_close.iloc[-16:-8].max() - weekly_close.iloc[-16:-8].min())
-    return prior_rng > 0 and recent_rng < prior_rng * 0.80
-
-
-def _check_atr_contracting(df_daily: pd.DataFrame) -> bool:
-    """Recent 20-day ATR mean < 80% of the preceding 6-month ATR mean."""
-    atr = df_daily["atr_14"].dropna()
-    if len(atr) < 126:
-        return False
-    recent = float(atr.iloc[-20:].mean())
-    older  = float(atr.iloc[-126:-20].mean())
-    return older > 0 and recent < older * 0.80
+    return any(prev < 0 <= curr for prev, curr in zip(recent.iloc[:-1], recent.iloc[1:]))
 
 
 # ---------------------------------------------------------------------------
-# Signal 2: VCP (Volatility Contraction Pattern)
+# R5 (signal 2): VCP with volume dry-up in final contraction
 # ---------------------------------------------------------------------------
 
-def _check_vcp(df_daily: pd.DataFrame) -> bool:
+def _check_vcp_with_volume_dryup(df_daily: pd.DataFrame) -> bool:
     """
-    Divide the last 80 trading days into four 20-day windows.
-    VCP fires when swing size (high-low%) and average volume both decline
-    monotonically across all four windows.
+    VCP (Volatility Contraction Pattern):
+    - Four 20-day windows must show monotonically contracting swing sizes (each ≤ 80% of prior)
+    - Average volume must decline across windows (each ≤ 92% of prior)
+    - Volume dry-up in final window: 4-day avg ≥ 20% below the 50-day volume SMA
     """
     if len(df_daily) < 80:
         return False
+
     df = df_daily.tail(80)
     swing_sizes: list[float] = []
     vol_avgs:    list[float] = []
+
     for start in range(0, 80, 20):
         w = df.iloc[start:start + 20]
         if len(w) < 15:
@@ -120,20 +188,31 @@ def _check_vcp(df_daily: pd.DataFrame) -> bool:
         vol_avgs[i] < vol_avgs[i - 1] * 0.92
         for i in range(1, len(vol_avgs))
     )
-    return sizes_contracting and vol_declining
-
-
-# ---------------------------------------------------------------------------
-# Signal 3: Volume accumulation
-# ---------------------------------------------------------------------------
-
-def _check_volume_accumulation(df_daily: pd.DataFrame) -> bool:
-    """
-    In the last 20 days, ≥3 up-days have volume ≥1.5× the 40-day average,
-    while the stock is in a flat base (price range ≤15% over 20 days).
-    """
-    if len(df_daily) < 30:
+    if not (sizes_contracting and vol_declining):
         return False
+
+    # Volume dry-up: 4-day avg must be ≥ 20% below the 50-day volume SMA
+    if len(df_daily) < 54:
+        return False
+    vol_sma50  = df_daily["Volume"].rolling(50).mean().iloc[-1]
+    vol_4d_avg = float(df_daily["Volume"].iloc[-4:].mean())
+    if pd.isna(vol_sma50) or float(vol_sma50) <= 0:
+        return False
+    return vol_4d_avg <= float(vol_sma50) * 0.80
+
+
+# ---------------------------------------------------------------------------
+# R6 (signal 3): Volume accumulation ratio
+# ---------------------------------------------------------------------------
+
+def _check_volume_accumulation_ratio(df_daily: pd.DataFrame) -> bool:
+    """
+    Volume accumulation: up-day volume / down-day volume ≥ 1.5x over trailing 20 sessions,
+    within a flat base (price range ≤ 15% over 20 days).
+    """
+    if len(df_daily) < 20:
+        return False
+
     last20 = df_daily.tail(20)
     lo20   = float(last20["Close"].min())
     if lo20 <= 0:
@@ -141,27 +220,27 @@ def _check_volume_accumulation(df_daily: pd.DataFrame) -> bool:
     if (float(last20["Close"].max()) - lo20) / lo20 > 0.15:
         return False  # not a flat base
 
-    vol_avg = float(df_daily.tail(40)["Volume"].mean())
-    up_with_vol = sum(
-        1 for _, row in last20.iterrows()
-        if row["Close"] > row["Open"] and row["Volume"] >= vol_avg * 1.5
-    )
-    return up_with_vol >= 3
+    up_vol   = sum(float(r["Volume"]) for _, r in last20.iterrows() if r["Close"] > r["Open"])
+    down_vol = sum(float(r["Volume"]) for _, r in last20.iterrows() if r["Close"] < r["Open"])
+
+    if down_vol <= 0:
+        return up_vol > 0
+    return (up_vol / down_vol) >= 1.5
 
 
 # ---------------------------------------------------------------------------
-# Signal 4: RS line new high before price
+# R4 (signal 4): RS leading price (formerly rs_new_high)
 # ---------------------------------------------------------------------------
 
-def _check_rs_new_high(rs_series: pd.Series, weekly_close: pd.Series) -> bool:
+def _check_rs_leading(rs_series: pd.Series, weekly_close: pd.Series) -> bool:
     """
-    RS is within 8% of its 52-week high while price is more than 5% below
-    its own 52-week high — RS leading indicator of an upcoming breakout.
+    RS is within 8% of its 52-week high while price is more than 5% below its
+    own 52-week high — RS leading price, a classic pre-breakout divergence.
     """
     if len(rs_series) < 26 or len(weekly_close) < 26:
         return False
 
-    rs_window   = rs_series.iloc[-52:]   if len(rs_series)   >= 52 else rs_series
+    rs_window    = rs_series.iloc[-52:]    if len(rs_series)    >= 52 else rs_series
     price_window = weekly_close.iloc[-52:] if len(weekly_close) >= 52 else weekly_close
 
     rs_52w_high    = float(rs_window.max())
@@ -175,6 +254,154 @@ def _check_rs_new_high(rs_series: pd.Series, weekly_close: pd.Series) -> bool:
     rs_pct_from_high    = (current_rs    / rs_52w_high    - 1) * 100
     price_pct_from_high = (current_price / price_52w_high - 1) * 100
     return rs_pct_from_high > -8 and price_pct_from_high < -5
+
+
+# ---------------------------------------------------------------------------
+# R7 (signal 5): Pivot proximity using Base Pivot High
+# ---------------------------------------------------------------------------
+
+def _check_pivot_proximity_bph(df_daily: pd.DataFrame, bph: float | None) -> bool:
+    """
+    Price is within 5% below to 0.5% above the Base Pivot High (BPH).
+    Falls back to the 52-week daily high if BPH is unavailable.
+    """
+    current = float(df_daily["Close"].iloc[-1])
+    pivot   = bph
+
+    if pivot is None or pivot <= 0:
+        close  = df_daily["Close"]
+        window = close.iloc[-252:] if len(close) >= 252 else close
+        pivot  = float(window.max())
+    if pivot <= 0:
+        return False
+
+    dist = (current / pivot - 1) * 100
+    return -5.0 <= dist <= 0.5
+
+
+# ---------------------------------------------------------------------------
+# R8: Market regime
+# ---------------------------------------------------------------------------
+
+def _assess_market_regime() -> str:
+    """
+    Classify market regime as 'bull', 'caution', or 'bear'.
+
+    Inputs:
+      - SPY vs 200-day SMA  (bull = above, bear = below)
+      - VIX closing level   (extreme = ≥ 35, stress = ≥ 25)
+      - HY credit spread    (FRED BAMLH0A0HYM2, bear zone = ≥ 500 bps)
+
+    Returns 'caution' on data errors so the screener keeps running.
+    """
+    try:
+        # SPY 200-day SMA
+        spy_daily = yf.Ticker("SPY").history(period="1y")
+        if spy_daily.empty or len(spy_daily) < 200:
+            log.warning("Regime: insufficient SPY history — defaulting to caution")
+            return "caution"
+        if spy_daily.index.tz is not None:
+            spy_daily.index = spy_daily.index.tz_localize(None)
+        spy_close   = spy_daily["Close"]
+        sma200      = float(spy_close.rolling(200).mean().iloc[-1])
+        current_spy = float(spy_close.iloc[-1])
+        spy_above   = current_spy > sma200
+
+        # VIX via yfinance
+        vix_data  = yf.Ticker("^VIX").history(period="5d")
+        vix_level = float(vix_data["Close"].iloc[-1]) if not vix_data.empty else 20.0
+
+        # HY spread via FRED (optional — key may be absent)
+        hy_spread_bps: float | None = None
+        fred_key = os.environ.get("FRED_API_KEY")
+        if fred_key:
+            try:
+                from fredapi import Fred
+                fred          = Fred(api_key=fred_key)
+                hy_series     = fred.get_series("BAMLH0A0HYM2", limit=5)
+                hy_spread_bps = float(hy_series.dropna().iloc[-1]) * 100  # pct → bps
+            except Exception as exc:
+                log.debug("FRED HY spread unavailable: %s", exc)
+
+        log.info(
+            "Market regime: SPY=%s 200d SMA (%.1f vs %.1f), VIX=%.1f, HY=%s bps",
+            "above" if spy_above else "below",
+            current_spy, sma200, vix_level,
+            f"{hy_spread_bps:.0f}" if hy_spread_bps is not None else "n/a",
+        )
+
+        # bear: SPY below 200d SMA, OR extreme VIX, OR extreme HY spread
+        if (not spy_above
+                or vix_level >= 35
+                or (hy_spread_bps is not None and hy_spread_bps >= 500)):
+            return "bear"
+        # bull: all conditions clear
+        if (spy_above
+                and vix_level < 25
+                and (hy_spread_bps is None or hy_spread_bps < 400)):
+            return "bull"
+        return "caution"
+
+    except Exception as exc:
+        log.warning("Market regime assessment failed: %s — defaulting to caution", exc)
+        return "caution"
+
+
+# ---------------------------------------------------------------------------
+# R3: Finnhub earnings proximity gate (runs last — saves API quota)
+# ---------------------------------------------------------------------------
+
+def _check_earnings_proximity_finnhub(ticker: str, client) -> bool:
+    """
+    Returns True if the ticker has an earnings event within the next 21 calendar days.
+    Stocks with imminent earnings are excluded — too binary an event for base setups.
+    Returns False on API error (do not exclude on uncertainty).
+    """
+    today = date.today()
+    end   = today + timedelta(days=21)
+    try:
+        cal      = client.earnings_calendar(
+            _from=today.isoformat(),
+            to=end.isoformat(),
+            symbol=ticker,
+        )
+        earnings = (cal or {}).get("earningsCalendar", [])
+        return len(earnings) > 0
+    except Exception as exc:
+        log.debug("Finnhub earnings gate failed for %s: %s", ticker, exc)
+        return False  # on error, do not exclude
+
+
+# ---------------------------------------------------------------------------
+# R9: Weighted composite score
+# ---------------------------------------------------------------------------
+
+_SIGNAL_WEIGHTS: dict[str, float] = {
+    "rs_leading":          2.0,
+    "stage_transition":    2.0,
+    "vcp":                 1.5,
+    "volume_accumulation": 1.0,
+    "pivot_proximity":     1.0,
+}
+_MAX_WITH_BONUS = 8.0   # max raw (7.5) + base quality bonus (0.5)
+
+
+def _weighted_score(
+    signals:        dict[str, bool],
+    base_weeks:     int   | None,
+    base_depth_pct: float | None,
+) -> float:
+    """
+    Weighted composite score scaled to 10.
+    Max raw = 7.5 (all signals fired) + 0.5 base quality bonus → 8.0 → 10.0.
+    """
+    raw   = sum(w for k, w in _SIGNAL_WEIGHTS.items() if signals.get(k))
+    bonus = 0.0
+    if (base_weeks is not None and base_weeks >= 6
+            and base_depth_pct is not None and base_depth_pct <= 30.0):
+        bonus = 0.5
+    scaled = (raw + bonus) / _MAX_WITH_BONUS * 10.0
+    return round(min(10.0, scaled), 1)
 
 
 # ---------------------------------------------------------------------------
@@ -204,15 +431,14 @@ def _volume_profile(df_daily: pd.DataFrame, bins: int = 40) -> dict:
     if hi <= lo:
         return {"poc": None, "supports": [], "resistances": []}
 
-    typical = (df["High"] + df["Low"] + df["Close"]) / 3
-    bin_edges = np.linspace(lo, hi, bins + 1)
+    typical    = (df["High"] + df["Low"] + df["Close"]) / 3
+    bin_edges  = np.linspace(lo, hi, bins + 1)
     bin_vol, _ = np.histogram(typical, bins=bin_edges, weights=df["Volume"])
-    bin_mid = (bin_edges[:-1] + bin_edges[1:]) / 2
+    bin_mid    = (bin_edges[:-1] + bin_edges[1:]) / 2
 
     poc_idx = int(np.argmax(bin_vol))
-    poc = round(float(bin_mid[poc_idx]), 2)
+    poc     = round(float(bin_mid[poc_idx]), 2)
 
-    # HVN = local peaks at or above the 65th percentile of non-zero volume bins
     nonzero = bin_vol[bin_vol > 0]
     if len(nonzero) == 0:
         return {"poc": poc, "supports": [], "resistances": []}
@@ -225,7 +451,7 @@ def _volume_profile(df_daily: pd.DataFrame, bins: int = 40) -> dict:
                 and bin_vol[i] >= bin_vol[i + 1]):
             hvns.append((round(float(bin_mid[i]), 2), float(bin_vol[i])))
 
-    cp = current_price
+    cp          = current_price
     supports    = sorted([h for h in hvns if h[0] < cp * 0.995], key=lambda x: x[0], reverse=True)[:3]
     resistances = sorted([h for h in hvns if h[0] > cp * 1.005], key=lambda x: x[0])[:3]
 
@@ -235,35 +461,6 @@ def _volume_profile(df_daily: pd.DataFrame, bins: int = 40) -> dict:
         "supports":    [(p, to_m(v)) for p, v in supports],
         "resistances": [(p, to_m(v)) for p, v in resistances],
     }
-
-
-# ---------------------------------------------------------------------------
-# Signal 5: Pivot proximity (enhanced with volume profile)
-# ---------------------------------------------------------------------------
-
-def _check_pivot_proximity(df_daily: pd.DataFrame) -> bool:
-    """Price is within 2-8% below its 52-week high — approaching but not at resistance."""
-    close    = df_daily["Close"]
-    window   = close.iloc[-252:] if len(close) >= 252 else close
-    high_52w = float(window.max())
-    current  = float(close.iloc[-1])
-    if high_52w <= 0:
-        return False
-    dist = (current / high_52w - 1) * 100
-    return -8 <= dist < -1
-
-
-def _check_pivot_proximity_vp(df_daily: pd.DataFrame, vp: dict) -> bool:
-    """
-    Price is within 2-8% below a HVN resistance level from the volume profile,
-    OR within 2-8% below the 52-week high (fallback if no HVN resistances found).
-    """
-    current_price = float(df_daily["Close"].iloc[-1])
-    for res_price, _ in vp.get("resistances", []):
-        dist = (current_price / res_price - 1) * 100
-        if -8 <= dist < -0.5:
-            return True
-    return _check_pivot_proximity(df_daily)
 
 
 # ---------------------------------------------------------------------------
@@ -303,7 +500,7 @@ def _breakout_profile(ticker: str) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
-# Reasoning
+# AI batch reasoning (model stays claude-sonnet-4-6 — do not change)
 # ---------------------------------------------------------------------------
 
 _MAX_TOKENS_OUTPUT = 8192  # claude-sonnet-4-6 hard cap
@@ -314,7 +511,7 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
     Single Claude API call to generate reasoning for all breakout candidates.
     Returns {ticker: reasoning_text}; tickers absent from result fall back to technical reasoning.
     """
-    import os, re
+    import re
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key or not candidates:
         return {}
@@ -323,10 +520,10 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
         import anthropic
         lines: list[str] = []
         for c in candidates:
-            fired = [k.replace("_", " ") for k, v in c["signals"].items() if v]
-            vp    = c["volume_profile"]
-            res   = vp.get("resistances", [])
-            sup   = vp.get("supports", [])
+            fired    = [k.replace("_", " ") for k, v in c["signals"].items() if v]
+            vp       = c["volume_profile"]
+            res      = vp.get("resistances", [])
+            sup      = vp.get("supports", [])
             vp_parts: list[str] = []
             if res:
                 vp_parts.append(f"resistance ${res[0][0]:.2f}")
@@ -354,15 +551,14 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
 
         # Cap at the model output limit — 220 tokens × N candidates can exceed 8 192 for large screens
         max_tokens = min(_MAX_TOKENS_OUTPUT, 220 * len(candidates))
-        client = anthropic.Anthropic(api_key=api_key)
-        msg = client.messages.create(
+        client     = anthropic.Anthropic(api_key=api_key)
+        msg        = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=max_tokens,
             messages=[{"role": "user", "content": prompt}],
         )
         response_text = msg.content[0].text
         result: dict[str, str] = {}
-        # Match ###TICKER blocks; allow one or more blank lines between entries
         blocks = re.findall(
             r"###([A-Z]{1,5})\n(.+?)(?=\n+###[A-Z]|\Z)", response_text, re.DOTALL
         )
@@ -400,7 +596,6 @@ def _breakout_reasoning(current_rs: float, signals: dict[str, bool], vp: dict) -
     resistances = vp.get("resistances", [])
     supports    = vp.get("supports", [])
 
-    # Volume profile context line — inserted after the RS intro if space allows
     if resistances and supports:
         vp_line = (
             f"Volume profile shows key resistance at ${resistances[0][0]:.2f} "
@@ -426,10 +621,10 @@ def _breakout_reasoning(current_rs: float, signals: dict[str, bool], vp: dict) -
         )
     if signals.get("volume_accumulation"):
         parts.append(
-            "Volume accumulation is visible: multiple up-days in the current base "
-            "show above-average volume, consistent with quiet institutional buying."
+            "Volume accumulation is visible: up-day volume significantly outpaces "
+            "down-day volume in the current base — consistent with quiet institutional buying."
         )
-    if signals.get("rs_new_high"):
+    if signals.get("rs_leading"):
         parts.append(
             "The RS line is near its 52-week high while price has not yet recovered "
             "its own prior high — this divergence typically resolves with a breakout."
@@ -442,11 +637,10 @@ def _breakout_reasoning(current_rs: float, signals: dict[str, bool], vp: dict) -
             )
         else:
             parts.append(
-                "The stock is within striking distance of a prior resistance level — "
+                "The stock is within striking distance of its Base Pivot High — "
                 "a strong-volume close above this pivot would confirm the breakout."
             )
 
-    # Insert the volume profile line as sentence 2 if we have fewer than 3 parts
     if vp_line and len(parts) < 3:
         parts.insert(1, vp_line)
 
@@ -463,14 +657,20 @@ def run_breakout_screener(
     force_refresh: bool = False,
 ) -> dict:
     """
-    Scan S&P 500 for breakout setups. Returns top max_candidates ranked by signal count.
+    Scan S&P 500 for breakout setups. Returns top max_candidates ranked by composite score.
+
+    Gate sequence (R1):
+      1. Weekly pre-filter    — batch yfinance (fast, ~500 tickers)
+      2. Daily signal check   — per-ticker yfinance (moderate, ~60 tickers)
+      3. Finnhub earnings gate — per-survivor (slow, so run last to save quota)
 
     Returns dict with keys:
         candidates       list of candidate dicts (with chart data + signals)
         screened_at      ISO timestamp
         universe_size    tickers in S&P 500 (excl. portfolio)
-        initial_count    after weekly signal pre-filter
-        qualified_count  after daily signal check + CIK dedup
+        initial_count    after weekly pre-filter
+        qualified_count  after daily checks + CIK dedup
+        regime           market regime ('bull' / 'caution' / 'bear')
     """
     CACHE_DIR.mkdir(exist_ok=True)
 
@@ -496,7 +696,11 @@ def run_breakout_screener(
     universe = [t for t in sp500 if t not in exclude]
     log.info("Breakout screener: %d tickers in universe", len(universe))
 
-    # ── Step 2: SPY weekly benchmark ─────────────────────────────────────────
+    # ── Step 2: Market regime (R8 — computed once, not per-ticker) ────────────
+    regime = _assess_market_regime()
+    log.info("Breakout screener: market regime = %s", regime)
+
+    # ── Step 3: SPY weekly benchmark ─────────────────────────────────────────
     spy_raw = yf.Ticker("SPY").history(period="3y", interval="1wk")
     if spy_raw.empty:
         return {"candidates": [], "error": "Could not fetch SPY weekly data"}
@@ -504,7 +708,7 @@ def run_breakout_screener(
         spy_raw.index = spy_raw.index.tz_localize(None)
     spy_weekly = spy_raw["Close"].dropna()
 
-    # ── Step 3: Batch weekly download ────────────────────────────────────────
+    # ── Step 4: Batch weekly download ────────────────────────────────────────
     log.info("Downloading 2y weekly prices for %d tickers...", len(universe))
     try:
         raw = yf.download(
@@ -520,7 +724,7 @@ def run_breakout_screener(
         log.error("Batch weekly download failed: %s", exc)
         return {"candidates": [], "error": str(exc)}
 
-    # ── Step 4: Weekly signal pre-filter ─────────────────────────────────────
+    # ── Step 5: Weekly signal pre-filter ─────────────────────────────────────
     log.info("Scanning weekly signals...")
     initial_candidates: list[dict] = []
 
@@ -537,34 +741,51 @@ def run_breakout_screener(
                 continue
             current_rs = float(rs_series.iloc[-1])
 
-            # Focus on the accumulation zone — not confirmed uptrends (RS > 40)
+            # Focus on accumulation zone — not confirmed uptrends (RS > 40)
             # and not deep downtrends (RS < -30) that need more time
             if current_rs < -30 or current_rs > 40:
                 continue
 
-            s1   = _check_stage_12_transition(rs_series)
-            s4   = _check_rs_new_high(rs_series, series)
-            stab = _check_price_stabilising(series)
+            # R2: Base Pivot High + R11: base stats (weekly data available here)
+            bph        = _compute_base_pivot_high(series)
+            base_stats = _compute_base_stats(series, bph)
 
-            # Price distance from 52-week high (proxy for pivot proximity)
-            price_52w = float(series.iloc[-52:].max()) if len(series) >= 52 else float(series.max())
-            price_pct  = (float(series.iloc[-1]) / price_52w - 1) * 100 if price_52w > 0 else -100
-            s5_hint    = -10 <= price_pct < -1
+            # RS leading signal (weekly)
+            s_rs_leading = _check_rs_leading(rs_series, series)
 
-            initial_score = int(s1) + int(s4) + int(s5_hint)
+            # Pivot proximity hint using BPH (R7 pre-filter)
+            if bph and bph > 0:
+                dist_bph = (float(series.iloc[-1]) / bph - 1) * 100
+                s5_hint  = -10 <= dist_bph < 0
+            else:
+                price_52w = float(series.iloc[-52:].max()) if len(series) >= 52 else float(series.max())
+                price_pct = (float(series.iloc[-1]) / price_52w - 1) * 100 if price_52w > 0 else -100
+                s5_hint   = -10 <= price_pct < -1
+
+            # RS cross above zero (stage transition pre-filter)
+            s_rs_cross = (
+                any(prev < 0 <= curr for prev, curr in zip(
+                    rs_series.iloc[-5:].iloc[:-1], rs_series.iloc[-5:].iloc[1:]
+                ))
+                if len(rs_series) >= 5 else False
+            )
+
+            initial_score = int(s_rs_leading) + int(s5_hint) + int(s_rs_cross)
             if initial_score < 1:
                 continue
 
             initial_candidates.append({
-                "ticker":           ticker,
-                "current_rs":       current_rs,
-                "rs_series":        rs_series,
-                "weekly_close":     series,
-                "s1_stage":         s1,
-                "s_price_stab":     stab,
-                "s4_rs_new_high":   s4,
-                "s5_pivot_hint":    s5_hint,
-                "initial_score":    initial_score,
+                "ticker":         ticker,
+                "current_rs":     current_rs,
+                "rs_series":      rs_series,
+                "weekly_close":   series,
+                "bph":            bph,
+                "base_weeks":     base_stats["base_weeks"],
+                "base_depth_pct": base_stats["base_depth_pct"],
+                "base_tightness": base_stats["base_tightness"],
+                "s_rs_leading":   s_rs_leading,
+                "s5_pivot_hint":  s5_hint,
+                "initial_score":  initial_score,
             })
         except Exception as exc:
             log.debug("Weekly scan error for %s: %s", ticker, exc)
@@ -578,7 +799,7 @@ def run_breakout_screener(
     )
     top_for_daily = initial_candidates[:60]
 
-    # ── Step 5: Daily analysis ────────────────────────────────────────────────
+    # ── Step 6: Daily analysis — yfinance gates only (R4, R5, R6, R7) ────────
     log.info("Fetching daily data for %d candidates...", len(top_for_daily))
     pre_candidates: list[dict] = []
 
@@ -592,63 +813,109 @@ def run_breakout_screener(
             df = profile["df"]
             vp = profile["volume_profile"]
 
-            s2_vcp     = _check_vcp(df)
-            s3_vol_acc = _check_volume_accumulation(df)
-            s5_pivot   = _check_pivot_proximity_vp(df, vp)
-
-            # Stage 1→2 confirms if RS crossed AND (price stabilising OR ATR contracting)
-            s_price_stab = c["s_price_stab"]
-            s_atr_contr  = _check_atr_contracting(df)
-            s1_final     = c["s1_stage"] and (s_price_stab or s_atr_contr)
+            s_stage   = _check_stage_transition_150d(df, c["rs_series"])   # R4
+            s_vcp     = _check_vcp_with_volume_dryup(df)                   # R5
+            s_vol_acc = _check_volume_accumulation_ratio(df)               # R6
+            s_pivot   = _check_pivot_proximity_bph(df, c.get("bph"))       # R7
+            s_rs_lead = c["s_rs_leading"]                                  # R4 (RS divergence)
 
             signals = {
-                "stage_transition":    s1_final,
-                "vcp":                 s2_vcp,
-                "volume_accumulation": s3_vol_acc,
-                "rs_new_high":         c["s4_rs_new_high"],
-                "pivot_proximity":     s5_pivot,
+                "stage_transition":    s_stage,
+                "vcp":                 s_vcp,
+                "volume_accumulation": s_vol_acc,
+                "rs_leading":          s_rs_lead,
+                "pivot_proximity":     s_pivot,
             }
-            total_score = sum(1 for v in signals.values() if v)
-            if total_score == 0:
+
+            # R9: weighted composite score
+            score = _weighted_score(signals, c.get("base_weeks"), c.get("base_depth_pct"))
+            if score == 0.0:
                 continue
 
-            rs_series = c["rs_series"]
             pre_candidates.append({
                 "ticker":               ticker,
                 "company_name":         profile["company_name"],
                 "sector":               profile["sector"],
                 "current_rs":           c["current_rs"],
                 "signals":              signals,
+                "composite_score":      score,
                 "volume_profile":       vp,
+                "base_weeks":           c.get("base_weeks"),
+                "base_depth_pct":       c.get("base_depth_pct"),
+                "base_tightness":       c.get("base_tightness"),
                 "technical_reasoning":  _breakout_reasoning(c["current_rs"], signals, vp),
-                "composite_score":      total_score,
                 "stop_loss":            _calc_stop_loss(profile["price"], profile["atr_14"]),
                 "ohlcv_daily":          profile["ohlcv_daily"],
                 "ohlcv_weekly":         profile["ohlcv_weekly"],
-                "mrs_daily":            _mrs_daily_to_json(rs_series),
-                "mrs_weekly":           _mrs_weekly_to_json(rs_series),
+                "mrs_daily":            _mrs_daily_to_json(c["rs_series"]),
+                "mrs_weekly":           _mrs_weekly_to_json(c["rs_series"]),
             })
 
         except Exception as exc:
             log.debug("Daily analysis failed for %s: %s", ticker, exc)
             continue
 
-    log.info("Breakout screener: %d qualified candidates (pre-dedup)", len(pre_candidates))
+    log.info("Pre-candidates after yfinance gates: %d", len(pre_candidates))
 
-    # Batch AI reasoning — single Claude call for all candidates
+    # ── Step 7: Finnhub earnings gate — R1/R3 (run last to save quota) ───────
+    fh_key = os.environ.get("FINNHUB_API_KEY")
+    if fh_key and pre_candidates:
+        log.info(
+            "Applying Finnhub earnings gate to %d candidates (21-day window)...",
+            len(pre_candidates),
+        )
+        try:
+            import finnhub
+            fh_client = finnhub.Client(api_key=fh_key)
+            survivors: list[dict] = []
+            for c in pre_candidates:
+                has_earnings = _check_earnings_proximity_finnhub(c["ticker"], fh_client)
+                if has_earnings:
+                    log.info("Earnings gate: excluded %s (earnings within 21 days)", c["ticker"])
+                else:
+                    survivors.append(c)
+                time.sleep(1.1)  # Finnhub free tier: 60 calls/min
+            log.info(
+                "Finnhub earnings gate: %d → %d survivors",
+                len(pre_candidates), len(survivors),
+            )
+            pre_candidates = survivors
+        except Exception as exc:
+            log.warning("Finnhub earnings gate failed: %s — proceeding without gate", exc)
+    else:
+        if not fh_key:
+            log.info("FINNHUB_API_KEY not set — skipping earnings gate")
+
+    # ── Step 8: AI batch reasoning ────────────────────────────────────────────
     ai_reasonings = _batch_enrich_reasoning_via_ai(pre_candidates)
 
+    # ── Step 9: Finalise candidates with score and high_conviction (R10) ─────
     final_candidates: list[dict] = []
     for c in pre_candidates:
-        ticker = c["ticker"]
+        ticker       = c["ticker"]
+        score        = c["composite_score"]
+        signals_list = [k for k, v in c["signals"].items() if v]
+
+        # R10: High Conviction — score ≥ 7.0 AND rs_leading AND stage_transition AND non-bear
+        high_conviction = (
+            score >= 7.0
+            and bool(c["signals"].get("rs_leading"))
+            and bool(c["signals"].get("stage_transition"))
+            and regime != "bear"
+        )
+
         final_candidates.append({
             "ticker":          ticker,
             "company_name":    c["company_name"],
             "sector":          c["sector"],
             "mansfield_rs":    round(c["current_rs"], 1),
-            "composite_score": c["composite_score"],
+            "composite_score": score,
+            "signals":         signals_list,
+            "high_conviction": high_conviction,
+            "base_weeks":      c.get("base_weeks"),
+            "base_depth_pct":  c.get("base_depth_pct"),
+            "base_tightness":  c.get("base_tightness"),
             "reasoning":       ai_reasonings.get(ticker) or c["technical_reasoning"],
-            "signals":         [k for k, v in c["signals"].items() if v],
             "stop_loss":       c["stop_loss"],
             "ohlcv_daily":     c["ohlcv_daily"],
             "ohlcv_weekly":    c["ohlcv_weekly"],
@@ -660,7 +927,11 @@ def run_breakout_screener(
     cik_map   = _load_cik_map()
     seen_ciks: set[str] = set()
     deduped:   list[dict] = []
-    for c in sorted(final_candidates, key=lambda x: (x["composite_score"], x["mansfield_rs"]), reverse=True):
+    for c in sorted(
+        final_candidates,
+        key=lambda x: (x["composite_score"], x["mansfield_rs"]),
+        reverse=True,
+    ):
         cik = cik_map.get(c["ticker"].upper())
         if cik:
             if cik in seen_ciks:
@@ -671,17 +942,20 @@ def run_breakout_screener(
     top = deduped[:max_candidates]
 
     result = {
-        "candidates":     top,
-        "screened_at":    datetime.now().isoformat(),
-        "universe_size":  len(universe),
-        "initial_count":  len(initial_candidates),
-        "qualified_count":len(deduped),
+        "candidates":      top,
+        "screened_at":     datetime.now().isoformat(),
+        "universe_size":   len(universe),
+        "initial_count":   len(initial_candidates),
+        "qualified_count": len(deduped),
+        "regime":          regime,
     }
 
     try:
         with open(BREAKOUT_CACHE, "w") as f:
             json.dump(result, f, indent=2, default=str)
-        log.info("Breakout screener cached: %d candidates", len(top))
+        log.info(
+            "Breakout screener cached: %d candidates (regime=%s)", len(top), regime
+        )
     except Exception as exc:
         log.warning("Breakout cache write failed: %s", exc)
 

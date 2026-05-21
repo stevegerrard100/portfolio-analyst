@@ -244,22 +244,24 @@ def render_dashboard(
         })
 
     # --- Breakout Watch List (top 15) ---
+    # high_conviction and composite_score are now computed in breakout_screener.py (R9/R10)
+    # regime is surfaced at the result level for the regime warning banner (R8)
+    breakout_regime = breakout.get("regime", "bull")
     breakout_candidates = []
     for c in breakout.get("candidates", [])[:15]:
         signals = c.get("signals", [])
-        high_conviction = (
-            "stage_transition" in signals
-            and ("vcp" in signals or "volume_accumulation" in signals)
-        )
         breakout_candidates.append({
             "ticker":          c["ticker"],
             "company_name":    c.get("company_name") or c["ticker"],
             "sector":          c.get("sector", "?"),
             "mansfield_rs":    round(float(c.get("mansfield_rs", 0)), 1),
-            "composite_score": int(c.get("composite_score", 0)),
+            "composite_score": c.get("composite_score", 0),
             "reasoning":       c.get("reasoning", ""),
             "signals":         signals,
-            "high_conviction": high_conviction,
+            "high_conviction": bool(c.get("high_conviction", False)),
+            "base_weeks":      c.get("base_weeks"),
+            "base_depth_pct":  c.get("base_depth_pct"),
+            "base_tightness":  c.get("base_tightness"),
             "stop_loss":       c.get("stop_loss"),
             "ohlcv_daily":     c.get("ohlcv_daily"),
             "ohlcv_weekly":    c.get("ohlcv_weekly"),
@@ -297,6 +299,7 @@ def render_dashboard(
         "holdings":             holdings,
         "screener_candidates":  screener_candidates,
         "breakout_candidates":  breakout_candidates,
+        "breakout_regime":      breakout_regime,
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
         "today_actions":        _build_today_actions(analysis.get("actions", []), market_data or {}),
