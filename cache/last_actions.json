@@ -1,20 +1,26 @@
 [
   {
-    "id": "EL-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Est\u00e9e Lauder is down a third from its high with shrinking sales and no clear recovery catalyst \u2014 reduce your position to limit downside exposure."
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "SGLP.L's relative strength score of -99 and a price sitting 99.2% below its 52-week high signal a position that has effectively collapsed \u2014 exit immediately."
   },
   {
     "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Despite eye-catching revenue growth, Ondas is loss-making with high short interest and deteriorating fundamentals \u2014 reduce the position before weakness deepens."
+    "text": "ONDS has missed earnings three times and carries heavy debt despite eye-catching revenue growth \u2014 trim this position to bring your risk exposure in line with the REDUCE signal."
   },
   {
-    "id": "AEP-buy",
-    "action_type": "buy",
+    "id": "TSLA-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "TSLA is barely above water at +1.1% while revenue is actually shrinking \u2014 the fundamentals don't support the current valuation, so reduce your exposure here."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
     "priority": "low",
-    "text": "American Electric Power has confirmed a stage transition with VCP accumulation and benefits from sector tailwinds in regulated utilities \u2014 this is a high-conviction new entry."
+    "text": "META combines a low PE of 16.7 with 22% revenue growth, making it the best value among your high-growth holdings \u2014 consider adding to this position on any near-term dip."
   }
 ]
