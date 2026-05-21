@@ -1,38 +1,32 @@
 [
   {
-    "id": "ONDS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "ONDS has three consecutive earnings misses, 34% short interest, is down 34% from its high, and the position is tiny \u2014 close it and redeploy the capital."
-  },
-  {
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "EL is down 17% with shrinking revenue and sitting 34% below its yearly high \u2014 reduce exposure before this deteriorates further."
+    "text": "Trim EL \u2014 down 16.5% with revenues shrinking 8.2% and sitting 33.8% below its high, the turnaround story isn't working yet and you should reduce exposure."
   },
   {
-    "id": "5UR.DE-trim",
+    "id": "SGLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "5UR.DE is a small position down 16% with bearish momentum below the 50-day average \u2014 trim or eliminate this underperforming ETF."
+    "text": "Trim SGLP.L \u2014 it has the weakest relative strength in your entire portfolio at -99, is down 11.7% with bearish momentum, and silver miners are in a clear downtrend."
   },
   {
     "id": "VTR-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "VTR scores a perfect 5.0 on the breakout screener as a healthcare REIT with confirmed accumulation \u2014 consider a starter position while rates are easing."
+    "text": "Buy VTR \u2014 this healthcare REIT scores a perfect 5.0 on the breakout screener with confirmed stage transition and accumulation, well-suited for the current easing rate environment."
   },
   {
     "id": "WMB-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "WMB scores 5.0 with a confirmed stage breakout in natural gas infrastructure, a sector benefiting from AI-driven energy demand growth."
+    "text": "Buy WMB \u2014 Williams Companies scores 5.0 with a confirmed breakout pattern, and as a stable natural gas infrastructure play it offers defensive growth in this macro backdrop."
   },
   {
     "id": "UNH-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "UNH scores 5.0 as the largest US health services company showing a confirmed breakout pattern \u2014 a quality defensive growth name to add stability."
+    "text": "Buy UNH \u2014 the world's largest health services company scores a perfect 5.0 breakout signal with stage transition confirmed, offering quality growth at a reasonable valuation."
   }
 ]
