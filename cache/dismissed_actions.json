@@ -21,5 +21,11 @@
     "snoozed_until": "2026-05-28",
     "snoozed_at": "2026-05-21",
     "snoozed_price": 324.26
+  },
+  {
+    "id": "QBTS-sell",
+    "snoozed_until": "2026-05-28",
+    "snoozed_at": "2026-05-21",
+    "snoozed_price": 25.74
   }
 ]
