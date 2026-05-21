@@ -1,26 +1,32 @@
 [
   {
-    "id": "SGLP.L-sell",
+    "id": "ONDS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "SGLP.L's relative strength score of -99 and a price sitting 99.2% below its 52-week high signal a position that has effectively collapsed \u2014 exit immediately."
+    "text": "ONDS is down 16%, sitting 35% below its 52-week high with deteriorating momentum and no clear recovery catalyst \u2014 exit this position."
   },
   {
-    "id": "ONDS-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ONDS has missed earnings three times and carries heavy debt despite eye-catching revenue growth \u2014 trim this position to bring your risk exposure in line with the REDUCE signal."
+    "text": "IONQ is speculative, loss-making, and cash is being burned \u2014 reduce your position size to limit exposure if this story doesn't play out."
   },
   {
     "id": "TSLA-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "TSLA is barely above water at +1.1% while revenue is actually shrinking \u2014 the fundamentals don't support the current valuation, so reduce your exposure here."
+    "text": "Tesla is flat on your position but revenue growth has stalled and the valuation remains stretched \u2014 reduce exposure while the stock is near breakeven."
   },
   {
-    "id": "META-add",
+    "id": "AAPL-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Apple is at its 52-week high and up 15.3% for you, but at a PE of 31.6 the upside is limited from here \u2014 take some profit while it's at peak strength."
+  },
+  {
+    "id": "BE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META combines a low PE of 16.7 with 22% revenue growth, making it the best value among your high-growth holdings \u2014 consider adding to this position on any near-term dip."
+    "text": "Bloom Energy is at its 52-week high with 37% revenue growth and consistent earnings beats \u2014 strong momentum makes this a candidate to add to on any small pullback."
   }
 ]
