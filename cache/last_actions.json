@@ -1,38 +1,38 @@
 [
   {
+    "id": "ONDS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "ONDS has three consecutive earnings misses, 34% short interest, is down 34% from its high, and the position is tiny \u2014 close it and redeploy the capital."
+  },
+  {
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim Est\u00e9e Lauder \u2014 down 16% with revenues shrinking over 8% and sitting 34% below its high, the turnaround story isn't working and you should reduce your exposure."
-  },
-  {
-    "id": "ONDS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim Ondas \u2014 down 15% with no profits, massive cash burn, and 34% short interest means too many people are betting against this stock to hold a full position."
+    "text": "EL is down 17% with shrinking revenue and sitting 34% below its yearly high \u2014 reduce exposure before this deteriorates further."
   },
   {
     "id": "5UR.DE-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim this tech ETF \u2014 a 16% loss on a diversified ETF is a red flag that something structural is wrong, and ETFs shouldn't typically fall this hard."
+    "text": "5UR.DE is a small position down 16% with bearish momentum below the 50-day average \u2014 trim or eliminate this underperforming ETF."
   },
   {
     "id": "VTR-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "Buy Ventas \u2014 this healthcare real estate trust is showing a perfect breakout setup with confirmed accumulation, and benefits from an easing rate environment which helps dividend-paying real estate."
+    "text": "VTR scores a perfect 5.0 on the breakout screener as a healthcare REIT with confirmed accumulation \u2014 consider a starter position while rates are easing."
   },
   {
     "id": "WMB-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "Buy Williams Companies \u2014 this natural gas pipeline operator has a confirmed stage breakout with strong accumulation, offering steady cash flows in a supportive macro backdrop."
+    "text": "WMB scores 5.0 with a confirmed stage breakout in natural gas infrastructure, a sector benefiting from AI-driven energy demand growth."
   },
   {
     "id": "UNH-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "Buy UnitedHealth Group \u2014 the world's largest health insurer is flashing a high-conviction breakout signal with confirmed accumulation at a time when defensive quality names look attractive."
+    "text": "UNH scores 5.0 as the largest US health services company showing a confirmed breakout pattern \u2014 a quality defensive growth name to add stability."
   }
 ]
