@@ -1,44 +1,38 @@
 [
   {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "QBTS has no profits, negative cash flow, 16% short interest, and is down 43% from its high \u2014 this speculative bet isn't working and should be closed."
-  },
-  {
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "EL is down 16% with shrinking revenues and sits 34% off its high \u2014 trim this losing position to reduce further downside risk."
+    "text": "Trim Est\u00e9e Lauder \u2014 down 16% with revenues shrinking over 8% and sitting 34% below its high, the turnaround story isn't working and you should reduce your exposure."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is your weakest ETF at -10% with bearish momentum below its 50-day average \u2014 trim to free up capital for stronger positions."
+    "text": "Trim Ondas \u2014 down 15% with no profits, massive cash burn, and 34% short interest means too many people are betting against this stock to hold a full position."
   },
   {
-    "id": "VST-trim",
+    "id": "5UR.DE-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "VST is 31% off its high with three consecutive earnings misses and weak relative strength \u2014 reduce exposure until the trend stabilizes."
-  },
-  {
-    "id": "SILG.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "SILG.L is down 13% and your worst precious metals holding while you already own GDX.L and GDXJ.L \u2014 trim this overlapping, underperforming position."
+    "text": "Trim this tech ETF \u2014 a 16% loss on a diversified ETF is a red flag that something structural is wrong, and ETFs shouldn't typically fall this hard."
   },
   {
     "id": "VTR-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "VTR scores a perfect 5.0 as a healthcare REIT breakout candidate with confirmed accumulation, and the easing rate environment directly benefits rate-sensitive real estate."
+    "text": "Buy Ventas \u2014 this healthcare real estate trust is showing a perfect breakout setup with confirmed accumulation, and benefits from an easing rate environment which helps dividend-paying real estate."
   },
   {
     "id": "WMB-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "WMB scores a perfect 5.0 with a confirmed stage transition in natural gas infrastructure, offering steady cash flows and defensive characteristics in the current environment."
+    "text": "Buy Williams Companies \u2014 this natural gas pipeline operator has a confirmed stage breakout with strong accumulation, offering steady cash flows in a supportive macro backdrop."
+  },
+  {
+    "id": "UNH-buy",
+    "action_type": "buy",
+    "priority": "low",
+    "text": "Buy UnitedHealth Group \u2014 the world's largest health insurer is flashing a high-conviction breakout signal with confirmed accumulation at a time when defensive quality names look attractive."
   }
 ]
