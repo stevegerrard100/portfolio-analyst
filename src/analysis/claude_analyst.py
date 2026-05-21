@@ -22,7 +22,7 @@ import anthropic
 
 log = logging.getLogger(__name__)
 
-MODEL_PROSE     = "claude-sonnet-4-6"  # descriptive prompts: macro, sector, opportunities, actions
+MODEL_PROSE     = "claude-sonnet-4-6"  # descriptive prompts: macro, sector, opportunities
 MODEL_REASONING = "claude-opus-4-6"   # decision-grade prompts: holdings signals, verdict
 
 SYSTEM_PROMPT = """You are a personal financial co-pilot speaking to a non-expert investor.
@@ -435,7 +435,7 @@ MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and 
     mkt = market_data or {}
 
     try:
-        raw = _call(prompt, max_tokens=2000)
+        raw = _call(prompt, max_tokens=2000, model=MODEL_REASONING)
         # Strip accidental markdown fences
         raw = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
         actions = json.loads(raw)
