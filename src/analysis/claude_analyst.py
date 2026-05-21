@@ -22,7 +22,8 @@ import anthropic
 
 log = logging.getLogger(__name__)
 
-MODEL = "claude-sonnet-4-6"
+MODEL_PROSE     = "claude-sonnet-4-6"  # descriptive prompts: macro, sector, opportunities, actions
+MODEL_REASONING = "claude-opus-4-6"   # decision-grade prompts: holdings signals, verdict
 
 SYSTEM_PROMPT = """You are a personal financial co-pilot speaking to a non-expert investor.
 Your job is to interpret financial data and deliver clear conclusions in
@@ -43,10 +44,10 @@ def _client() -> anthropic.Anthropic:
     return anthropic.Anthropic()
 
 
-def _call(prompt: str, max_tokens: int = 800) -> str:
+def _call(prompt: str, max_tokens: int = 800, model: str = MODEL_PROSE) -> str:
     """Single Claude API call against the shared system prompt."""
     msg = _client().messages.create(
-        model=MODEL,
+        model=model,
         max_tokens=max_tokens,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
@@ -241,7 +242,7 @@ Portfolio positions:
 
 {positions_text}"""
 
-    raw = _call(prompt, max_tokens=max(2000, len(positions) * 120))
+    raw = _call(prompt, max_tokens=max(2000, len(positions) * 120), model=MODEL_REASONING)
 
     # Build a canonical upper→original mapping so parsed tickers can be
     # mapped back to the exact format stored in the portfolio (COPGl, SEMI.L…)
@@ -552,7 +553,7 @@ Write "Today's Verdict" — a single punchy paragraph (max 100 words) that:
 
 Be direct. Lead with a verdict, not with observations. No hedging."""
 
-    return _strip_md_markers(_call(prompt, max_tokens=250))
+    return _strip_md_markers(_call(prompt, max_tokens=250, model=MODEL_REASONING))
 
 
 # ---------------------------------------------------------------------------
@@ -583,7 +584,8 @@ def run_analysis(
     All optional inputs default to {} / None — analysis degrades gracefully
     to whatever data is available.
     """
-    log.info("Claude analysis: starting six-prompt pipeline (model=%s)", MODEL)
+    log.info("Claude analysis: starting six-prompt pipeline (reasoning=%s prose=%s)",
+             MODEL_REASONING, MODEL_PROSE)
 
     # 1 & 2 — independent
     log.info("Claude: macro narrative...")
@@ -635,5 +637,5 @@ def run_analysis(
         "actions":            actions,
         "verdict":            verdict,
         "generated_at":       datetime.now().isoformat(),
-        "model":              MODEL,
+        "model":              MODEL_REASONING,
     }
