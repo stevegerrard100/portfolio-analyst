@@ -65,7 +65,7 @@ src/
     macro.py                  FRED macro series
     sector_flows.py           Finviz sector perf + SPDR ETF Mansfield RS
     screener.py               S&P 500 growth screen (multi-pass)
-    breakout_screener.py      S&P 500 accumulation/breakout screen (5-signal)
+    breakout_screener.py      S&P 500 accumulation/breakout screen (5-signal, weighted /10, regime-aware)
     institutional.py          (unused in main pipeline; available for extension)
 
 netlify/
@@ -149,8 +149,10 @@ docs/
 
 ### Anthropic Claude
 - **Key**: `ANTHROPIC_API_KEY`
-- **Model**: `claude-sonnet-4-6`
-- Six prompts per run for main analysis (see §4.1). Breakout screener uses one additional batched call for candidate reasoning (see §4.7).
+- **Two model constants** (in `claude_analyst.py`):
+  - `MODEL_REASONING = "claude-opus-4-6"` — decision-grade prompts: `analyse_holdings`, `todays_verdict`, `todays_actions`
+  - `MODEL_PROSE = "claude-sonnet-4-6"` — descriptive prompts: `macro_plain_english`, `sector_rotation_narrative`, `growth_opportunities`
+- Breakout screener uses one additional batched call for candidate reasoning — always on `claude-sonnet-4-6` (hardcoded, do not change).
 - Total token usage (main pipeline): ~4,000–7,000 input + ~3,000–5,000 output per run.
 
 ### GitHub Contents API (via Netlify function)
@@ -166,14 +168,14 @@ docs/
 
 Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor persona):
 
-| # | Function | Input | Output | max_tokens |
-|---|----------|-------|--------|-----------|
-| 1 | `macro_plain_english` | FRED macro dict | 2–3 paragraphs | 400 |
-| 2 | `sector_rotation_narrative` | Finviz perf + ETF RS | 1–2 paragraphs | 350 |
-| 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis}]` | max(2000, n×120) |
-| 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 |
-| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector | `[{priority, action_type, text, id}]` JSON | 2000 |
-| 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 |
+| # | Function | Input | Output | max_tokens | Model |
+|---|----------|-------|--------|-----------|-------|
+| 1 | `macro_plain_english` | FRED macro dict | 2–3 paragraphs | 400 | Sonnet |
+| 2 | `sector_rotation_narrative` | Finviz perf + ETF RS | 1–2 paragraphs | 350 | Sonnet |
+| 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis}]` | max(2000, n×120) | Opus |
+| 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 | Sonnet |
+| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
+| 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 | Opus |
 
 Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–4.
 
@@ -259,20 +261,50 @@ Portfolio tickers are excluded from output.
 
 ### 4.6 `src/data/breakout_screener.py`
 
-Five-signal accumulation and early breakout screen over the S&P 500. Results cached for 8 hours (`cache/breakout_screener.json`).
+Five-signal accumulation/early-breakout screen over the S&P 500. Weighted composite score out of 10. Results cached for 8 hours (`cache/breakout_screener.json`).
 
-**Five signals:**
-1. `stage_transition` — RS acceleration + price above SMA50
-2. `vcp` — Volatility Contraction Pattern
-3. `volume_accumulation` — above-average volume on up days
-4. `rs_leading_price` — RS making new highs before price
-5. `pivot_proximity` — within 5% of consolidation high
+**Gate sequence (R1)** — runs in this order to minimise API quota usage:
+1. Weekly pre-filter — batch yfinance download (~500 tickers, fast)
+2. Daily signal check — per-ticker yfinance (~60 tickers, moderate)
+3. Finnhub earnings gate — per-survivor only (~25–40 tickers, slow)
 
-Composite score = signal count (0–5).
+**Five signals and weights:**
 
-**AI reasoning**: Single batched Claude API call. `max_tokens = min(8192, 220 * len(candidates))`.
+| Signal key | Description | Points |
+|-----------|-------------|--------|
+| `stage_transition` | Price above rising 150-day SMA + RS crossed above zero | 2.0 |
+| `rs_leading` | RS within 8% of 52w high while price is >5% below its own 52w high | 2.0 |
+| `vcp` | Four 20-day windows with contracting swings, declining volume, and 4-day final-window vol avg ≥20% below 50-day vol SMA | 1.5 |
+| `volume_accumulation` | Up-day vol / down-day vol ratio ≥ 1.5× over trailing 20 sessions, within flat base (range ≤15%) | 1.0 |
+| `pivot_proximity` | Price within 5% below to 0.5% above the Base Pivot High | 1.0 |
 
-**High-conviction flag**: `stage_transition` AND (`vcp` OR `volume_accumulation`).
+**Base quality bonus**: +0.5 pts if base_weeks ≥ 6 AND base_depth_pct ≤ 30%.
+
+**Scoring**: `(raw_score + bonus) / 8.0 * 10.0`, rounded to 1dp, capped at 10.
+
+**Key computed values:**
+
+- **Base Pivot High (BPH)**: highest weekly close over the past 26 weeks. Used by pivot_proximity signal and base stats.
+- **Base stats** (surfaced in dashboard table):
+  - `base_weeks` — weeks since the BPH was set
+  - `base_depth_pct` — (BPH − base_low) / BPH × 100
+  - `base_tightness` — std-dev / mean of weekly closes in the base (lower = tighter)
+
+**Market regime** (computed once per run, stored in result dict):
+- SPY 200-day SMA + ^VIX (yfinance) + HY spread (FRED BAMLH0A0HYM2, if key available)
+- `bear`: SPY below 200d SMA OR VIX ≥ 35 OR HY spread ≥ 500 bps
+- `bull`: SPY above 200d SMA AND VIX < 25 AND HY spread < 400 bps
+- `caution`: everything else; also the fallback on data errors
+
+**High Conviction flag (R10)**: score ≥ 7.0 AND `rs_leading` AND `stage_transition` AND regime ≠ `"bear"`. High Conviction is suppressed entirely in bear regime.
+
+**Finnhub earnings gate (R3)**: calls `earnings_calendar(_from=today, to=today+21d, symbol=ticker)` for each yfinance survivor. Tickers with an event in the window are excluded (too binary an event for base setups). 1.1s sleep per call (free tier: 60/min). Gate skipped gracefully if `FINNHUB_API_KEY` absent.
+
+**AI reasoning**: Single batched Claude API call on `claude-sonnet-4-6` (hardcoded — do not change). `max_tokens = min(8192, 220 * len(candidates))`.
+
+**Result dict keys**: `candidates`, `screened_at`, `universe_size`, `initial_count`, `qualified_count`, `regime`.
+
+**⚠️ Cache schema note**: After any change to this file, delete `cache/breakout_screener.json` before the next run. Old caches have `composite_score /5` and lack `regime`/`high_conviction`/base-stats fields.
 
 ### 4.7 `src/data/fundamentals.py`
 
@@ -419,9 +451,12 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 - Signal filter buttons (ALL / ADD / WATCH / HOLD / REDUCE / EXIT) with counts
 
 **Tab 3 — Opportunities**:
-- **Growth Opportunities** — condensed intro (first 3 sentences of Claude's opportunities narrative)
+- **Growth Opportunities** — full Claude opportunities narrative (no truncation)
 - **Momentum Opportunities** table — top 10 screener candidates with expandable chart rows
-- **Breakout Watch List** table — top 15 breakout candidates with expandable chart rows; high-conviction picks highlighted green
+- **Breakout Watch List** — top 15 breakout candidates with expandable chart rows:
+  - Regime warning banner (red in bear, amber in caution, hidden in bull) appears above the table
+  - Table columns: Ticker, Company, Sector, Mansfield RS, Signals (badge per signal), Score /10, Base Wks, Depth %
+  - High-conviction picks highlighted green with a `High Conviction` badge; suppressed in bear regime
 
 ### Action Board
 
@@ -534,7 +569,15 @@ Must be at module level in `trading212.py` and `main.py`. Inside a function, Pyt
 
 ### Breakout AI Batch Call — Token Cap
 
-`max_tokens = min(8192, 220 * len(candidates))`. The model hard limit is 8,192 output tokens. With 37 candidates the cap just fits. If candidate count grows significantly, reduce the per-candidate budget.
+`max_tokens = min(8192, 220 * len(candidates))`. The model hard limit is 8,192 output tokens. With 37 candidates the cap just fits. If candidate count grows significantly, reduce the per-candidate budget. The breakout screener's AI call always uses `claude-sonnet-4-6` — do not change this to Opus.
+
+### Breakout Screener Cache — Schema Compatibility
+
+`cache/breakout_screener.json` must be deleted before the first run after any change to `breakout_screener.py`. Old caches have `composite_score /5` and lack `regime`, `high_conviction`, `base_weeks`, `base_depth_pct`, and `base_tightness` fields. The renderer and template will produce incorrect output if served stale cache with the wrong schema.
+
+### Finnhub Earnings Gate — Gate Ordering
+
+The Finnhub earnings gate in `breakout_screener.py` runs **after** all yfinance gates, not before. This is intentional (R1): yfinance gates reduce ~500 tickers to ~25–40 survivors, then Finnhub is called only for those survivors. Reversing the order would burn ~500 Finnhub calls per run against the free-tier 60/min limit.
 
 ### Holdings Charts Outside the Scrollable Table
 
@@ -568,7 +611,7 @@ The Netlify function's commit message for updating `dismissed_actions.json` incl
 |--------|-------|-------------|
 | Trading 212 pies | 1 req / 30s | `trading212.py` sleep |
 | yfinance | ~2 req/s practical | 0.5s sleep in `_download()` |
-| Finnhub (free tier) | 60 req/min | 1.0s sleep in `fundamentals.py` |
+| Finnhub (free tier) | 60 req/min | 1.0s sleep in `fundamentals.py`; 1.1s sleep in `breakout_screener.py` earnings gate |
 | FRED | 120 req/min | No sleep needed |
 | Finviz | No stated limit | Single request per run |
 | SEC EDGAR | 10 req/s | 0.3s sleep in `ticker_resolver.py` |
@@ -580,7 +623,7 @@ The Netlify function's commit message for updating `dismissed_actions.json` incl
 - Steps 3–4 (sector + macro): ~1 min
 - Step 5 (fundamentals): ~3 min
 - Step 6 (screener): 45–75 min cold; 0 if cached
-- Step 7 (breakout screener): 10–20 min cold; 0 if cached
+- Step 7 (breakout screener): 15–30 min cold (includes Finnhub earnings gate: ~1.1s × survivors); 0 if cached
 - Step 8 (Claude analysis): ~45s (6 API calls + 1 batch breakout call)
 - Step 9 (render): <1s
 
@@ -645,7 +688,11 @@ Composite score weights and pass-1 filters are in `screener.py`. `_disqualifiers
 
 ### Changing breakout signal thresholds
 
-Each signal has its own function in `breakout_screener.py`. If you rename a signal key, update the high-conviction check in both `renderer.py` and `template.html`.
+Each signal has its own function in `breakout_screener.py`. Signal weights are in `_SIGNAL_WEIGHTS`. High Conviction threshold (currently 7.0) is in `run_breakout_screener()`. Regime thresholds are in `_assess_market_regime()`.
+
+If you rename a signal key: update `BREAKOUT_SIGNAL_LABELS` in `template.html`, and the `high_conviction` computation in `run_breakout_screener()`. The old `high_conviction` logic in `renderer.py` has been removed — it is now computed in the screener.
+
+After any change, delete `cache/breakout_screener.json` before the next run.
 
 ### Running locally
 
