@@ -44,6 +44,10 @@ CACHE_DIR = Path("cache")
 SCREENER_CACHE = CACHE_DIR / "screener.json"
 SCREENER_CACHE_HOURS = 8
 
+# Increment this whenever the result dict schema changes so stale caches are
+# auto-discarded on the next run without requiring manual file deletion.
+CACHE_SCHEMA_VERSION = 2
+
 CIK_CACHE       = CACHE_DIR / "sec_company_tickers.json"
 CIK_CACHE_DAYS  = 7
 _SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
@@ -464,9 +468,17 @@ def run_screener(
             age_h = (datetime.now() - datetime.fromtimestamp(
                 SCREENER_CACHE.stat().st_mtime)).total_seconds() / 3600
             if age_h < SCREENER_CACHE_HOURS:
-                log.info("Using cached screener (%.1fh old)", age_h)
                 with open(SCREENER_CACHE) as f:
-                    return json.load(f)
+                    cached = json.load(f)
+                found_version = cached.get("schema_version")
+                if found_version != CACHE_SCHEMA_VERSION:
+                    log.info(
+                        "Screener cache schema version mismatch (found %s, expected %d) — discarding",
+                        found_version, CACHE_SCHEMA_VERSION,
+                    )
+                else:
+                    log.info("Using cached screener (%.1fh old)", age_h)
+                    return cached
         except Exception:
             pass
 
@@ -600,6 +612,7 @@ def run_screener(
     log.info("Pass 3 (qualified after CIK dedup): %d → returning top %d", len(deduped), max_candidates)
 
     result = {
+        "schema_version": CACHE_SCHEMA_VERSION,
         "candidates":     deduped[:max_candidates],
         "all_candidates": candidates,          # full list incl. disqualified (for debugging)
         "screened_at":    datetime.now().isoformat(),

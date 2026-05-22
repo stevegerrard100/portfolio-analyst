@@ -19,9 +19,8 @@ High Conviction: score ≥ 7.0 AND rs_leading AND stage_transition AND non-bear 
 Gate sequence (R1): yfinance signals first → Finnhub earnings gate last (saves API quota).
 
 Cache: 8h TTL (same policy as the growth screener).
-
-⚠️  Delete cache/breakout_screener.json before the next run after upgrading —
-    the old cache has composite_score /5 and lacks regime / base_stats fields.
+      Schema versioning (CACHE_SCHEMA_VERSION) auto-discards stale caches when
+      the result dict schema changes — no manual deletion needed.
 """
 
 import json
@@ -50,6 +49,12 @@ log = logging.getLogger(__name__)
 CACHE_DIR = Path("cache")
 BREAKOUT_CACHE = CACHE_DIR / "breakout_screener.json"
 BREAKOUT_CACHE_HOURS = 8
+
+# Increment this whenever the result dict schema changes (e.g. new candidate fields,
+# renamed keys) so stale caches are auto-discarded on the next run.
+# Improvements 2-5 all add fields to the result dict, so start at 3 to ensure
+# caches written before those improvements are invalidated automatically.
+CACHE_SCHEMA_VERSION = 3
 
 
 def _calc_stop_loss(price: float, atr: float | None) -> float | None:
@@ -680,9 +685,17 @@ def run_breakout_screener(
                 datetime.now() - datetime.fromtimestamp(BREAKOUT_CACHE.stat().st_mtime)
             ).total_seconds() / 3600
             if age_h < BREAKOUT_CACHE_HOURS:
-                log.info("Using cached breakout screener (%.1fh old)", age_h)
                 with open(BREAKOUT_CACHE) as f:
-                    return json.load(f)
+                    cached = json.load(f)
+                found_version = cached.get("schema_version")
+                if found_version != CACHE_SCHEMA_VERSION:
+                    log.info(
+                        "Breakout cache schema version mismatch (found %s, expected %d) — discarding",
+                        found_version, CACHE_SCHEMA_VERSION,
+                    )
+                else:
+                    log.info("Using cached breakout screener (%.1fh old)", age_h)
+                    return cached
         except Exception:
             pass
 
@@ -977,6 +990,7 @@ def run_breakout_screener(
     top = deduped[:max_candidates]
 
     result = {
+        "schema_version":  CACHE_SCHEMA_VERSION,
         "candidates":      top,
         "screened_at":     datetime.now().isoformat(),
         "universe_size":   len(universe),
