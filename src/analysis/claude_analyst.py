@@ -372,15 +372,17 @@ def todays_actions(
             )
 
     # ── High-conviction breakout candidates ────────────────────────────────
+    # Use the high_conviction flag computed by the screener: it enforces
+    # score >= 7.0, rs_leading, stage_transition, AND non-bear regime in one
+    # place rather than duplicating the threshold logic here.
     breakout_lines = []
     for c in (breakout or {}).get("candidates", [])[:15]:
-        signals = c.get("signals", [])
-        if ("stage_transition" in signals
-                and ("vcp" in signals or "volume_accumulation" in signals)):
-            breakout_lines.append(
-                f"  {c['ticker']} (score {c.get('composite_score',0)}): "
-                f"{c.get('reasoning','')[:120]}"
-            )
+        if not c.get("high_conviction"):
+            continue
+        breakout_lines.append(
+            f"  {c['ticker']} (score {c.get('composite_score', 0)}): "
+            f"{c.get('reasoning', '')[:120]}"
+        )
 
     # ── Macro snapshot ─────────────────────────────────────────────────────
     yc     = (macro or {}).get("yield_curve", {})

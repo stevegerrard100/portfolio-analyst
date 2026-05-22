@@ -134,6 +134,7 @@ def render_dashboard(
     breakout: dict | None = None,
     macro: dict | None = None,
     sector_flows: dict | None = None,
+    regret_tracker: list | None = None,
     output_path: str = "output/index.html",
 ) -> None:
     """
@@ -306,11 +307,16 @@ def render_dashboard(
         "dismiss_url":          os.environ.get("NETLIFY_DISMISS_URL", ""),
     }
 
+    data["regret_tracker"] = regret_tracker or []
+
     template = _TEMPLATE.read_text(encoding="utf-8")
     html = template.replace("{{DASHBOARD_DATA}}", json.dumps(data, indent=2, ensure_ascii=False))
 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
-    log.info("Dashboard written → %s  (%d holdings, %d screener picks, %d breakout picks)",
-             output_path, len(holdings), len(screener_candidates), len(breakout_candidates))
+    log.info(
+        "Dashboard written → %s  (%d holdings, %d screener picks, %d breakout picks, %d regret entries)",
+        output_path, len(holdings), len(screener_candidates), len(breakout_candidates),
+        len(regret_tracker or []),
+    )

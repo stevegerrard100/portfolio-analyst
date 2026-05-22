@@ -54,11 +54,18 @@ def main() -> None:
     portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
     log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
+    # Pre-compute exited tickers so their current prices are included in the
+    # main yfinance batch (step 2) — avoids a separate fetch in the renderer.
+    from src.data.regret_tracker import get_exited_tickers as _get_exited
+    _exited_tickers = _get_exited(portfolio.get("order_history", []), set(portfolio_tickers))
+    if _exited_tickers:
+        log.info("Regret tracker: %d exited ticker(s) to pre-fetch: %s", len(_exited_tickers), _exited_tickers)
+
     # ── 2. Market data ────────────────────────────────────────────────────────
     _step(2, 9, "Market data (yfinance + Mansfield RS)")
     from src.data.market_data import fetch_market_data, SPDR_ETFS, COMMODITY_PROXIES
-    # Always include SPDR ETFs and commodity proxies for sector rotation signals
-    extra = [t for t in (SPDR_ETFS + COMMODITY_PROXIES) if t not in portfolio_tickers]
+    # Always include SPDR ETFs, commodity proxies, and exited tickers (for Regret Tracker)
+    extra = [t for t in (SPDR_ETFS + COMMODITY_PROXIES + _exited_tickers) if t not in portfolio_tickers]
     all_tickers = portfolio_tickers + extra
     market_data = fetch_market_data(all_tickers)
     log.info("Market data: %d/%d tickers processed", len(market_data), len(all_tickers))
@@ -105,6 +112,14 @@ def main() -> None:
              len(breakout.get("candidates", [])),
              breakout.get("universe_size", 0))
 
+    # ── Regret Tracker (uses already-fetched market data) ────────────────────
+    from src.data.regret_tracker import build_regret_tracker
+    regret_tracker = build_regret_tracker(
+        portfolio.get("order_history", []),
+        set(portfolio_tickers),
+        market_data,
+    )
+
     # ── 8. Claude analysis ────────────────────────────────────────────────────
     _step(8, 9, "Claude analysis (6-prompt pipeline)")
 
@@ -149,6 +164,7 @@ def main() -> None:
         breakout=breakout,
         macro=macro,
         sector_flows=sector_flows,
+        regret_tracker=regret_tracker,
         output_path=_OUTPUT_HTML,
     )
 

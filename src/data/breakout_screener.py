@@ -802,12 +802,43 @@ def run_breakout_screener(
     # ── Step 6: Daily analysis — yfinance gates only (R4, R5, R6, R7) ────────
     log.info("Fetching daily data for %d candidates...", len(top_for_daily))
     pre_candidates: list[dict] = []
+    gate1_excluded = 0
 
     for c in top_for_daily:
         ticker = c["ticker"]
         try:
             profile = _breakout_profile(ticker)
             if profile is None:
+                continue
+
+            # Gate 1: minimum base quality — must be checked before scoring (R1)
+            # base_depth_pct < 10% → not a real pullback (e.g. 0.9% means price
+            # is still pinned to its high, not consolidating).
+            # base_weeks < 6     → too short to be an accumulation base.
+            # base_depth_pct > 55% → too deep; likely a distribution, not a base.
+            # When either stat is None (insufficient history) we allow through.
+            base_weeks     = c.get("base_weeks")
+            base_depth_pct = c.get("base_depth_pct")
+            if base_weeks is not None and base_weeks < 6:
+                log.debug(
+                    "Gate 1 fail: %s — base_weeks=%d < 6 (minimum base length)",
+                    ticker, base_weeks,
+                )
+                gate1_excluded += 1
+                continue
+            if base_depth_pct is not None and base_depth_pct < 10.0:
+                log.debug(
+                    "Gate 1 fail: %s — base_depth_pct=%.1f%% < 10%% (too shallow, not a real base)",
+                    ticker, base_depth_pct,
+                )
+                gate1_excluded += 1
+                continue
+            if base_depth_pct is not None and base_depth_pct > 55.0:
+                log.debug(
+                    "Gate 1 fail: %s — base_depth_pct=%.1f%% > 55%% (too deep, likely distribution)",
+                    ticker, base_depth_pct,
+                )
+                gate1_excluded += 1
                 continue
 
             df = profile["df"]
@@ -855,6 +886,10 @@ def run_breakout_screener(
             log.debug("Daily analysis failed for %s: %s", ticker, exc)
             continue
 
+    log.info(
+        "Gate 1 (base quality): %d candidate(s) excluded (base_weeks < 6, depth < 10%%, or depth > 55%%)",
+        gate1_excluded,
+    )
     log.info("Pre-candidates after yfinance gates: %d", len(pre_candidates))
 
     # ── Step 7: Finnhub earnings gate — R1/R3 (run last to save quota) ───────

@@ -303,7 +303,84 @@ class Trading212Client:
         return direct
 
     def get_order_history(self) -> list:
-        return self._to_list(self._get(_EP_ORDERS))
+        """
+        Fetch order history (newest-first), following nextPagePath pagination.
+
+        Stops early once the oldest item on a page pre-dates _ORDERS_CUTOFF —
+        there is no need to walk history back to account creation.  Date
+        filtering for the regret tracker is still done in Python by the caller
+        (build_regret_tracker).
+
+        T212 response shape:
+            {'items': [...], 'nextPagePath': '/equity/history/orders?cursor=<token>&limit=50'}
+        nextPagePath is absent (or null) on the last page.
+        """
+        _ORDERS_CUTOFF = "2026-01-01"
+        all_items: list = []
+        endpoint: str = _EP_ORDERS + "?limit=50"
+        page = 0
+
+        while True:
+            page += 1
+            log.info("T212: order history page %d — %s", page, endpoint)
+            raw = self._get(endpoint)
+
+            if isinstance(raw, list):
+                # Older API versions returned a bare list
+                log.info("T212: order history page %d — list response, %d item(s)", page, len(raw))
+                all_items.extend(raw)
+                break
+
+            if isinstance(raw, dict):
+                # Detect T212 error bodies returned as HTTP 200
+                if "code" in raw or "error" in raw:
+                    log.warning(
+                        "T212: order history page %d — error body (keys=%s): %s",
+                        page, list(raw.keys()),
+                        {k: raw.get(k) for k in ("code", "error", "message") if k in raw},
+                    )
+                    break
+
+                items = raw.get("items", [])
+                next_page_path = raw.get("nextPagePath")
+                log.info(
+                    "T212: order history page %d — %d item(s), nextPagePath=%s",
+                    page, len(items), repr(next_page_path),
+                )
+                all_items.extend(items)
+
+                if not next_page_path:
+                    break
+
+                # Early stop: T212 returns orders newest-first.  Once the oldest
+                # item on this page pre-dates the cutoff, every subsequent page
+                # will too — no point fetching further.
+                oldest_date = ""
+                for item in items:
+                    d = ((item.get("fill") or {}).get("filledAt") or
+                         (item.get("order") or {}).get("filledAt") or "")
+                    if d and (not oldest_date or d < oldest_date):
+                        oldest_date = d
+                if oldest_date and oldest_date[:10] < _ORDERS_CUTOFF:
+                    log.info(
+                        "T212: order history — stopping early: oldest item on page %d is %s (cutoff %s)",
+                        page, oldest_date[:10], _ORDERS_CUTOFF,
+                    )
+                    break
+
+                endpoint = next_page_path
+            else:
+                log.warning(
+                    "T212: order history page %d — unexpected response type %s",
+                    page, type(raw).__name__,
+                )
+                break
+
+        log.info(
+            "T212: order history — %d total item(s) across %d page(s)",
+            len(all_items), page,
+        )
+        return all_items
 
     def get_pies(self) -> list:
         """Return list of pie summaries (id, cash, result).  404 → []."""
@@ -666,6 +743,7 @@ def fetch_portfolio(use_live: bool = True, allow_mock: bool = False) -> dict:
 
         log.info("T212: fetching order history...")
         raw_orders = client.get_order_history()
+        log.info("T212: order history — %d raw item(s) received", len(raw_orders))
 
     except T212AuthError as exc:
         log.error("T212 auth failed: %s", exc)
@@ -696,6 +774,12 @@ def fetch_portfolio(use_live: bool = True, allow_mock: bool = False) -> dict:
 
     positions     = [_enrich_position(p, sectors) for p in raw_positions]
     order_history = _parse_order_history(raw_orders)
+    log.info(
+        "T212: order history — %d order(s) parsed | %d SELL | %d with fill_price>0",
+        len(order_history),
+        sum(1 for o in order_history if o.get("side", "").upper() == "SELL"),
+        sum(1 for o in order_history if float(o.get("fill_price") or 0) > 0),
+    )
     account       = _parse_account(summary, cash_data)
 
     environment = "LIVE" if use_live else "DEMO"

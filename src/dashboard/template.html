@@ -222,10 +222,15 @@
       border-bottom: 1px solid var(--border);
       padding: 0 28px;
       display: flex;
+      overflow-x: auto;          /* prevent buttons being clipped on narrow viewports */
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;     /* Firefox: hide scrollbar but keep scroll */
       position: sticky;
       top: 48px; /* sits immediately below the 48px header */
       z-index: 190;
     }
+    .tab-bar::-webkit-scrollbar { display: none; } /* Chrome/Safari: hide scrollbar */
     .tab-btn {
       padding: 11px 20px;
       background: transparent;
@@ -301,6 +306,7 @@
     <button class="tab-btn active" data-tab="brief">Today's Brief</button>
     <button class="tab-btn" data-tab="portfolio">My Portfolio</button>
     <button class="tab-btn" data-tab="opportunities">Opportunities</button>
+    <button class="tab-btn" data-tab="regret">Regret Tracker</button>
   </nav>
 
   <div class="page">
@@ -404,6 +410,30 @@
       </div>
     </div>
 
+    <!-- Tab 4: Regret Tracker -->
+    <div id="tab-regret" class="tab-panel">
+      <div class="section">
+        <div class="card">
+          <div class="card-title">Regret Tracker</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:16px">Positions fully exited since 1 January 2026, compared to today's price. <span style="color:var(--red)">Red</span> = current price is higher than your sell price (sold too early). <span style="color:var(--green)">Green</span> = current price is lower (sold well).</p>
+          <div id="regret-empty" style="display:none;color:var(--muted);font-size:13px;padding:32px 0;text-align:center">No fully exited positions found since 1 January 2026.</div>
+          <div class="h-table-wrap">
+            <table class="stbl" id="regret-table">
+              <thead><tr>
+                <th>Ticker</th>
+                <th>Company</th>
+                <th>Sell Date</th>
+                <th>Sell Price</th>
+                <th>Current Price</th>
+                <th>% Change</th>
+              </tr></thead>
+              <tbody id="regret-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -456,6 +486,23 @@
     // ── Header ───────────────────────────────────────────────────────────────
     document.getElementById('hdr-date').textContent = DATA.meta.date_str;
     document.getElementById('hdr-sub').textContent  = `Generated ${DATA.meta.time_str} · ${DATA.meta.model}`;
+
+    // ── localStorage helpers for client-side dismissal persistence ─────────────
+    const LS_KEY = 'portfolioAnalyst_dismissed';
+    function _lsDismissed() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+    }
+    function _lsSave(map) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(map)); } catch {}
+    }
+    function _lsPrune() {
+      // Remove entries whose snooze period has expired
+      const today = new Date().toISOString().split('T')[0];
+      const map = _lsDismissed();
+      const pruned = Object.fromEntries(Object.entries(map).filter(([, v]) => v >= today));
+      _lsSave(pruned);
+      return pruned;
+    }
 
     // ── Action Board ─────────────────────────────────────────────────────────
     (function renderActionBoard() {
@@ -540,23 +587,6 @@
         if (row) row.style.display = 'none';
       });
     })();
-
-    // ── localStorage helpers for client-side dismissal persistence ─────────────
-    const LS_KEY = 'portfolioAnalyst_dismissed';
-    function _lsDismissed() {
-      try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
-    }
-    function _lsSave(map) {
-      try { localStorage.setItem(LS_KEY, JSON.stringify(map)); } catch {}
-    }
-    function _lsPrune() {
-      // Remove entries whose snooze period has expired
-      const today = new Date().toISOString().split('T')[0];
-      const map = _lsDismissed();
-      const pruned = Object.fromEntries(Object.entries(map).filter(([, v]) => v >= today));
-      _lsSave(pruned);
-      return pruned;
-    }
 
     // ── Dismiss action (via Netlify function — PAT never exposed to browser) ──
     async function dismissAction(id, days) {
@@ -1407,6 +1437,36 @@
         applyBreakoutChartData(c.ticker);
       });
     });
+
+    // ── Regret Tracker ───────────────────────────────────────────────────────
+    // NOTE: The "Regret Tracker" tab button is static HTML and is always
+    // rendered regardless of whether DATA.regret_tracker is empty.
+    // Only the table content (below) is data-conditional.
+    (function renderRegretTracker() {
+      if (!Object.prototype.hasOwnProperty.call(DATA, 'regret_tracker')) {
+        // Key entirely absent — dashboard was built with an older renderer.
+        console.warn('[RegretTracker] DATA.regret_tracker is missing — stale output/index.html?');
+      }
+      const entries = DATA.regret_tracker || [];
+      if (!entries.length) {
+        document.getElementById('regret-table').style.display = 'none';
+        document.getElementById('regret-empty').style.display = 'block';
+        return;
+      }
+      document.getElementById('regret-body').innerHTML = entries.map(e => {
+        const pct    = e.pct_diff;
+        const cls    = pct > 0 ? 'neg' : (pct < 0 ? 'pos' : '');
+        const sign   = pct > 0 ? '+' : '';
+        return `<tr>
+          <td style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(e.ticker)}</td>
+          <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.company_name || e.ticker)}</td>
+          <td style="font-size:12px;color:var(--muted)">${esc(e.sell_date)}</td>
+          <td style="font-family:var(--mono);font-size:12px">${Number(e.sell_price).toFixed(2)}</td>
+          <td style="font-family:var(--mono);font-size:12px">${Number(e.current_price).toFixed(2)}</td>
+          <td class="${cls}" style="font-weight:700;font-size:13px">${sign}${Number(e.pct_diff).toFixed(1)}%</td>
+        </tr>`;
+      }).join('');
+    })();
 
     // ── Tab switching ─────────────────────────────────────────────────────────
     function switchTab(tabId) {

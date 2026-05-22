@@ -111,6 +111,7 @@ docs/
   - `GET /equity/positions` — direct (non-pie) holdings
   - `GET /equity/pies` — list of pie IDs
   - `GET /equity/pies/{id}` — pie composition and per-holding data
+  - `GET /equity/history/orders` — paginated order history (used by Regret Tracker)
 - **Keys**: generated in T212 Settings → API Beta
 - **Rate limit**: pie endpoints — 1 request per 30 seconds (enforced in `trading212.py`)
 - **Pie cache**: raw pie positions cached at `cache/pie_positions.json` for 4 hours to avoid repeated rate-limited fetches during local development. GitHub Actions always runs cold (no persistent cache), so every CI run fetches fresh.
@@ -164,6 +165,38 @@ docs/
 
 ## 4. Module Reference
 
+### 4.0 `src/data/regret_tracker.py`
+
+Processes already-fetched order history to build the Regret Tracker tab.
+
+**`get_exited_tickers(order_history, current_tickers)`**
+Called in `main.py` immediately after Step 1 (portfolio fetch). Returns a list of ticker symbols that have at least one SELL order from 2026-01-01 onwards and are no longer in the live portfolio. These tickers are added to the `extra` list passed to `fetch_market_data()` (Step 2) so their current prices are included in the main yfinance batch — no separate price fetch is needed.
+
+**`build_regret_tracker(order_history, current_tickers, market_data)`**
+Called in `main.py` after Step 7, before Claude analysis. Returns a sorted list of dicts ready for the renderer:
+
+| Field | Description |
+|-------|-------------|
+| `ticker` | Normalised ticker symbol |
+| `company_name` | From the T212 `instrument.fullName` field |
+| `sell_date` | YYYY-MM-DD of most recent sell |
+| `sell_price` | Per-share fill price in the stock's native currency |
+| `current_price` | From `market_data[ticker]["current_price"]` |
+| `pct_diff` | `(current / sell − 1) × 100`, rounded to 1 dp |
+
+**Filtering rules:**
+- Only orders where `side.upper() == "SELL"`
+- Only orders where `filled_at[:10] >= "2026-01-01"`
+- Only tickers not present in the current portfolio (fully exited)
+- Where a ticker was sold multiple times, keeps the most recent sell by `filled_at` timestamp
+- Sorted by `pct_diff` descending (biggest regret first — current price far above sell price)
+
+**`_CUTOFF = "2026-01-01"`** — module-level constant. Changing it will affect both `get_exited_tickers` and `build_regret_tracker`.
+
+**No caching**: current prices come from the main `market_data` dict (already cached at the yfinance level). The order history itself is cached as part of `last_portfolio.json`.
+
+---
+
 ### 4.1 `src/analysis/claude_analyst.py`
 
 Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor persona):
@@ -205,6 +238,30 @@ The function returns a JSON array. The validator drops any item whose `action_ty
 - `BRK_B_US_EQ` → `BRK-B` (override dict for special cases)
 
 Hard overrides in `_TICKER_OVERRIDES` at the top of the file handle renames and special cases. After normalisation, `_apply_merger_overrides()` applies a second pass of overrides from `ticker_resolver._TICKER_OVERRIDES` — this resolves post-merger SPAC tickers (e.g. DMYI→IONQ, XPOA→QBTS, SNII→RGTI, VACQ→RKLB, NPA→ASTS). The module-level import `from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES` is critical — the import must be at module level, not inside the function, to avoid a silent lazy-import failure pattern.
+
+**Order history endpoint**: `GET /equity/history/orders` returns a cursor-paginated response:
+```json
+{
+  "items": [
+    {
+      "order": {
+        "ticker": "AAPL_US_EQ",
+        "side": "sell",
+        "filledQuantity": "10.0",
+        "status": "FILLED",
+        "instrument": { "fullName": "Apple Inc" }
+      },
+      "fill": {
+        "price": "182.50",
+        "filledAt": "2026-02-14T10:30:00.000Z",
+        "walletImpact": { "netValue": "1825.00", "realisedProfitLoss": "234.50", "fxRate": "0.792" }
+      }
+    }
+  ],
+  "nextCursor": null
+}
+```
+Query parameters: `limit` (1–50, default 50), `cursor` (pagination), `ticker` (filter by ticker), `dateCreatedFrom` (ISO8601 — inclusive lower bound). `get_order_history()` passes `dateCreatedFrom=2026-01-01T00:00:00Z` and follows `nextCursor` until it is `null`. `side` values are lowercase (`"buy"` / `"sell"`). `status` is uppercase (`"FILLED"`). `fill.price` is in the stock's native trading currency (USD for US stocks, GBp for LSE stocks).
 
 **Pie cache**: Before fetching pie positions from T212, `fetch_portfolio()` checks `cache/pie_positions.json`. If the file exists and is less than 4 hours old, it's used directly. This avoids the 30s-per-pie rate limit during repeated local runs.
 
@@ -435,7 +492,7 @@ Controls three things:
 
 The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_DATA}}`. At render time, `renderer.py` replaces this with a JSON blob. All rendering happens client-side in vanilla JavaScript on page load.
 
-### Tab Layout (3 tabs)
+### Tab Layout (4 tabs)
 
 **Tab 1 — Today's Brief** (default landing tab):
 - **Action Board** card — appears first, hidden entirely if `today_actions` is empty. See Action Board section below.
@@ -449,6 +506,15 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 - **Account stats bar** — Total Value, Unrealised P&L, Realised P&L, Position count
 - **Holdings list** — compact table, one row per stock (see Holdings List below)
 - Signal filter buttons (ALL / ADD / WATCH / HOLD / REDUCE / EXIT) with counts
+
+**Tab 4 — Regret Tracker**:
+- Single card with a description line and a plain table
+- Columns: Ticker, Company, Sell Date, Sell Price, Current Price, % Change
+- % Change cell: red (`neg` class) if current price > sell price (sold too early), green (`pos` class) if current price < sell price (sold well)
+- Sorted by % Change descending — biggest regret at the top
+- Empty state: short message shown if `DATA.regret_tracker` is empty
+- No charts, no Claude narrative — pure data table
+- Prices are in each stock's native trading currency (no conversion applied)
 
 **Tab 3 — Opportunities**:
 - **Growth Opportunities** — full Claude opportunities narrative (no truncation)
