@@ -21,6 +21,17 @@ import time
 from datetime import date
 from pathlib import Path
 
+# Load .env if present — local dev only.
+# Uses setdefault so existing env vars (GitHub Actions secrets) are never overwritten.
+_env_file = Path(__file__).resolve().parent.parent / ".env"
+if _env_file.exists():
+    for _line in _env_file.read_text(encoding="utf-8").splitlines():
+        _line = _line.strip()
+        if not _line or _line.startswith("#") or "=" not in _line:
+            continue
+        _key, _, _val = _line.partition("=")
+        os.environ.setdefault(_key.strip(), _val.strip().strip('"').strip("'"))
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
