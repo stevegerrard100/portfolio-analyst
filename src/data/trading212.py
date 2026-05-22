@@ -312,10 +312,18 @@ class Trading212Client:
         (build_regret_tracker).
 
         T212 response shape:
-            {'items': [...], 'nextPagePath': '/equity/history/orders?cursor=<token>&limit=50'}
+            {'items': [...], 'nextPagePath': '/api/v0/equity/history/orders?cursor=<token>&limit=50'}
         nextPagePath is absent (or null) on the last page.
+
+        URL construction note: _get() prepends self._base_url
+        (https://live.trading212.com/api/v0), so nextPagePath must have its
+        leading /api/v0 prefix stripped before being passed to _get() —
+        otherwise the path is doubled on every page 2+ request.
         """
+        from urllib.parse import urlparse as _urlparse
         _ORDERS_CUTOFF = "2026-01-01"
+        # Derive the path prefix to strip from nextPagePath (e.g. "/api/v0")
+        _api_prefix = _urlparse(self._base_url).path
         all_items: list = []
         endpoint: str = _EP_ORDERS + "?limit=50"
         page = 0
@@ -368,7 +376,14 @@ class Trading212Client:
                     )
                     break
 
-                endpoint = next_page_path
+                # Strip the /api/v0 prefix so _get() doesn't double it.
+                endpoint = (next_page_path[len(_api_prefix):]
+                            if next_page_path.startswith(_api_prefix)
+                            else next_page_path)
+                log.debug(
+                    "T212: order history page %d next endpoint: %s (raw: %s)",
+                    page, endpoint, next_page_path,
+                )
             else:
                 log.warning(
                     "T212: order history page %d — unexpected response type %s",
