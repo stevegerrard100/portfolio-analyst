@@ -6,9 +6,20 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-_CACHE_DIR = Path(__file__).parent / ".." / ".." / "cache"
+_CACHE_DIR    = Path(__file__).parent / ".." / ".." / "cache"
+_SECTORS_JSON = Path(__file__).parent / ".." / ".." / "config" / "sectors.json"
 
 log = logging.getLogger(__name__)
+
+
+def _load_ticker_to_sector() -> dict[str, str]:
+    try:
+        return json.loads(_SECTORS_JSON.read_text(encoding="utf-8")).get("ticker_to_sector", {})
+    except Exception:
+        return {}
+
+
+_TICKER_TO_SECTOR: dict[str, str] = _load_ticker_to_sector()
 
 _TEMPLATE = Path(__file__).parent / "template.html"
 
@@ -124,6 +135,42 @@ def _build_today_actions(raw_actions: list[dict], market_data: dict) -> list[dic
             "current_price": mkt.get("current_price"),
         })
     return result
+
+
+def _sector_rs_signal(ticker: str, candidate_sector: str, sector_flows: dict) -> str:
+    """
+    Return 'leading', 'neutral', or 'lagging' for a breakout candidate based on
+    the Mansfield RS of its sector's SPDR ETF proxy.
+
+    Lookup order for sector name:
+      1. config/sectors.json ticker_to_sector mapping
+      2. sector field already on the candidate dict
+      3. Falls back to 'Unknown'
+
+    SECTOR_TO_ETF is imported from src.data.sector_flows — not duplicated here (R5.2).
+    """
+    from src.data.sector_flows import SECTOR_TO_ETF
+
+    sector = _TICKER_TO_SECTOR.get(ticker) or candidate_sector or "Unknown"
+    if not sector or sector in ("Unknown", "ETF", "?"):
+        return "neutral"
+
+    etf = SECTOR_TO_ETF.get(sector)
+    if not etf:
+        return "neutral"
+
+    etf_data = sector_flows.get("etf_rs", {}).get(etf)
+    if not etf_data:
+        return "neutral"
+
+    # Rotation signals → leading; negative RS → lagging; otherwise neutral
+    if (etf_data.get("early_rotation")
+            or etf_data.get("momentum_building")
+            or etf_data.get("rotation_peaking")):
+        return "leading"
+    if etf_data.get("mansfield_rs", 0) < 0:
+        return "lagging"
+    return "neutral"
 
 
 def render_dashboard(
@@ -251,23 +298,30 @@ def render_dashboard(
     breakout_candidates = []
     for c in breakout.get("candidates", [])[:15]:
         signals = c.get("signals", [])
+        ticker  = c["ticker"]
+        sector  = c.get("sector", "?")
         breakout_candidates.append({
-            "ticker":          c["ticker"],
-            "company_name":    c.get("company_name") or c["ticker"],
-            "sector":          c.get("sector", "?"),
-            "mansfield_rs":    round(float(c.get("mansfield_rs", 0)), 1),
-            "composite_score": c.get("composite_score", 0),
-            "reasoning":       c.get("reasoning", ""),
-            "signals":         signals,
-            "high_conviction": bool(c.get("high_conviction", False)),
-            "base_weeks":      c.get("base_weeks"),
-            "base_depth_pct":  c.get("base_depth_pct"),
-            "base_tightness":  c.get("base_tightness"),
-            "stop_loss":       c.get("stop_loss"),
-            "ohlcv_daily":     c.get("ohlcv_daily"),
-            "ohlcv_weekly":    c.get("ohlcv_weekly"),
-            "mrs_daily":       c.get("mrs_daily"),
-            "mrs_weekly":      c.get("mrs_weekly"),
+            "ticker":           ticker,
+            "company_name":     c.get("company_name") or ticker,
+            "sector":           sector,
+            "mansfield_rs":     round(float(c.get("mansfield_rs", 0)), 1),
+            "composite_score":  c.get("composite_score", 0),
+            "score_delta":      c.get("score_delta"),
+            "reasoning":        c.get("reasoning", ""),
+            "signals":          signals,
+            "high_conviction":  bool(c.get("high_conviction", False)),
+            "regime_watchlist": bool(c.get("regime_watchlist", False)),
+            "earnings_soon":    bool(c.get("earnings_soon", False)),
+            "earnings_date":    c.get("earnings_date"),
+            "sector_rs_signal": _sector_rs_signal(ticker, sector, sector_flows),
+            "base_weeks":       c.get("base_weeks"),
+            "base_depth_pct":   c.get("base_depth_pct"),
+            "base_tightness":   c.get("base_tightness"),
+            "stop_loss":        c.get("stop_loss"),
+            "ohlcv_daily":      c.get("ohlcv_daily"),
+            "ohlcv_weekly":     c.get("ohlcv_weekly"),
+            "mrs_daily":        c.get("mrs_daily"),
+            "mrs_weekly":       c.get("mrs_weekly"),
         })
 
     # --- Meta ---

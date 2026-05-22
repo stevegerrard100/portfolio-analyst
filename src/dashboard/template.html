@@ -139,6 +139,7 @@
       .ctrl-group { flex-wrap: wrap; }
       .hc-chart { height: 250px !important; }
       .h-list-table th:nth-child(n+7), .h-list-table td:nth-child(n+7) { display: none; }
+      .bk-table th:nth-child(n+7), .bk-table td:nth-child(n+7) { display: none; }
     }
     .h-section { margin-bottom: 22px; }
     .h-section-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
@@ -400,11 +401,11 @@
           <div class="card-title">Breakout Watch List</div>
           <p style="color:var(--muted);font-size:12px;margin-bottom:12px">S&amp;P 500 stocks forming accumulation bases — weighted score out of 10: Stage&nbsp;1→2 (2pts), RS&nbsp;Leading (2pts), VCP (1.5pts), Vol&nbsp;Acc (1pt), Pivot&nbsp;Proximity (1pt) + base quality bonus. High Conviction requires score&nbsp;≥&nbsp;7 in a bull market.</p>
           <div id="bk-regime-banner" style="display:none;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-size:12px;font-weight:600"></div>
-          <table class="stbl">
+          <table class="stbl bk-table">
             <thead><tr>
               <th>Ticker</th><th>Company</th><th>Sector</th>
               <th>Mansfield RS</th><th>Signals</th><th>Score /10</th>
-              <th>Base Wks</th><th>Depth %</th>
+              <th>Base Wks</th><th>Depth %</th><th>Sector RS</th>
             </tr></thead>
             <tbody id="breakout-body"></tbody>
           </table>
@@ -1381,6 +1382,11 @@
         <td style="font-weight:700;color:var(--blue)">${c.composite_score}/10${deltaHtml}</td>
         <td style="color:var(--muted);font-size:12px">${baseWks}</td>
         <td style="color:var(--muted);font-size:12px">${depthPct}</td>
+        <td style="font-size:12px;white-space:nowrap">${
+          c.sector_rs_signal === 'leading' ? '<span style="color:var(--green)">▲ Leading</span>'  :
+          c.sector_rs_signal === 'lagging' ? '<span style="color:var(--red)">▼ Lagging</span>'   :
+                                             '<span style="color:var(--muted)">— Neutral</span>'
+        }</td>
       `;
 
       const chartControls = hasChart ? `
@@ -1403,7 +1409,7 @@
       detailRow.className = 's-detail';
       detailRow.dataset.ticker = c.ticker;
       detailRow.style.display = 'none';
-      detailRow.innerHTML = `<td colspan="8"><div class="s-detail-inner">
+      detailRow.innerHTML = `<td colspan="9"><div class="s-detail-inner">
         ${c.reasoning ? `<p class="s-reasoning">${esc(c.reasoning)}</p>` : ''}
         ${chartControls}
       </div></td>`;
