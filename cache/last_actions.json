@@ -3,30 +3,30 @@
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim EL \u2014 down 16.5% with revenues shrinking 8.2% and sitting 33.8% below its high, the turnaround story isn't working yet and you should reduce exposure."
+    "text": "EL is down 17% with revenue declining 8.2% and sitting 34% off its high \u2014 trim this position to limit further damage while the turnaround story remains unproven."
   },
   {
-    "id": "SGLP.L-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SGLP.L \u2014 it has the weakest relative strength in your entire portfolio at -99, is down 11.7% with bearish momentum, and silver miners are in a clear downtrend."
+    "text": "ONDS is down 14.8% and 35% off its high with a tiny market cap and no profitability \u2014 reduce your exposure because explosive revenue from a small base doesn't offset the cash burn risk."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META offers a rare combination of a low 16.9x PE, 22% revenue growth, strong free cash flow, and consistent earnings \u2014 this pullback is a quality-at-a-discount opportunity to add shares."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "MSFT is down 13.4% but revenue is growing 15% with strong cash flow and reliable earnings \u2014 this is one of the best businesses in the world on sale, worth adding to."
   },
   {
     "id": "VTR-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "Buy VTR \u2014 this healthcare REIT scores a perfect 5.0 on the breakout screener with confirmed stage transition and accumulation, well-suited for the current easing rate environment."
-  },
-  {
-    "id": "WMB-buy",
-    "action_type": "buy",
-    "priority": "low",
-    "text": "Buy WMB \u2014 Williams Companies scores 5.0 with a confirmed breakout pattern, and as a stable natural gas infrastructure play it offers defensive growth in this macro backdrop."
-  },
-  {
-    "id": "UNH-buy",
-    "action_type": "buy",
-    "priority": "low",
-    "text": "Buy UNH \u2014 the world's largest health services company scores a perfect 5.0 breakout signal with stage transition confirmed, offering quality growth at a reasonable valuation."
+    "text": "VTR scores a perfect 5.0 as a breakout candidate with confirmed accumulation in healthcare real estate \u2014 a new small position here benefits from the easing rate environment which helps REITs."
   }
 ]
