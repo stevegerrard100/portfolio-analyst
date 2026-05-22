@@ -3,12 +3,13 @@
 Standalone regret tracker smoke test.
 
 Runs only:
-  1. T212 order history fetch  (get_order_history + _parse_order_history)
+  1. T212 full portfolio fetch  (fetch_portfolio — positions + order history)
   2. Minimal yfinance price fetch for exited tickers only
   3. build_regret_tracker()
 
-No Claude API, no full portfolio fetch, no screeners, no yfinance batch.
-Typical runtime: 15-45 seconds (dominated by T212 rate-limit pauses).
+No Claude API, no screeners, no full yfinance batch.
+Typical runtime: 3-5 minutes (dominated by T212 pie rate-limit pauses;
+6 pies × ~30s each).
 
 Usage (run from project root):
     python scripts/test_regret.py
@@ -56,7 +57,8 @@ log = logging.getLogger(__name__)
 import pandas as pd
 import yfinance as yf
 
-from src.data.trading212 import Trading212Client, _parse_order_history
+from src.data.trading212 import fetch_portfolio
+from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
 from src.data.regret_tracker import get_exited_tickers, build_regret_tracker
 
 _CUTOFF = "2026-01-01"
@@ -66,27 +68,43 @@ _CUTOFF = "2026-01-01"
 
 def main() -> None:
 
-    # ── Step 1: Fetch order history ───────────────────────────────────────────
-    log.info("Connecting to T212 (LIVE)...")
-    client = Trading212Client(use_live=True)
+    # ── Step 1: Fetch portfolio (positions + order history) ───────────────────
+    # fetch_portfolio() calls get_order_history() + _parse_order_history()
+    # internally, so both current positions and parsed orders come from one
+    # call — the same source as the main pipeline.
+    log.info("Fetching T212 portfolio (positions + order history)...")
+    log.info("Note: pie fetches are rate-limited at 1 req/30s — expect 3-5 min")
+    portfolio = fetch_portfolio()
 
-    log.info("Fetching order history (pagination follows nextPagePath)...")
-    raw_orders = client.get_order_history()
-    log.info("Raw response: %d item(s)", len(raw_orders))
+    positions = portfolio.get("positions", [])
+    log.info(
+        "Portfolio: %d position(s) (env=%s)",
+        len(positions), portfolio.get("environment", "?"),
+    )
 
-    # ── Step 2: Parse ─────────────────────────────────────────────────────────
-    parsed = _parse_order_history(raw_orders)
+    # ── Step 2: Derive current_tickers (same logic as main.py line 54) ───────
+    # Apply merger overrides so e.g. IIVI in the portfolio resolves to COHR,
+    # matching how sold tickers are resolved inside build_regret_tracker().
+    current_tickers: set[str] = {
+        _MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions
+    }
+    log.info(
+        "current_tickers (%d): %s",
+        len(current_tickers), sorted(current_tickers),
+    )
 
-    all_sells   = [o for o in parsed if o.get("side", "").upper() == "SELL"]
-    with_price  = [o for o in parsed if float(o.get("fill_price") or 0) > 0]
+    # ── Step 3: Inspect order history ────────────────────────────────────────
+    order_history = portfolio.get("order_history", [])
+    all_sells    = [o for o in order_history if o.get("side", "").upper() == "SELL"]
+    with_price   = [o for o in order_history if float(o.get("fill_price") or 0) > 0]
     recent_sells = [
         o for o in all_sells
         if (o.get("filled_at") or "")[:10] >= _CUTOFF
     ]
 
     log.info(
-        "Parsed: %d order(s) total | %d SELL | %d with fill_price > 0",
-        len(parsed), len(all_sells), len(with_price),
+        "Order history: %d order(s) total | %d SELL | %d with fill_price > 0",
+        len(order_history), len(all_sells), len(with_price),
     )
 
     if all_sells:
@@ -100,35 +118,35 @@ def main() -> None:
     if not recent_sells:
         print("\nNo SELL orders found since the cutoff — nothing to track.")
         print("Possible causes:")
-        print("  • Order history only returned pre-cutoff pages (check pagination logs above)")
+        print("  • Order history pagination stopped before reaching cutoff date")
         print("  • T212 returned an error body — check for 'error body' warnings above")
         return
 
-    # ── Step 3: Identify exited tickers ──────────────────────────────────────
-    # Pass empty current_tickers — this script has no portfolio fetch, so all
-    # sold tickers are treated as exited.  Re-bought positions will appear; a
-    # full pipeline run filters those out correctly.
-    current_tickers: set[str] = set()
-    exited = get_exited_tickers(parsed, current_tickers)
-    log.info("Tickers to price: %s", exited if exited else "(none)")
+    # ── Step 4: Identify exited tickers ──────────────────────────────────────
+    exited = get_exited_tickers(order_history, current_tickers)
+    log.info("Exited tickers to price: %s", exited if exited else "(none)")
 
     if not exited:
         print("\nget_exited_tickers() returned an empty list.")
-        print("All sold tickers may have side != 'SELL' or filled_at pre-dates the cutoff.")
+        print("All sold tickers since the cutoff may still be held in the portfolio.")
+        print("Check the current_tickers log line above to confirm.")
         return
 
-    # ── Step 4: Fetch current prices for exited tickers only ─────────────────
-    log.info(
-        "Fetching current prices for %d ticker(s) via yfinance...", len(exited)
-    )
+    # ── Step 5: Fetch current prices for exited tickers only ─────────────────
+    log.info("Fetching current prices for %d ticker(s) via yfinance...", len(exited))
     market_data: dict = {}
     try:
         if len(exited) == 1:
             # yf.download with a single ticker returns a plain DataFrame
             raw = yf.download(exited[0], period="5d", auto_adjust=True, progress=False)
-            close_series = raw["Close"].dropna() if "Close" in raw.columns else pd.Series([], dtype=float)
+            close_series = (
+                raw["Close"].dropna() if "Close" in raw.columns
+                else pd.Series([], dtype=float)
+            )
             if not close_series.empty:
-                market_data[exited[0]] = {"current_price": round(float(close_series.iloc[-1]), 4)}
+                market_data[exited[0]] = {
+                    "current_price": round(float(close_series.iloc[-1]), 4)
+                }
         else:
             raw = yf.download(
                 exited,
@@ -137,12 +155,16 @@ def main() -> None:
                 progress=False,
                 threads=True,
             )
-            close_df = raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
+            close_df = (
+                raw["Close"] if isinstance(raw.columns, pd.MultiIndex) else raw
+            )
             for t in exited:
                 if t in close_df.columns:
                     series = close_df[t].dropna()
                     if not series.empty:
-                        market_data[t] = {"current_price": round(float(series.iloc[-1]), 4)}
+                        market_data[t] = {
+                            "current_price": round(float(series.iloc[-1]), 4)
+                        }
 
         for t in exited:
             if t in market_data:
@@ -153,11 +175,11 @@ def main() -> None:
     except Exception as exc:
         log.error("yfinance fetch failed: %s", exc)
 
-    # ── Step 5: Build regret tracker ──────────────────────────────────────────
+    # ── Step 6: Build regret tracker ─────────────────────────────────────────
     log.info("Running build_regret_tracker()...")
-    entries = build_regret_tracker(parsed, current_tickers, market_data)
+    entries = build_regret_tracker(order_history, current_tickers, market_data)
 
-    # ── Step 6: Print results table ───────────────────────────────────────────
+    # ── Step 7: Print results table ───────────────────────────────────────────
     W = 74
     print()
     print("=" * W)
@@ -168,13 +190,16 @@ def main() -> None:
         print("  No entries.")
         print()
         print("  Diagnostic checklist:")
-        print(f"  • Are there SELL orders since {_CUTOFF}?  (see 'recent_sells' count above)")
-        print("  • Did get_exited_tickers() return any tickers?  (see log above)")
-        print("  • Did yfinance return prices for those tickers?  (see log above)")
+        print(f"  • Are there SELL orders since {_CUTOFF}?  (see order history log above)")
+        print("  • Did get_exited_tickers() return any tickers?  (see step 4 log above)")
+        print("  • Did yfinance return prices for those tickers?  (see step 5 log above)")
         print("  • build_regret_tracker() skips entries with sell_price <= 0")
         print("    or missing current_price — check for 'skipping' warnings above")
     else:
-        hdr = f"  {'Ticker':<10}  {'Company':<28}  {'Sold':<10}  {'Sell £':>8}  {'Now £':>8}  {'%Δ':>7}"
+        hdr = (
+            f"  {'Ticker':<10}  {'Company':<28}  {'Sold':<10}"
+            f"  {'Sell £':>8}  {'Now £':>8}  {'%Δ':>7}"
+        )
         print(hdr)
         print("  " + "-" * (W - 2))
         for e in entries:
@@ -188,9 +213,12 @@ def main() -> None:
             )
 
     print("=" * W)
-    print(f"  {len(entries)} entry/entries  |  "
-          f"{len(recent_sells)} SELL orders since {_CUTOFF}  |  "
-          f"{len(exited)} ticker(s) priced")
+    print(
+        f"  {len(entries)} entry/entries  |  "
+        f"{len(recent_sells)} SELL orders since {_CUTOFF}  |  "
+        f"{len(current_tickers)} held  |  "
+        f"{len(exited)} ticker(s) priced"
+    )
     print("=" * W)
     print()
 
