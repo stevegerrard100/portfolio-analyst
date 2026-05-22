@@ -14,3 +14,4 @@ build/
 .venv/
 venv/
 .python-version
+.claude/
