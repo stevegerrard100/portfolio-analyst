@@ -1362,6 +1362,12 @@
 
       const baseWks  = c.base_weeks  != null ? String(c.base_weeks) + 'w' : '—';
       const depthPct = c.base_depth_pct != null ? fmt(c.base_depth_pct, {dp:1}) + '%' : '—';
+      const delta    = c.score_delta;
+      const deltaHtml = (delta != null && delta !== 0)
+        ? (delta > 0
+            ? `<span style="color:var(--green);font-size:10px;margin-left:4px;font-weight:400">↑ +${delta}</span>`
+            : `<span style="color:var(--red);font-size:10px;margin-left:4px;font-weight:400">↓ ${delta}</span>`)
+        : '';
 
       const mainRow = document.createElement('tr');
       mainRow.className = 's-row' + (c.high_conviction ? ' bk-row-hc' : '');
@@ -1372,7 +1378,7 @@
         <td style="color:var(--muted);font-size:12px">${esc(c.sector)}</td>
         <td>${rsCol}</td>
         <td>${badges}</td>
-        <td style="font-weight:700;color:var(--blue)">${c.composite_score}/10</td>
+        <td style="font-weight:700;color:var(--blue)">${c.composite_score}/10${deltaHtml}</td>
         <td style="color:var(--muted);font-size:12px">${baseWks}</td>
         <td style="color:var(--muted);font-size:12px">${depthPct}</td>
       `;

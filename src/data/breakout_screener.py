@@ -49,6 +49,7 @@ log = logging.getLogger(__name__)
 
 CACHE_DIR = Path("cache")
 BREAKOUT_CACHE = CACHE_DIR / "breakout_screener.json"
+LAST_SCORES_CACHE = CACHE_DIR / "last_breakout_scores.json"
 BREAKOUT_CACHE_HOURS = 8
 
 # Increment this whenever the result dict schema changes (e.g. new candidate fields,
@@ -686,6 +687,19 @@ def run_breakout_screener(
     """
     CACHE_DIR.mkdir(exist_ok=True)
 
+    # R4.2: Load previous run's scores for score_delta computation.
+    # Must happen before any early return so delta is available whether
+    # the screener runs fresh or returns cached data.
+    prev_scores: dict[str, float] = {}
+    if LAST_SCORES_CACHE.exists():
+        try:
+            prev_scores = json.loads(LAST_SCORES_CACHE.read_text(encoding="utf-8"))
+            log.info("Loaded previous breakout scores for %d ticker(s)", len(prev_scores))
+        except Exception as exc:
+            log.warning("Could not load last_breakout_scores.json: %s", exc)
+    else:
+        log.info("No previous breakout scores found — delta unavailable")
+
     if not force_refresh and BREAKOUT_CACHE.exists():
         try:
             age_h = (
@@ -979,12 +993,17 @@ def run_breakout_screener(
             and bool(c["signals"].get("stage_transition"))
         )
 
+        # R4.3: Score delta vs previous run — None for new entrants to the screen.
+        prev_score = prev_scores.get(ticker)
+        score_delta = round(score - prev_score, 1) if prev_score is not None else None
+
         final_candidates.append({
             "ticker":          ticker,
             "company_name":    c["company_name"],
             "sector":          c["sector"],
             "mansfield_rs":    round(c["current_rs"], 1),
             "composite_score": score,
+            "score_delta":     score_delta,
             "signals":         signals_list,
             "high_conviction": high_conviction,
             "regime_watchlist": regime_watchlist,

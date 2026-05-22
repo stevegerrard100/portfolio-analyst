@@ -224,6 +224,21 @@ def main() -> None:
             market_data,
         )
 
+    # ── Persist breakout score snapshot (for score_delta on next run) ────────
+    # Written unconditionally — covers both fresh runs and cache hits (R4.1).
+    _scores_path = _CACHE_DIR / "last_breakout_scores.json"
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _bk_scores = {
+            c["ticker"]: c["composite_score"]
+            for c in breakout.get("candidates", [])
+            if c.get("ticker") and c.get("composite_score") is not None
+        }
+        _scores_path.write_text(json.dumps(_bk_scores, indent=2), encoding="utf-8")
+        log.info("Persisted %d breakout scores → %s", len(_bk_scores), _scores_path)
+    except Exception as exc:
+        log.warning("Could not write last_breakout_scores.json: %s", exc)
+
     # ── 8. Claude analysis ────────────────────────────────────────────────────
     _step(8, 9, "Claude analysis (6-prompt pipeline)")
 
