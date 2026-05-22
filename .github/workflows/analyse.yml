@@ -1,10 +1,9 @@
 name: Portfolio Analysis
 
 on:
-  schedule:
-    - cron: '0 6 * * 1-5'   # 07:00 BST (UK summer, UTC+1 ≈ Mar–Oct)
-    - cron: '0 7 * * 1-5'   # 07:00 GMT (UK winter, UTC+0 ≈ Oct–Mar)
-  workflow_dispatch:         # manual trigger
+  workflow_dispatch:         # triggered externally by cron-job.org at 07:05 UTC Mon-Fri
+                             # DO NOT add a schedule: block — cron-job.org + GH schedule
+                             # would cause duplicate runs and race conditions on git push
 
 jobs:
   analyse:

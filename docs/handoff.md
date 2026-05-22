@@ -92,7 +92,7 @@ output/
   index.html                  Generated dashboard
 
 .github/workflows/
-  analyse.yml                 Daily 07:00 UTC schedule + gh-pages deploy
+  analyse.yml                 workflow_dispatch only — triggered externally by cron-job.org
 
 docs/
   handoff.md                  This document
@@ -590,17 +590,20 @@ Chart.js v4 (CDN). Lazy-initialised on first My Portfolio tab visit via `ensureS
 ## 7. CI/CD
 
 `.github/workflows/analyse.yml` triggers on:
-- **Schedule**: `0 6 * * 1-5` and `0 7 * * 1-5` (covers BST and GMT)
-- **`workflow_dispatch`**: manual trigger
+- **`workflow_dispatch`** only — the daily run is fired externally by **cron-job.org** at **07:05 UTC on weekdays**, which calls the GitHub API to dispatch the workflow.
+
+> ⚠️ **Do not add a `schedule:` block to `analyse.yml`.** GitHub's built-in cron and cron-job.org would both fire, causing duplicate runs, double API spend, and race conditions on the git push steps. The workflow intentionally has no `schedule:` trigger.
 
 Steps:
 1. Checkout repo
 2. Set up Python 3.11
 3. Cache pip packages (keyed on `requirements.txt` hash)
 4. Install dependencies
-5. **Run analysis pipeline** — `python -m src.main` with secrets: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`
-6. **Persist actions cache** — `git add -f cache/last_actions.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, push with `--force-with-lease`. The `-f` flag is required because `cache/` is in `.gitignore`.
-7. **Deploy to GitHub Pages** — `peaceiris/actions-gh-pages@v4`, publishes `./output/` to `{repo}/markets/`, `keep_files: true`
+5. **Get today's date** — writes UTC date to `$GITHUB_OUTPUT` for the screener cache key
+6. **Restore screener cache** — `actions/cache@v4`, paths `cache/screener.json` + `cache/breakout_screener.json`, keyed on `screener-{os}-{YYYY-MM-DD}`. No `restore-keys` — strict date match ensures next-day runs always start fresh. Same-day re-runs (e.g. manual re-trigger) skip the 45-min screener entirely.
+7. **Run analysis pipeline** — `python -m src.main` with secrets: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`
+8. **Persist actions cache** — `git add -f cache/last_actions.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, push with `--force-with-lease`. The `-f` flag is required because `cache/` is in `.gitignore`.
+9. **Deploy to GitHub Pages** — `peaceiris/actions-gh-pages@v4`, publishes `./output/` to `{repo}/markets/`, `keep_files: true`
 
 `timeout-minutes: 120` covers T212 pie fetches (32s/pie) and the screener (45+ min).
 
