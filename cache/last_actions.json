@@ -1,38 +1,26 @@
 [
   {
-    "id": "EL-trim",
-    "action_type": "trim",
+    "id": "ONDS-sell",
+    "action_type": "sell",
     "priority": "medium",
-    "text": "Trim EL \u2014 Est\u00e9e Lauder is down 17% and 34% off its high with persistent selling pressure, so reduce your exposure before it gets worse."
+    "text": "ONDS is down 15.9% with three consecutive earnings misses, bearish technicals across the board, and a REDUCE signal \u2014 there's no catalyst to justify holding this any longer."
   },
   {
-    "id": "SGLP.L-trim",
+    "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SGLP.L \u2014 it has the weakest relative strength in your entire portfolio at -99 and is down nearly 12%, meaning the market is actively rejecting this name."
+    "text": "KTOS is your worst performer at -26.9% and sits 57% below its 52-week high \u2014 even without a REDUCE signal, that level of drawdown with bearish technicals warrants cutting your exposure in half."
   },
   {
-    "id": "ONDS-trim",
+    "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim ONDS \u2014 three consecutive earnings misses, down 15%, and 34% off its high means the company keeps disappointing and the stock reflects it."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to MU \u2014 a PE of just 7.4 combined with 49% revenue growth is unusually cheap for that kind of momentum, making this pullback a good entry point."
+    "text": "SILG.L is your worst commodities holding at -13.6% with bearish MACD \u2014 silver miners are highly volatile and this position deserves a smaller size until momentum turns."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to META \u2014 a PE of 16.9 with 22% revenue growth and strong free cash flow is a genuinely rare value-and-growth combo in big tech right now."
-  },
-  {
-    "id": "VTR-buy",
-    "action_type": "buy",
-    "priority": "low",
-    "text": "Buy VTR \u2014 this healthcare REIT scores a perfect 5.0 on the breakout screener with confirmed accumulation, and benefits from the easing rate environment."
+    "text": "META is growing revenue at 22% with a PE of just 16.9 and carries an ADD signal \u2014 this is the strongest fundamental name in your portfolio and deserves a bigger allocation."
   }
 ]
