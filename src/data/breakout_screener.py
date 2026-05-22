@@ -16,7 +16,8 @@ Five signals with weighted composite score out of 10:
 Market regime: bull / caution / bear (SPY 200d SMA + VIX + HY credit spread).
 High Conviction: score ≥ 7.0 AND rs_leading AND stage_transition AND non-bear regime.
 
-Gate sequence (R1): yfinance signals first → Finnhub earnings gate last (saves API quota).
+Gate sequence (R1): yfinance signals first → Finnhub earnings check last (saves API quota).
+      Earnings-risk candidates are annotated (earnings_soon/earnings_date) and retained.
 
 Cache: 8h TTL (same policy as the growth screener).
       Schema versioning (CACHE_SCHEMA_VERSION) auto-discards stale caches when
@@ -356,11 +357,13 @@ def _assess_market_regime() -> str:
 # R3: Finnhub earnings proximity gate (runs last — saves API quota)
 # ---------------------------------------------------------------------------
 
-def _check_earnings_proximity_finnhub(ticker: str, client) -> bool:
+def _check_earnings_proximity_finnhub(ticker: str, client) -> tuple[bool, str | None]:
     """
-    Returns True if the ticker has an earnings event within the next 21 calendar days.
-    Stocks with imminent earnings are excluded — too binary an event for base setups.
-    Returns False on API error (do not exclude on uncertainty).
+    Returns (has_earnings_soon, earnings_date) where:
+    - has_earnings_soon: True if an earnings event exists within 21 calendar days
+    - earnings_date:     ISO date string of the nearest event, or None
+
+    Returns (False, None) on API error — do not flag as earnings-soon on uncertainty.
     """
     today = date.today()
     end   = today + timedelta(days=21)
@@ -371,10 +374,14 @@ def _check_earnings_proximity_finnhub(ticker: str, client) -> bool:
             symbol=ticker,
         )
         earnings = (cal or {}).get("earningsCalendar", [])
-        return len(earnings) > 0
+        if not earnings:
+            return False, None
+        dates = sorted(e.get("date", "") for e in earnings if e.get("date"))
+        nearest = dates[0] if dates else None
+        return True, nearest
     except Exception as exc:
-        log.debug("Finnhub earnings gate failed for %s: %s", ticker, exc)
-        return False  # on error, do not exclude
+        log.debug("Finnhub earnings check failed for %s: %s", ticker, exc)
+        return False, None  # on error, do not flag
 
 
 # ---------------------------------------------------------------------------
@@ -905,34 +912,44 @@ def run_breakout_screener(
     )
     log.info("Pre-candidates after yfinance gates: %d", len(pre_candidates))
 
-    # ── Step 7: Finnhub earnings gate — R1/R3 (run last to save quota) ───────
+    # ── Step 7: Finnhub earnings annotation (run last to save quota) ─────────
+    # Earnings-risk candidates are retained — they are often the most interesting.
+    # The earnings_soon flag is surfaced in the dashboard as an amber badge so
+    # investors can see the event risk without the candidate being hidden.
+    for c in pre_candidates:
+        c["earnings_soon"] = False
+        c["earnings_date"] = None
+
     fh_key = os.environ.get("FINNHUB_API_KEY")
     if fh_key and pre_candidates:
         log.info(
-            "Applying Finnhub earnings gate to %d candidates (21-day window)...",
+            "Checking earnings proximity for %d candidates (21-day window)...",
             len(pre_candidates),
         )
         try:
             import finnhub
             fh_client = finnhub.Client(api_key=fh_key)
-            survivors: list[dict] = []
             for c in pre_candidates:
-                has_earnings = _check_earnings_proximity_finnhub(c["ticker"], fh_client)
+                has_earnings, earnings_date = _check_earnings_proximity_finnhub(
+                    c["ticker"], fh_client
+                )
                 if has_earnings:
-                    log.info("Earnings gate: excluded %s (earnings within 21 days)", c["ticker"])
-                else:
-                    survivors.append(c)
+                    log.info(
+                        "Earnings: %s flagged (event on %s)", c["ticker"], earnings_date
+                    )
+                    c["earnings_soon"] = True
+                    c["earnings_date"] = earnings_date
                 time.sleep(1.1)  # Finnhub free tier: 60 calls/min
+            n_flagged = sum(1 for c in pre_candidates if c["earnings_soon"])
             log.info(
-                "Finnhub earnings gate: %d → %d survivors",
-                len(pre_candidates), len(survivors),
+                "Finnhub earnings check: %d/%d candidates flagged with imminent earnings",
+                n_flagged, len(pre_candidates),
             )
-            pre_candidates = survivors
         except Exception as exc:
-            log.warning("Finnhub earnings gate failed: %s — proceeding without gate", exc)
+            log.warning("Finnhub earnings check failed: %s — proceeding without annotation", exc)
     else:
         if not fh_key:
-            log.info("FINNHUB_API_KEY not set — skipping earnings gate")
+            log.info("FINNHUB_API_KEY not set — earnings_soon defaults to False for all candidates")
 
     # ── Step 8: AI batch reasoning ────────────────────────────────────────────
     ai_reasonings = _batch_enrich_reasoning_via_ai(pre_candidates)
@@ -960,6 +977,8 @@ def run_breakout_screener(
             "composite_score": score,
             "signals":         signals_list,
             "high_conviction": high_conviction,
+            "earnings_soon":   c.get("earnings_soon", False),
+            "earnings_date":   c.get("earnings_date"),
             "base_weeks":      c.get("base_weeks"),
             "base_depth_pct":  c.get("base_depth_pct"),
             "base_tightness":  c.get("base_tightness"),

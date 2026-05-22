@@ -211,6 +211,7 @@
 
     .bk-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; background: #0c1e2e; border: 1px solid #1a4a7a; color: var(--blue); margin-right: 3px; white-space: nowrap; }
     .bk-hc-badge { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; background: #0d2a14; border: 1px solid #2ea043; color: var(--green); margin-right: 6px; white-space: nowrap; vertical-align: middle; }
+    .bk-earn-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #2a1f00; border: 1px solid #b8860b; color: #e6ac00; margin-right: 6px; white-space: nowrap; vertical-align: middle; cursor: default; }
     .bk-row-hc td { background: rgba(63,185,80,0.04) !important; }
     .bk-row-hc { border-left: 2px solid var(--green); }
 
@@ -1353,7 +1354,9 @@
         `<span class="bk-badge">${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`
       ).join('');
 
-      const hcBadge  = c.high_conviction ? `<span class="bk-hc-badge">High Conviction</span>` : '';
+      const hcBadge   = c.high_conviction ? `<span class="bk-hc-badge">High Conviction</span>` : '';
+      const earnTitle = c.earnings_date ? ` title="Earnings: ${esc(c.earnings_date)}"` : '';
+      const earnBadge = c.earnings_soon  ? `<span class="bk-earn-badge"${earnTitle}>⚠ Earnings</span>` : '';
 
       const baseWks  = c.base_weeks  != null ? String(c.base_weeks) + 'w' : '—';
       const depthPct = c.base_depth_pct != null ? fmt(c.base_depth_pct, {dp:1}) + '%' : '—';
@@ -1363,7 +1366,7 @@
       mainRow.dataset.ticker = c.ticker;
       mainRow.innerHTML = `
         <td style="font-family:var(--mono);font-weight:700">${esc(c.ticker)}</td>
-        <td>${hcBadge}${esc(c.company_name)}</td>
+        <td>${hcBadge}${earnBadge}${esc(c.company_name)}</td>
         <td style="color:var(--muted);font-size:12px">${esc(c.sector)}</td>
         <td>${rsCol}</td>
         <td>${badges}</td>
