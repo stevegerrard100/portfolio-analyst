@@ -32,5 +32,11 @@
     "id": "5UR.DE-trim",
     "snoozed_until": "2026-05-28",
     "snoozed_at": "2026-05-21"
+  },
+  {
+    "id": "EL-trim",
+    "snoozed_until": "2026-05-29",
+    "snoozed_at": "2026-05-22",
+    "snoozed_price": 78.91
   }
 ]
