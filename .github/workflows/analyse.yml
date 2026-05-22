@@ -57,9 +57,7 @@ jobs:
           git add -f cache/last_actions.json
           git add -f cache/last_breakout_scores.json 2>/dev/null || true
           git diff --cached --quiet || git commit -m "chore: update actions cache [skip ci]"
-          git stash
           git pull --rebase origin main
-          git stash pop
           git push origin HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
