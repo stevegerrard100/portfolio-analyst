@@ -1,6 +1,9 @@
 name: Portfolio Analysis
 
 on:
+  schedule:
+    - cron: '0 6 * * 1-5'   # 07:00 BST (UK summer, UTC+1 ≈ Mar–Oct)
+    - cron: '0 7 * * 1-5'   # 07:00 GMT (UK winter, UTC+0 ≈ Oct–Mar)
   workflow_dispatch:         # manual trigger
 
 jobs:

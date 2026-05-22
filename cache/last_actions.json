@@ -3,36 +3,36 @@
     "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Est\u00e9e Lauder is down 16% with shrinking revenue and sits 34% below its high, so reduce your exposure before it potentially falls further."
+    "text": "Trim EL \u2014 Est\u00e9e Lauder is down 17% and 34% off its high with persistent selling pressure, so reduce your exposure before it gets worse."
   },
   {
-    "id": "SILG.L-trim",
+    "id": "SGLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SILG.L is your worst commodity holding, down 13% and below its 50-day average \u2014 silver miners are extra volatile, so lighten up to manage your risk."
+    "text": "Trim SGLP.L \u2014 it has the weakest relative strength in your entire portfolio at -99 and is down nearly 12%, meaning the market is actively rejecting this name."
   },
   {
-    "id": "GDXJ.L-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GDXJ.L is down 8.4% with bearish momentum and sitting 28% below its high \u2014 trim this junior gold miner ETF since all technical signals point lower."
+    "text": "Trim ONDS \u2014 three consecutive earnings misses, down 15%, and 34% off its high means the company keeps disappointing and the stock reflects it."
   },
   {
-    "id": "GDX.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "GDX.L tells the same bearish story as GDXJ.L \u2014 down nearly 10% with bearish momentum across the board, so reduce your gold miner exposure."
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to MU \u2014 a PE of just 7.4 combined with 49% revenue growth is unusually cheap for that kind of momentum, making this pullback a good entry point."
   },
   {
-    "id": "UNH-buy",
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to META \u2014 a PE of 16.9 with 22% revenue growth and strong free cash flow is a genuinely rare value-and-growth combo in big tech right now."
+  },
+  {
+    "id": "VTR-buy",
     "action_type": "buy",
     "priority": "low",
-    "text": "UnitedHealth Group is a high-conviction breakout candidate with world-class fundamentals in healthcare, and the current easing rate environment supports defensive quality names like this."
-  },
-  {
-    "id": "WMB-buy",
-    "action_type": "buy",
-    "priority": "low",
-    "text": "Williams Companies is breaking out with confirmed accumulation patterns, and as a major natural gas pipeline operator it benefits directly from steady energy demand and the current favorable macro backdrop."
+    "text": "Buy VTR \u2014 this healthcare REIT scores a perfect 5.0 on the breakout screener with confirmed accumulation, and benefits from the easing rate environment."
   }
 ]
