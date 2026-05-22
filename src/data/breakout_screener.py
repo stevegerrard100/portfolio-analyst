@@ -969,6 +969,16 @@ def run_breakout_screener(
             and regime != "bear"
         )
 
+        # R3: Regime Watchlist — bear market leaders showing genuine RS leadership.
+        # high_conviction stays False in bear regime; this flag is additive.
+        # Useful for identifying names to monitor before a potential market turn.
+        regime_watchlist = (
+            regime == "bear"
+            and score >= 7.0
+            and bool(c["signals"].get("rs_leading"))
+            and bool(c["signals"].get("stage_transition"))
+        )
+
         final_candidates.append({
             "ticker":          ticker,
             "company_name":    c["company_name"],
@@ -977,6 +987,7 @@ def run_breakout_screener(
             "composite_score": score,
             "signals":         signals_list,
             "high_conviction": high_conviction,
+            "regime_watchlist": regime_watchlist,
             "earnings_soon":   c.get("earnings_soon", False),
             "earnings_date":   c.get("earnings_date"),
             "base_weeks":      c.get("base_weeks"),
