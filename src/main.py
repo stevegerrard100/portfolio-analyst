@@ -12,9 +12,11 @@ Step sequence:
   9. render_dashboard       Static HTML → output/index.html
 """
 
+import argparse
 import json
 import logging
 import os
+import sys
 import time
 from datetime import date
 from pathlib import Path
@@ -36,89 +38,164 @@ def _step(n: int, total: int, label: str) -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Portfolio Analyst pipeline")
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help=(
+            "Skip live fetches (steps 1-7) and load data from cache files. "
+            "For local development only — never use in CI."
+        ),
+    )
+    args = parser.parse_args()
+    fast = args.fast
+
     t0 = time.time()
-    log.info("━" * 60)
-    log.info("  Portfolio Analyst — full pipeline starting")
-    log.info("━" * 60)
+
+    if fast:
+        print(
+            "\n⚡ FAST MODE — using cached data, skipping live fetches. "
+            "This is for local development only and should never be used in CI.\n",
+            file=sys.stderr,
+        )
+        log.info("━" * 60)
+        log.info("  Portfolio Analyst — FAST MODE (steps 1-7 skipped)")
+        log.info("━" * 60)
+    else:
+        log.info("━" * 60)
+        log.info("  Portfolio Analyst — full pipeline starting")
+        log.info("━" * 60)
 
     os.makedirs(_OUTPUT_DIR, exist_ok=True)
 
-    # ── 1. Portfolio ──────────────────────────────────────────────────────────
-    _step(1, 9, "Trading 212 portfolio")
-    from src.data.trading212 import fetch_portfolio
     from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
-    portfolio = fetch_portfolio()
-    positions = portfolio.get("positions", [])
-    # Apply merger overrides explicitly — ensures resolved tickers (IONQ, QBTS…) reach
-    # all downstream steps even if _enrich_position's override path failed silently.
-    portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
-    log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
-    # Pre-compute exited tickers so their current prices are included in the
-    # main yfinance batch (step 2) — avoids a separate fetch in the renderer.
-    from src.data.regret_tracker import get_exited_tickers as _get_exited
-    _exited_tickers = _get_exited(portfolio.get("order_history", []), set(portfolio_tickers))
-    if _exited_tickers:
-        log.info("Regret tracker: %d exited ticker(s) to pre-fetch: %s", len(_exited_tickers), _exited_tickers)
+    if fast:
+        # ── Fast mode: load steps 1-7 data from cache ────────────────────────
+        _required = {
+            "portfolio":  _CACHE_DIR / "last_portfolio.json",
+            "screener":   _CACHE_DIR / "screener.json",
+            "breakout":   _CACHE_DIR / "breakout_screener.json",
+        }
+        missing = [str(p) for name, p in _required.items() if not p.exists()]
+        if missing:
+            log.error(
+                "FAST MODE: missing cache file(s): %s — run without --fast first",
+                missing,
+            )
+            sys.exit(1)
 
-    # ── 2. Market data ────────────────────────────────────────────────────────
-    _step(2, 9, "Market data (yfinance + Mansfield RS)")
-    from src.data.market_data import fetch_market_data, SPDR_ETFS, COMMODITY_PROXIES
-    # Always include SPDR ETFs, commodity proxies, and exited tickers (for Regret Tracker)
-    extra = [t for t in (SPDR_ETFS + COMMODITY_PROXIES + _exited_tickers) if t not in portfolio_tickers]
-    all_tickers = portfolio_tickers + extra
-    market_data = fetch_market_data(all_tickers)
-    log.info("Market data: %d/%d tickers processed", len(market_data), len(all_tickers))
+        log.info("Fast mode: loading portfolio from %s", _required["portfolio"])
+        portfolio = json.loads(_required["portfolio"].read_text(encoding="utf-8"))
 
-    # ── 3. Sector flows ───────────────────────────────────────────────────────
-    _step(3, 9, "Sector rotation (Finviz + ETF RS)")
-    from src.data.sector_flows import fetch_sector_data
-    sector_flows = fetch_sector_data(market_data, positions)
-    n_signals = len(sector_flows.get("rotation_signals", []))
-    log.info("Sector data: %d rotation signals, alignment=%.0f%%",
-             n_signals, sector_flows.get("alignment", {}).get("alignment_pct", 0))
+        log.info("Fast mode: loading screener from %s", _required["screener"])
+        screener = json.loads(_required["screener"].read_text(encoding="utf-8"))
 
-    # ── 4. Macro ──────────────────────────────────────────────────────────────
-    _step(4, 9, "FRED macro data")
-    from src.data.macro import fetch_macro_data
-    macro = fetch_macro_data()
-    if macro:
-        yc = macro.get("yield_curve", {})
-        log.info("Macro: HY regime=%s, yield curve=%s (%s bps), rates=%s",
-                 macro.get("hy_regime", "?"),
-                 yc.get("status", "?"),
-                 yc.get("spread_bps", "?"),
-                 macro.get("rate_trajectory", "?"))
+        log.info("Fast mode: loading breakout from %s", _required["breakout"])
+        breakout = json.loads(_required["breakout"].read_text(encoding="utf-8"))
 
-    # ── 5. Fundamentals ───────────────────────────────────────────────────────
-    _step(5, 9, "Fundamentals (Finnhub + yfinance)")
-    from src.data.fundamentals import fetch_all_fundamentals
-    fundamentals = fetch_all_fundamentals(portfolio_tickers)
-    log.info("Fundamentals: %d/%d tickers", len(fundamentals), len(portfolio_tickers))
+        market_data:  dict = {}
+        sector_flows: dict = {}
+        macro:        dict = {}
+        fundamentals: dict = {}
+        regret_tracker:     list = []
 
-    # ── 6. Screener ───────────────────────────────────────────────────────────
-    _step(6, 9, "S&P 500 growth screener (8h cached)")
-    from src.data.screener import run_screener
-    screener = run_screener(exclude_tickers=portfolio_tickers)
-    log.info("Screener: %d candidates (universe=%d)",
-             len(screener.get("candidates", [])),
-             screener.get("universe_size", 0))
+        positions        = portfolio.get("positions", [])
+        portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
+        log.info(
+            "Fast mode: %d positions, %d screener candidates, %d breakout candidates",
+            len(positions),
+            len(screener.get("candidates", [])),
+            len(breakout.get("candidates", [])),
+        )
 
-    # ── 7. Breakout Watch List ────────────────────────────────────────────────
-    _step(7, 9, "Breakout Watch List screener (8h cached)")
-    from src.data.breakout_screener import run_breakout_screener
-    breakout = run_breakout_screener(exclude_tickers=portfolio_tickers)
-    log.info("Breakout screener: %d candidates (universe=%d)",
-             len(breakout.get("candidates", [])),
-             breakout.get("universe_size", 0))
+    else:
+        # ── 1. Portfolio ──────────────────────────────────────────────────────
+        _step(1, 9, "Trading 212 portfolio")
+        from src.data.trading212 import fetch_portfolio
+        portfolio = fetch_portfolio()
+        positions = portfolio.get("positions", [])
+        # Apply merger overrides explicitly — ensures resolved tickers (IONQ, QBTS…) reach
+        # all downstream steps even if _enrich_position's override path failed silently.
+        portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
+        log.info("Portfolio: %d positions (env=%s)", len(positions), portfolio.get("environment", "?"))
 
-    # ── Regret Tracker (uses already-fetched market data) ────────────────────
-    from src.data.regret_tracker import build_regret_tracker
-    regret_tracker = build_regret_tracker(
-        portfolio.get("order_history", []),
-        set(portfolio_tickers),
-        market_data,
-    )
+        # Persist portfolio for --fast dev runs
+        _portfolio_cache = _CACHE_DIR / "last_portfolio.json"
+        try:
+            _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            _portfolio_cache.write_text(
+                json.dumps(portfolio, indent=2, default=str), encoding="utf-8"
+            )
+            log.info("Portfolio cached → %s", _portfolio_cache)
+        except Exception as exc:
+            log.warning("Could not cache portfolio: %s", exc)
+
+        # Pre-compute exited tickers so their current prices are included in the
+        # main yfinance batch (step 2) — avoids a separate fetch in the renderer.
+        from src.data.regret_tracker import get_exited_tickers as _get_exited
+        _exited_tickers = _get_exited(portfolio.get("order_history", []), set(portfolio_tickers))
+        if _exited_tickers:
+            log.info("Regret tracker: %d exited ticker(s) to pre-fetch: %s", len(_exited_tickers), _exited_tickers)
+
+        # ── 2. Market data ────────────────────────────────────────────────────
+        _step(2, 9, "Market data (yfinance + Mansfield RS)")
+        from src.data.market_data import fetch_market_data, SPDR_ETFS, COMMODITY_PROXIES
+        # Always include SPDR ETFs, commodity proxies, and exited tickers (for Regret Tracker)
+        extra = [t for t in (SPDR_ETFS + COMMODITY_PROXIES + _exited_tickers) if t not in portfolio_tickers]
+        all_tickers = portfolio_tickers + extra
+        market_data = fetch_market_data(all_tickers)
+        log.info("Market data: %d/%d tickers processed", len(market_data), len(all_tickers))
+
+        # ── 3. Sector flows ───────────────────────────────────────────────────
+        _step(3, 9, "Sector rotation (Finviz + ETF RS)")
+        from src.data.sector_flows import fetch_sector_data
+        sector_flows = fetch_sector_data(market_data, positions)
+        n_signals = len(sector_flows.get("rotation_signals", []))
+        log.info("Sector data: %d rotation signals, alignment=%.0f%%",
+                 n_signals, sector_flows.get("alignment", {}).get("alignment_pct", 0))
+
+        # ── 4. Macro ──────────────────────────────────────────────────────────
+        _step(4, 9, "FRED macro data")
+        from src.data.macro import fetch_macro_data
+        macro = fetch_macro_data()
+        if macro:
+            yc = macro.get("yield_curve", {})
+            log.info("Macro: HY regime=%s, yield curve=%s (%s bps), rates=%s",
+                     macro.get("hy_regime", "?"),
+                     yc.get("status", "?"),
+                     yc.get("spread_bps", "?"),
+                     macro.get("rate_trajectory", "?"))
+
+        # ── 5. Fundamentals ───────────────────────────────────────────────────
+        _step(5, 9, "Fundamentals (Finnhub + yfinance)")
+        from src.data.fundamentals import fetch_all_fundamentals
+        fundamentals = fetch_all_fundamentals(portfolio_tickers)
+        log.info("Fundamentals: %d/%d tickers", len(fundamentals), len(portfolio_tickers))
+
+        # ── 6. Screener ───────────────────────────────────────────────────────
+        _step(6, 9, "S&P 500 growth screener (8h cached)")
+        from src.data.screener import run_screener
+        screener = run_screener(exclude_tickers=portfolio_tickers)
+        log.info("Screener: %d candidates (universe=%d)",
+                 len(screener.get("candidates", [])),
+                 screener.get("universe_size", 0))
+
+        # ── 7. Breakout Watch List ────────────────────────────────────────────
+        _step(7, 9, "Breakout Watch List screener (8h cached)")
+        from src.data.breakout_screener import run_breakout_screener
+        breakout = run_breakout_screener(exclude_tickers=portfolio_tickers)
+        log.info("Breakout screener: %d candidates (universe=%d)",
+                 len(breakout.get("candidates", [])),
+                 breakout.get("universe_size", 0))
+
+        # ── Regret Tracker (uses already-fetched market data) ─────────────────
+        from src.data.regret_tracker import build_regret_tracker
+        regret_tracker = build_regret_tracker(
+            portfolio.get("order_history", []),
+            set(portfolio_tickers),
+            market_data,
+        )
 
     # ── 8. Claude analysis ────────────────────────────────────────────────────
     _step(8, 9, "Claude analysis (6-prompt pipeline)")
