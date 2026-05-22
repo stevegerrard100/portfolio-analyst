@@ -519,10 +519,13 @@ def _breakout_profile(ticker: str) -> dict | None:
 _MAX_TOKENS_OUTPUT = 8192  # claude-sonnet-4-6 hard cap
 
 
-def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
+def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
     """
-    Single Claude API call to generate reasoning for all breakout candidates.
-    Returns {ticker: reasoning_text}; tickers absent from result fall back to technical reasoning.
+    Single Claude API call to generate structured reasoning for all breakout candidates.
+
+    Returns {ticker: {"setup_strength": str|None, "key_risk": str|None, "maturity": str|None}}.
+    Tickers absent from the result (or with parse failures) will have all three fields as None,
+    causing the dashboard to fall back to technical_reasoning (R6.5).
     """
     import re
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -543,27 +546,36 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
             if sup:
                 vp_parts.append(f"support ${sup[0][0]:.2f}")
             vp_str = ", ".join(vp_parts)
+            base_ctx = (
+                f"base {c.get('base_weeks', '?')}w / "
+                f"{c.get('base_depth_pct', '?')}% depth"
+            )
             lines.append(
                 f"###{c['ticker']}\n"
                 f"{c['company_name']} | {c['sector']} | RS {c['current_rs']:+.1f} | "
-                f"signals: {', '.join(fired) or 'none'}"
+                f"{base_ctx} | signals: {', '.join(fired) or 'none'}"
                 + (f" | {vp_str}" if vp_str else "")
             )
 
         prompt = (
-            "For each stock below, write exactly 3 concise plain-English sentences "
-            "(no bullets, no markdown, no bold). "
-            "Sentences: 1) what the company does and why its sector is currently favourable; "
-            "2) a specific catalyst or tailwind that could drive a breakout move; "
-            "3) a direct buy-setup assessment (compelling / speculative / needs more confirmation) "
-            "referencing the signals and price levels.\n\n"
-            "Format: respond with ###TICKER on its own line, then the 3 sentences on the next line. "
-            "Do not add any other text between entries.\n\n"
+            "You are a technical analysis expert evaluating breakout setups.\n"
+            "For each stock below provide a structured assessment using EXACTLY this format "
+            "— no deviations, no extra text between entries:\n\n"
+            "###TICKER\n"
+            "SETUP: <1-2 sentences. Explain what specifically makes this setup attractive "
+            "by focusing on the interplay between relative strength, base quality, and volume "
+            "behaviour. Do not mechanically restate signal names.>\n"
+            "RISK: <1 sentence. The single most important factor that would invalidate this setup.>\n"
+            "MATURITY: <one word only — Early, Developing, or Extended>\n\n"
+            "MATURITY definitions:\n"
+            "  Early = base recently started, price still well below the pivot\n"
+            "  Developing = base well-established, approaching but not yet at the pivot\n"
+            "  Extended = price at or very close to the base pivot, setup nearly complete\n\n"
             + "\n\n".join(lines)
         )
 
-        # Cap at the model output limit — 220 tokens × N candidates can exceed 8 192 for large screens
-        max_tokens = min(_MAX_TOKENS_OUTPUT, 220 * len(candidates))
+        # Cap at model output limit — 280 tokens × N candidates (R6.2)
+        max_tokens = min(_MAX_TOKENS_OUTPUT, 280 * len(candidates))
         client     = anthropic.Anthropic(api_key=api_key)
         msg        = client.messages.create(
             model="claude-sonnet-4-6",
@@ -571,14 +583,37 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, str]:
             messages=[{"role": "user", "content": prompt}],
         )
         response_text = msg.content[0].text
-        result: dict[str, str] = {}
-        blocks = re.findall(
-            r"###([A-Z]{1,5})\n(.+?)(?=\n+###[A-Z]|\Z)", response_text, re.DOTALL
-        )
-        for ticker, text in blocks:
-            result[ticker] = text.strip()
+
+        result: dict[str, dict] = {}
+        # Split on ###TICKER markers (tickers: 1–6 chars, letters/digits/hyphens)
+        parts = re.split(r"\n?###([A-Z][A-Z0-9\-]{0,5})\n", response_text)
+        # parts = ['', 'TICK1', 'block1', 'TICK2', 'block2', ...]
+        i = 1
+        while i < len(parts) - 1:
+            ticker = parts[i].strip()
+            block  = parts[i + 1]
+            try:
+                setup_m = re.search(
+                    r"SETUP:\s*(.+?)(?=\nRISK:|\nMATURITY:|\Z)", block, re.DOTALL
+                )
+                risk_m  = re.search(
+                    r"RISK:\s*(.+?)(?=\nMATURITY:|\Z)", block, re.DOTALL
+                )
+                mat_m   = re.search(
+                    r"MATURITY:\s*(Early|Developing|Extended)", block, re.IGNORECASE
+                )
+                result[ticker] = {
+                    "setup_strength": setup_m.group(1).strip() if setup_m else None,
+                    "key_risk":       risk_m.group(1).strip()  if risk_m  else None,
+                    "maturity":       mat_m.group(1).strip().capitalize() if mat_m else None,
+                }
+            except Exception:
+                result[ticker] = {"setup_strength": None, "key_risk": None, "maturity": None}
+            i += 2
+
+        enriched = sum(1 for v in result.values() if v.get("setup_strength"))
         log.info(
-            "Batch AI reasoning: %d/%d candidates enriched", len(result), len(candidates)
+            "Batch AI reasoning: %d/%d candidates enriched", enriched, len(candidates)
         )
         return result
     except Exception as exc:
@@ -997,6 +1032,7 @@ def run_breakout_screener(
         prev_score = prev_scores.get(ticker)
         score_delta = round(score - prev_score, 1) if prev_score is not None else None
 
+        ai_result = ai_reasonings.get(ticker) or {}
         final_candidates.append({
             "ticker":          ticker,
             "company_name":    c["company_name"],
@@ -1012,7 +1048,11 @@ def run_breakout_screener(
             "base_weeks":      c.get("base_weeks"),
             "base_depth_pct":  c.get("base_depth_pct"),
             "base_tightness":  c.get("base_tightness"),
-            "reasoning":       ai_reasonings.get(ticker) or c["technical_reasoning"],
+            # R6.3: structured AI fields; reasoning is the plain-text fallback (R6.5)
+            "reasoning":       c["technical_reasoning"],
+            "setup_strength":  ai_result.get("setup_strength"),
+            "key_risk":        ai_result.get("key_risk"),
+            "maturity":        ai_result.get("maturity"),
             "stop_loss":       c["stop_loss"],
             "ohlcv_daily":     c["ohlcv_daily"],
             "ohlcv_weekly":    c["ohlcv_weekly"],

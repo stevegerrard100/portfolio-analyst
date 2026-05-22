@@ -314,6 +314,10 @@ def render_dashboard(
             "earnings_soon":    bool(c.get("earnings_soon", False)),
             "earnings_date":    c.get("earnings_date"),
             "sector_rs_signal": _sector_rs_signal(ticker, sector, sector_flows),
+            # R6.3: structured AI reasoning fields; setup_strength=None triggers fallback (R6.5)
+            "setup_strength":   c.get("setup_strength"),
+            "key_risk":         c.get("key_risk"),
+            "maturity":         c.get("maturity"),
             "base_weeks":       c.get("base_weeks"),
             "base_depth_pct":   c.get("base_depth_pct"),
             "base_tightness":   c.get("base_tightness"),
