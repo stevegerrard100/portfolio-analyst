@@ -101,9 +101,25 @@ def main() -> None:
 
         log.info("Fast mode: loading screener from %s", _required["screener"])
         screener = json.loads(_required["screener"].read_text(encoding="utf-8"))
+        from src.data.screener import CACHE_SCHEMA_VERSION as _SCREENER_SCHEMA_VERSION
+        if screener.get("schema_version") != _SCREENER_SCHEMA_VERSION:
+            log.error(
+                "FAST MODE: screener.json schema version mismatch "
+                "(found %s, expected %d) — run without --fast to rebuild",
+                screener.get("schema_version"), _SCREENER_SCHEMA_VERSION,
+            )
+            sys.exit(1)
 
         log.info("Fast mode: loading breakout from %s", _required["breakout"])
         breakout = json.loads(_required["breakout"].read_text(encoding="utf-8"))
+        from src.data.breakout_screener import CACHE_SCHEMA_VERSION as _BREAKOUT_SCHEMA_VERSION
+        if breakout.get("schema_version") != _BREAKOUT_SCHEMA_VERSION:
+            log.error(
+                "FAST MODE: breakout_screener.json schema version mismatch "
+                "(found %s, expected %d) — run without --fast to rebuild",
+                breakout.get("schema_version"), _BREAKOUT_SCHEMA_VERSION,
+            )
+            sys.exit(1)
 
         market_data:  dict = {}
         sector_flows: dict = {}
