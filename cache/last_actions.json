@@ -1,26 +1,38 @@
 [
   {
-    "id": "ONDS-sell",
-    "action_type": "sell",
-    "priority": "medium",
-    "text": "ONDS is down 15.9% with three consecutive earnings misses, bearish technicals across the board, and a REDUCE signal \u2014 there's no catalyst to justify holding this any longer."
+    "id": "RGTI-trim",
+    "action_type": "trim",
+    "priority": "high",
+    "text": "RGTI is down 20.5% with shrinking revenue and sits 53% below its high \u2014 cut this position significantly because the business fundamentals are deteriorating, not just the stock price."
+  },
+  {
+    "id": "ONDS-trim",
+    "action_type": "trim",
+    "priority": "high",
+    "text": "ONDS is down 16.4%, deeply unprofitable with bearish technicals across the board \u2014 reduce your exposure here before losses deepen further."
   },
   {
     "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "KTOS is your worst performer at -26.9% and sits 57% below its 52-week high \u2014 even without a REDUCE signal, that level of drawdown with bearish technicals warrants cutting your exposure in half."
-  },
-  {
-    "id": "SILG.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "SILG.L is your worst commodities holding at -13.6% with bearish MACD \u2014 silver miners are highly volatile and this position deserves a smaller size until momentum turns."
+    "text": "KTOS is your deepest single-stock loss at -26.9% and 57% off its high \u2014 even if you believe in the long-term story, the position size needs to shrink given how far it's fallen."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META is growing revenue at 22% with a PE of just 16.9 and carries an ADD signal \u2014 this is the strongest fundamental name in your portfolio and deserves a bigger allocation."
+    "text": "META at a PE of just 16.9 with stellar growth and 22.6% off its high is a genuine discount on one of the most profitable businesses in tech \u2014 worth adding on this pullback."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Microsoft down 14.3% with rock-solid 15% revenue growth is like finding a premium product on clearance \u2014 this pullback in a best-in-class company is worth adding to."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron's PE of 7.3 paired with 49% revenue growth and consistent earnings beats suggests the market is underpricing a strong cyclical recovery \u2014 consider adding here."
   }
 ]
