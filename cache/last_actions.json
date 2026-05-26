@@ -1,38 +1,32 @@
 [
   {
-    "id": "RGTI-trim",
-    "action_type": "trim",
+    "id": "ONDS-sell",
+    "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 20.5% with shrinking revenue and sits 53% below its high \u2014 cut this position significantly because the business fundamentals are deteriorating, not just the stock price."
-  },
-  {
-    "id": "ONDS-trim",
-    "action_type": "trim",
-    "priority": "high",
-    "text": "ONDS is down 16.4%, deeply unprofitable with bearish technicals across the board \u2014 reduce your exposure here before losses deepen further."
+    "text": "Sell ONDS \u2014 you're down 15%, it's 35% below its high, trading below its 50-day average with bearish momentum, and the technical picture is broken with no catalyst to reverse it."
   },
   {
     "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "KTOS is your deepest single-stock loss at -26.9% and 57% off its high \u2014 even if you believe in the long-term story, the position size needs to shrink given how far it's fallen."
+    "text": "Trim KTOS \u2014 at -25.8% and a brutal 57% off its high, the damage is severe even if the bullish case exists long-term, so right-size this position to something you can stomach if it falls further."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "META at a PE of just 16.9 with stellar growth and 22.6% off its high is a genuine discount on one of the most profitable businesses in tech \u2014 worth adding on this pullback."
+    "id": "TSLA-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim TSLA \u2014 you're barely breaking even at +2%, revenue is declining, and a PE of 169 leaves almost no margin for error if sentiment turns against it further."
   },
   {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Microsoft down 14.3% with rock-solid 15% revenue growth is like finding a premium product on clearance \u2014 this pullback in a best-in-class company is worth adding to."
+    "id": "SKYT-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim SKYT \u2014 you're up a fantastic 63.8% at its 52-week high, but it's unprofitable with negative earnings, so consider locking in some of those gains before the market reprices this speculative name."
   },
   {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Micron's PE of 7.3 paired with 49% revenue growth and consistent earnings beats suggests the market is underpricing a strong cyclical recovery \u2014 consider adding here."
+    "id": "ASTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim ASTS \u2014 you're up 31.7% on a company with no real earnings and heavy cash burn, so take some profit off the table because speculative winners can reverse fast."
   }
 ]
