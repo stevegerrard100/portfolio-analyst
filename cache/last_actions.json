@@ -1,32 +1,38 @@
 [
   {
-    "id": "ONDS-sell",
+    "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell ONDS \u2014 you're down 15%, it's 35% below its high, trading below its 50-day average with bearish momentum, and the technical picture is broken with no catalyst to reverse it."
+    "text": "RGTI is down 25%, revenue is shrinking by 34%, it's over 55% off its high, and the business fundamentals are deteriorating \u2014 cut this loss before it gets worse."
   },
   {
-    "id": "KTOS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim KTOS \u2014 at -25.8% and a brutal 57% off its high, the damage is severe even if the bullish case exists long-term, so right-size this position to something you can stomach if it falls further."
+    "id": "KTOS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "KTOS has been nearly halved from its peak at -56.5% off its high, carries an expensive PE of 53 with no momentum to justify it \u2014 this is a broken chart that needs to go."
   },
   {
-    "id": "TSLA-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim TSLA \u2014 you're barely breaking even at +2%, revenue is declining, and a PE of 169 leaves almost no margin for error if sentiment turns against it further."
+    "text": "ONDS is down 10% with bearish technicals across the board, deeply unprofitable, and high short interest \u2014 trim this to limit further damage on a speculative name that isn't working."
   },
   {
-    "id": "SKYT-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SKYT \u2014 you're up a fantastic 63.8% at its 52-week high, but it's unprofitable with negative earnings, so consider locking in some of those gains before the market reprices this speculative name."
+    "text": "IONQ is up 21% but has no earnings, extremely high short interest, and is deeply speculative \u2014 lock in some of that gain before a short squeeze reversal or further correction hits."
   },
   {
-    "id": "ASTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim ASTS \u2014 you're up 31.7% on a company with no real earnings and heavy cash burn, so take some profit off the table because speculative winners can reverse fast."
+    "id": "AMD-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "AMD is sitting at its 52-week high with 34% revenue growth, strong relative strength, and a bullish MACD \u2014 this is textbook momentum worth adding to on any small pullback."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron is at its 52-week high with nearly 49% revenue growth and firing on all fundamentals \u2014 consider adding on any minor dip to build this winning position."
   }
 ]
