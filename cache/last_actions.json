@@ -3,36 +3,30 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 25%, revenue is shrinking by 34%, it's over 55% off its high, and the business fundamentals are deteriorating \u2014 cut this loss before it gets worse."
+    "text": "RGTI is down 26% with revenue shrinking 34%, no profits, heavy cash burn, and 18% short interest \u2014 the thesis here is failing and this should be exited before losses deepen."
   },
   {
-    "id": "KTOS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "KTOS has been nearly halved from its peak at -56.5% off its high, carries an expensive PE of 53 with no momentum to justify it \u2014 this is a broken chart that needs to go."
-  },
-  {
-    "id": "ONDS-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ONDS is down 10% with bearish technicals across the board, deeply unprofitable, and high short interest \u2014 trim this to limit further damage on a speculative name that isn't working."
+    "text": "QBTS is unprofitable with heavy cash burn, 15% short interest, and two analyst downgrades \u2014 trim your exposure while you still have a manageable 11% loss."
   },
   {
-    "id": "IONQ-trim",
+    "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is up 21% but has no earnings, extremely high short interest, and is deeply speculative \u2014 lock in some of that gain before a short squeeze reversal or further correction hits."
+    "text": "SKYT is up 61% but is unprofitable with heavy cash burn, so lock in some of that gain now before momentum fades on a stock with no earnings to support the price."
   },
   {
-    "id": "AMD-add",
+    "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "AMD is sitting at its 52-week high with 34% revenue growth, strong relative strength, and a bullish MACD \u2014 this is textbook momentum worth adding to on any small pullback."
+    "text": "META looks compelling with a PE of just 17.6, 22% revenue growth, and the strongest free cash flow profile in the portfolio \u2014 consider adding on this relative value."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron is at its 52-week high with nearly 49% revenue growth and firing on all fundamentals \u2014 consider adding on any minor dip to build this winning position."
+    "text": "MU is at its 52-week high with nearly 49% revenue growth and strong technical signals across the board \u2014 this is a momentum leader worth adding to."
   }
 ]
