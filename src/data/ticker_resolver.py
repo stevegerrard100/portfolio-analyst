@@ -49,6 +49,7 @@ _TICKER_OVERRIDES: dict[str, str] = {
     "DMYI": "IONQ",   # dMY Technology IV → IonQ (quantum computing)
     "XPOA": "QBTS",   # SPAC → D-Wave Quantum Inc.
     "SNII": "RGTI",   # Supernova Partners II → Rigetti Computing
+    "GNPK": "RDW",    # Genesis Park Acquisition Corp → Redwire
 }
 
 # ---------------------------------------------------------------------------
