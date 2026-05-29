@@ -84,6 +84,8 @@ cache/                        Written at runtime, gitignored except where noted
   breakout_screener.json      Breakout screener results (8h TTL)
   sec_company_tickers.json    EDGAR CIK map (7-day TTL)
   last_actions.json           Today's final actions list (force-added to git by CI)
+  last_breakout_scores.json   Breakout composite scores from last run (force-added
+                              to git by CI; used for score_delta on next run)
   dismissed_actions.json      Snoozed action IDs with expiry dates (written by
                               Netlify function via GitHub Contents API; force-added
                               by Netlify function, never by CI)
@@ -316,6 +318,8 @@ Three-pass S&P 500 growth screen. Results cached for 8 hours (`cache/screener.js
 
 Portfolio tickers are excluded from output.
 
+**Cache schema versioning**: `CACHE_SCHEMA_VERSION = 2`. Written as `"schema_version"` in the result dict. On read, if the found version ≠ 2, the cache is discarded and a fresh screen runs automatically — no manual deletion needed.
+
 ### 4.6 `src/data/breakout_screener.py`
 
 Five-signal accumulation/early-breakout screen over the S&P 500. Weighted composite score out of 10. Results cached for 8 hours (`cache/breakout_screener.json`).
@@ -353,15 +357,21 @@ Five-signal accumulation/early-breakout screen over the S&P 500. Weighted compos
 - `bull`: SPY above 200d SMA AND VIX < 25 AND HY spread < 400 bps
 - `caution`: everything else; also the fallback on data errors
 
-**High Conviction flag (R10)**: score ≥ 7.0 AND `rs_leading` AND `stage_transition` AND regime ≠ `"bear"`. High Conviction is suppressed entirely in bear regime.
+**High Conviction flag**: score ≥ 7.0 AND `rs_leading` AND `stage_transition` AND regime ≠ `"bear"`. High Conviction is suppressed entirely in bear regime. Computed in `run_breakout_screener()` before cache write — not at render time.
 
-**Finnhub earnings gate (R3)**: calls `earnings_calendar(_from=today, to=today+21d, symbol=ticker)` for each yfinance survivor. Tickers with an event in the window are excluded (too binary an event for base setups). 1.1s sleep per call (free tier: 60/min). Gate skipped gracefully if `FINNHUB_API_KEY` absent.
+**Leadership Watch flag (regime_watchlist)**: score ≥ 7.0 AND `rs_leading` AND `stage_transition` AND regime == `"bear"`. Candidates meeting this criterion were previously suppressed in bear regime; they are now included with a muted-blue "Leadership Watch" badge instead of a green "High Conviction" badge.
 
-**AI reasoning**: Single batched Claude API call on `claude-sonnet-4-6` (hardcoded — do not change). `max_tokens = min(8192, 220 * len(candidates))`.
+**Finnhub earnings gate**: calls `earnings_calendar(_from=today, to=today+21d, symbol=ticker)` for each yfinance survivor. Tickers with an upcoming earnings event are **annotated** (not excluded) with `earnings_soon=True` and `earnings_date` (YYYY-MM-DD string). Displayed in the dashboard as an amber `⚠ Earnings` badge with a date tooltip. 1.1s sleep per call (free tier: 60/min). Gate skipped gracefully if `FINNHUB_API_KEY` absent. All candidates always have `earnings_soon` and `earnings_date` keys; defaults are `False` / `None`.
 
-**Result dict keys**: `candidates`, `screened_at`, `universe_size`, `initial_count`, `qualified_count`, `regime`.
+**Score delta**: `LAST_SCORES_CACHE = CACHE_DIR / "last_breakout_scores.json"`. At the start of `run_breakout_screener()`, loads a `{ticker: score}` dict from this file (if it exists). `score_delta = round(current_score - prev_score, 1)` per candidate, `None` if ticker was not in the previous run. The snapshot is written by `main.py` (after the `if fast / else` block, before Step 8) unconditionally — covers both fresh runs and cache hits.
 
-**⚠️ Cache schema note**: After any change to this file, delete `cache/breakout_screener.json` before the next run. Old caches have `composite_score /5` and lack `regime`/`high_conviction`/base-stats fields.
+**AI reasoning** (structured output): Single batched Claude API call on `claude-sonnet-4-6` (hardcoded — do not change). `max_tokens = min(8192, 280 * len(candidates))`. The prompt requests structured output with `###TICKER` blocks containing SETUP / RISK / MATURITY labeled sections. The parser uses `re.split(r"\n?###([A-Z][A-Z0-9\-]{0,5})\n", text)` to split per ticker, then targeted regex per field. Parse failures populate `setup_strength`, `key_risk`, `maturity` as `None` (no exception raised). These fields are always present in every candidate dict.
+
+**Cache schema versioning**: `CACHE_SCHEMA_VERSION = 3`. Written as `"schema_version"` in the result dict. On read, if the found version ≠ 3, the cache is discarded and a fresh screen runs automatically — no manual deletion needed. The `--fast` mode in `main.py` also checks the version and exits with an error if the cache is stale.
+
+**Result dict keys**: `schema_version`, `candidates`, `screened_at`, `universe_size`, `initial_count`, `qualified_count`, `regime`.
+
+**Per-candidate dict keys** (all always present): `ticker`, `company_name`, `sector`, `mansfield_rs`, `composite_score`, `score_delta`, `high_conviction`, `regime_watchlist`, `earnings_soon`, `earnings_date`, `signals`, `reasoning`, `setup_strength`, `key_risk`, `maturity`, `base_weeks`, `base_depth_pct`, `base_tightness`, `stop_loss`, `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly`.
 
 ### 4.7 `src/data/fundamentals.py`
 
@@ -413,20 +423,26 @@ Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`.
 
 **`_build_today_actions(raw_actions, market_data)`** — adds `color` field to each action (`sell/trim/danger → "red"`, `add/buy → "green"`). Also computes `is_new` flag by comparing each action's `id` against `cache/last_actions.json` from the previous run.
 
-**`dismiss_url`** — embedded into the data dict from the `NETLIFY_DISMISS_URL` environment variable. If the env var is not set (e.g. local runs), the value is an empty string and all snooze buttons are hidden in the dashboard.
+**`_dismiss_url`** — embedded into the data dict from the `NETLIFY_DISMISS_URL` environment variable. If the env var is not set (e.g. local runs), the value is an empty string and all snooze buttons are hidden in the dashboard.
 
 **`_ACTION_COLORS`**: `sell → red`, `trim → red`, `add → green`, `buy → green`, `danger → red`.
+
+**`_TICKER_TO_SECTOR`** — module-level dict loaded from `config/sectors.json` at import time. Used by `_sector_rs_signal()` to resolve sector names for breakout candidates.
+
+**`_sector_rs_signal(ticker, candidate_sector, sector_flows)`** — returns `"leading"`, `"neutral"`, or `"lagging"` based on the Mansfield RS of the candidate's sector SPDR ETF proxy. Lookup order: `_TICKER_TO_SECTOR[ticker]` → `candidate_sector` → `"Unknown"`. The `SECTOR_TO_ETF` mapping is imported lazily inside the function (`from src.data.sector_flows import SECTOR_TO_ETF`) to avoid a circular import at module load time. Returns `"neutral"` if sector is unknown, unmapped, or ETF data is absent.
 
 Full function signature:
 ```python
 def render_dashboard(
     analysis, portfolio, market_data, screener, breakout,
-    macro, sector_flows,
+    macro, sector_flows, regret_tracker,
     output_path="output/index.html"
 ) -> None
 ```
 
 Log line at the top of `render_dashboard()` confirms the value of `NETLIFY_DISMISS_URL` for debugging CI runs.
+
+**Breakout candidate whitelist** — `renderer.py` explicitly names every field it passes from the breakout cache to the dashboard data dict. Fields not listed are silently dropped. Current whitelist: `ticker`, `company_name`, `sector`, `mansfield_rs`, `composite_score`, `score_delta`, `reasoning`, `signals`, `high_conviction`, `regime_watchlist`, `earnings_soon`, `earnings_date`, `sector_rs_signal` (computed by `_sector_rs_signal()`), `setup_strength`, `key_risk`, `maturity`, `base_weeks`, `base_depth_pct`, `base_tightness`, `stop_loss`, `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly`. When adding new fields to `breakout_screener.py`, add them here too or they will not reach the template.
 
 ### 4.11 `netlify/functions/dismiss-action.js`
 
@@ -521,8 +537,17 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 - **Momentum Opportunities** table — top 10 screener candidates with expandable chart rows
 - **Breakout Watch List** — top 15 breakout candidates with expandable chart rows:
   - Regime warning banner (red in bear, amber in caution, hidden in bull) appears above the table
-  - Table columns: Ticker, Company, Sector, Mansfield RS, Signals (badge per signal), Score /10, Base Wks, Depth %
-  - High-conviction picks highlighted green with a `High Conviction` badge; suppressed in bear regime
+  - Table columns (9 total): Ticker, Company, Sector, Mansfield RS, Signals (badge per signal), Score /10, Base Wks, Depth %, Sector RS
+  - Columns 7–9 (Base Wks, Depth %, Sector RS) are hidden on mobile via `.bk-table th:nth-child(n+7), .bk-table td:nth-child(n+7) { display: none }`
+  - **High Conviction** badge (green): score ≥ 7.0 + `rs_leading` + `stage_transition` + regime ≠ bear — row highlighted green
+  - **Leadership Watch** badge (muted blue, `.bk-lw-badge`): score ≥ 7.0 + `rs_leading` + `stage_transition` + regime = bear — these candidates were previously suppressed; now shown with a muted-blue badge, no green highlight
+  - **⚠ Earnings** badge (amber, `.bk-earn-badge`): `earnings_soon=True`; hover/title shows `earnings_date` (YYYY-MM-DD)
+  - **Score delta**: `↑ +N` (green) or `↓ −N` (red) rendered inline next to the score when `score_delta != null && score_delta !== 0`; `null` means the ticker is new since the last run (no delta available)
+  - **Expanded row** (colspan="9") shows structured AI reasoning:
+    - Primary reasoning: `setup_strength` field if non-null, else falls back to `reasoning` (plain technical text)
+    - Key risk: amber `⚠ Risk:` label + `key_risk` text (hidden if `key_risk` is null)
+    - Maturity badge: Early (blue) / Developing (amber) / Extended (muted) — hidden if `maturity` is null
+    - Base stats, stop loss, chart (daily/weekly toggle) as before
 
 ### Action Board
 
@@ -602,7 +627,7 @@ Steps:
 5. **Get today's date** — writes UTC date to `$GITHUB_OUTPUT` for the screener cache key
 6. **Restore screener cache** — `actions/cache@v4`, paths `cache/screener.json` + `cache/breakout_screener.json`, keyed on `screener-{os}-{YYYY-MM-DD}`. No `restore-keys` — strict date match ensures next-day runs always start fresh. Same-day re-runs (e.g. manual re-trigger) skip the 45-min screener entirely.
 7. **Run analysis pipeline** — `python -m src.main` with secrets: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`
-8. **Persist actions cache** — `git add -f cache/last_actions.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, push with `--force-with-lease`. The `-f` flag is required because `cache/` is in `.gitignore`.
+8. **Persist actions cache** — `git add -f cache/last_actions.json` and `git add -f cache/last_breakout_scores.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, `git pull --rebase origin main`, then push. The `-f` flag is required because `cache/` is in `.gitignore`. **Note**: `git stash` / `git stash pop` are NOT used here — the working tree is always clean after the commit (only staged files were changed), and `git stash pop` on a clean tree exits with code 1 ("No stash entries found"), which would fail the step.
 9. **Deploy to GitHub Pages** — `peaceiris/actions-gh-pages@v4`, publishes `./output/` to `{repo}/markets/`, `keep_files: true`
 
 `timeout-minutes: 120` covers T212 pie fetches (32s/pie) and the screener (45+ min).
@@ -610,6 +635,8 @@ Steps:
 **`cache/dismissed_actions.json`** is NOT written by CI. It is written by the Netlify function directly to the repo via the GitHub Contents API whenever a user snoozes an action. CI reads it on the next run.
 
 **`cache/last_actions.json`** is written at the end of `src/main.py` and committed by the Persist actions cache step. It is used by the next run to compute `is_new` badges.
+
+**`cache/last_breakout_scores.json`** is written by `src/main.py` immediately after the `if fast / else` block (before Step 8), unconditionally — covers both fresh runs and cache hits. Contains `{ticker: composite_score}` for every candidate in the current run. Committed by the same Persist actions cache step. Used at the start of the next `run_breakout_screener()` call to compute per-candidate `score_delta`.
 
 Secrets required: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`. `GITHUB_TOKEN` is provided automatically.
 
@@ -638,15 +665,17 @@ Must be at module level in `trading212.py` and `main.py`. Inside a function, Pyt
 
 ### Breakout AI Batch Call — Token Cap
 
-`max_tokens = min(8192, 220 * len(candidates))`. The model hard limit is 8,192 output tokens. With 37 candidates the cap just fits. If candidate count grows significantly, reduce the per-candidate budget. The breakout screener's AI call always uses `claude-sonnet-4-6` — do not change this to Opus.
+`max_tokens = min(8192, 280 * len(candidates))`. The model hard limit is 8,192 output tokens. The per-candidate budget is 280 tokens to accommodate the structured SETUP/RISK/MATURITY output format. With 29 candidates the cap just fits. If candidate count grows significantly, reduce the per-candidate budget. The breakout screener's AI call always uses `claude-sonnet-4-6` — do not change this to Opus.
 
-### Breakout Screener Cache — Schema Compatibility
+### Breakout and Screener Cache — Schema Versioning
 
-`cache/breakout_screener.json` must be deleted before the first run after any change to `breakout_screener.py`. Old caches have `composite_score /5` and lack `regime`, `high_conviction`, `base_weeks`, `base_depth_pct`, and `base_tightness` fields. The renderer and template will produce incorrect output if served stale cache with the wrong schema.
+Both `breakout_screener.py` (`CACHE_SCHEMA_VERSION = 3`) and `screener.py` (`CACHE_SCHEMA_VERSION = 2`) embed a `"schema_version"` key in their result dicts. On the next run, the cache read block checks the found version against the expected constant. If they differ, the cache is discarded and a fresh screen runs automatically. **Manual cache deletion is no longer needed** after schema changes — bumping `CACHE_SCHEMA_VERSION` in the module is sufficient. The `--fast` mode in `main.py` also performs the same version check and exits with an error if the cached file is stale, so stale caches cannot be used in fast mode either.
 
-### Finnhub Earnings Gate — Gate Ordering
+### Finnhub Earnings Gate — Gate Ordering and Annotation
 
 The Finnhub earnings gate in `breakout_screener.py` runs **after** all yfinance gates, not before. This is intentional (R1): yfinance gates reduce ~500 tickers to ~25–40 survivors, then Finnhub is called only for those survivors. Reversing the order would burn ~500 Finnhub calls per run against the free-tier 60/min limit.
+
+The gate **annotates** candidates with upcoming earnings (within 21 days) rather than excluding them. Candidates get `earnings_soon=True` and `earnings_date` (YYYY-MM-DD). This is displayed as an amber `⚠ Earnings` badge in the dashboard. All candidates have both fields (defaults: `False` / `None`).
 
 ### Holdings Charts Outside the Scrollable Table
 
@@ -670,7 +699,7 @@ The Netlify function's commit message for updating `dismissed_actions.json` incl
 
 ### `cache/` in `.gitignore` — Force-Add for Tracked Files
 
-`cache/` is gitignored. `cache/last_actions.json` is committed by CI using `git add -f`. `cache/dismissed_actions.json` is committed by the Netlify function via the GitHub Contents API (which bypasses `.gitignore`). Neither file should be added to the whitelist in `.gitignore` — force-add in CI is intentional.
+`cache/` is gitignored. `cache/last_actions.json` and `cache/last_breakout_scores.json` are committed by CI using `git add -f`. `cache/dismissed_actions.json` is committed by the Netlify function via the GitHub Contents API (which bypasses `.gitignore`). None of these files should be added to a `.gitignore` allowlist — force-add in CI is intentional.
 
 ---
 
@@ -757,11 +786,11 @@ Composite score weights and pass-1 filters are in `screener.py`. `_disqualifiers
 
 ### Changing breakout signal thresholds
 
-Each signal has its own function in `breakout_screener.py`. Signal weights are in `_SIGNAL_WEIGHTS`. High Conviction threshold (currently 7.0) is in `run_breakout_screener()`. Regime thresholds are in `_assess_market_regime()`.
+Each signal has its own function in `breakout_screener.py`. Signal weights are in `_SIGNAL_WEIGHTS`. High Conviction and Leadership Watch thresholds (currently 7.0) are in `run_breakout_screener()`. Regime thresholds are in `_assess_market_regime()`.
 
-If you rename a signal key: update `BREAKOUT_SIGNAL_LABELS` in `template.html`, and the `high_conviction` computation in `run_breakout_screener()`. The old `high_conviction` logic in `renderer.py` has been removed — it is now computed in the screener.
+If you rename a signal key: update `BREAKOUT_SIGNAL_LABELS` in `template.html`, and the `high_conviction` / `regime_watchlist` computations in `run_breakout_screener()`. Both flags are computed in the screener before cache write — not at render time.
 
-After any change, delete `cache/breakout_screener.json` before the next run.
+After any structural change (new fields, changed scoring formula, new result dict keys), bump `CACHE_SCHEMA_VERSION` in `breakout_screener.py`. The cache will be auto-discarded on the next run — no manual deletion needed.
 
 ### Running locally
 
@@ -774,4 +803,4 @@ python -m src.main
 open output/index.html
 ```
 
-Delete `cache/screener.json` and `cache/breakout_screener.json` to force a fresh screen. Delete `cache/pie_positions.json` to force a fresh T212 fetch.
+Both screener caches are auto-invalidated when their `schema_version` key doesn't match the current module constant — no manual deletion needed after code changes. To force a fresh screen regardless (e.g. to re-run with updated data mid-day), delete `cache/screener.json` and/or `cache/breakout_screener.json`. Delete `cache/pie_positions.json` to force a fresh T212 fetch.
