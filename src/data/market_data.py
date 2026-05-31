@@ -79,8 +79,9 @@ def _add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["macd_signal"] = macd.macd_signal()
     df["macd_diff"] = macd.macd_diff()
 
-    df["sma_20"] = ta.trend.SMAIndicator(close, window=20).sma_indicator()
-    df["sma_50"] = ta.trend.SMAIndicator(close, window=50).sma_indicator()
+    df["sma_20"]  = ta.trend.SMAIndicator(close, window=20).sma_indicator()
+    df["sma_50"]  = ta.trend.SMAIndicator(close, window=50).sma_indicator()
+    df["sma_200"] = ta.trend.SMAIndicator(close, window=200).sma_indicator()
 
     df["atr_14"] = ta.volatility.AverageTrueRange(
         high, low, close, window=14
@@ -237,9 +238,17 @@ def process_ticker(ticker: str, spy_daily: pd.DataFrame) -> dict | None:
 
     dist_high, dist_low = _52w_proximity(df)
 
-    sma_20 = _safe_float(df["sma_20"])
-    sma_50 = _safe_float(df["sma_50"])
-    atr = _safe_float(df["atr_14"]) or 0.0
+    sma_20  = _safe_float(df["sma_20"])
+    sma_50  = _safe_float(df["sma_50"])
+    sma_200 = _safe_float(df["sma_200"])
+    atr     = _safe_float(df["atr_14"]) or 0.0
+
+    # 26-week base low — lowest closing price over the trailing 26 weekly candles.
+    # Computed here from OHLCV directly (not from the breakout screener).
+    if len(weekly_close) >= 5:
+        base_low_26w = round(float(weekly_close.tail(26).min()), 4)
+    else:
+        base_low_26w = None
 
     macd_bullish = _macd_crossover_recent(df)
 
@@ -263,10 +272,14 @@ def process_ticker(ticker: str, spy_daily: pd.DataFrame) -> dict | None:
         "rs_20d": round(daily_rs["rs_20d"], 2),
         "rs_60d": round(daily_rs["rs_60d"], 2),
         # Moving averages (canonical names used by renderer and Claude analyst)
-        "sma_20": sma_20,
-        "sma_50": sma_50,
-        "above_sma50": bool(sma_50 and current_price > sma_50),
-        "above_sma_20": bool(sma_20 and current_price > sma_20),
+        "sma_20":  sma_20,
+        "sma_50":  sma_50,
+        "sma_200": sma_200,
+        "above_sma50":  bool(sma_50  and current_price > sma_50),
+        "above_sma200": bool(sma_200 and current_price > sma_200),
+        "above_sma_20": bool(sma_20  and current_price > sma_20),
+        # 26-week base low (lowest weekly close over trailing 26 weeks)
+        "base_low_26w": base_low_26w,
         # Volatility
         "atr_14": round(atr, 4),
         "bb_upper": _safe_float(df["bb_upper"]),

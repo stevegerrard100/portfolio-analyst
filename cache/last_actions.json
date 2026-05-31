@@ -1,50 +1,50 @@
 [
   {
-    "id": "SGLP.L-sell",
+    "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L immediately \u2014 it's down 99.2% from its high with a relative strength score of -98.9, meaning it's weaker than virtually every other stock out there, and this looks like a broken instrument you should exit completely."
+    "text": "Sell RGTI \u2014 down 25% with the weakest commercial business among your quantum holdings, minimal revenue, and no catalyst to reverse the decline, so cut this loss now."
   },
   {
-    "id": "RGTI-trim",
+    "id": "5UR.DE-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell 5UR.DE \u2014 down 16% and at only \u00a3235 it's too small to matter, so eliminate this dead-weight position and redeploy the capital somewhere meaningful."
+  },
+  {
+    "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim RGTI \u2014 you're down 21.7%, revenue is actually shrinking, it's 55% off its high, and it's the weakest of your quantum computing holdings, so reduce your exposure before further deterioration."
+    "text": "Trim KTOS \u2014 down 28% as your worst-performing defence holding, which signals the market sees revenue or contract risks that haven't resolved, so reduce your exposure before it gets worse."
   },
   {
-    "id": "LPTH-trim",
+    "id": "EL-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LPTH to lock in some of that +50% gain \u2014 a PE of 131 with negative free cash flow and four consecutive earnings misses means the valuation has no fundamental support if sentiment shifts."
+    "text": "Trim EL \u2014 down 17% with ongoing weakness in China and travel retail demand, and no clear sign of a turnaround, so reduce this position to limit further downside."
   },
   {
-    "id": "SKYT-trim",
+    "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SKYT into strength \u2014 a +67% gain at its 52-week high sounds great, but bearish MACD on an unprofitable company means this is the time to take some profit off the table, not add risk."
+    "text": "Trim SILG.L \u2014 down 12.4% and underperforming the metals it tracks, meaning you're paying extra volatility for worse returns, so lighten up on silver miners."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to META \u2014 at a PE of 17.5 with 22% revenue growth and strong free cash flow, this is arguably the best value in big tech right now and deserves a larger position."
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim QBTS \u2014 underwater with negligible revenue and years away from commercial viability, and combined with RGTI and IONQ you have too much speculative quantum exposure."
   },
   {
-    "id": "RTX-add",
-    "action_type": "add",
+    "id": "IONQ-trim",
+    "action_type": "trim",
     "priority": "low",
-    "text": "Add to RTX \u2014 a quality defense name at a reasonable PE of 23.8 with positive free cash flow and a consistent earnings beat streak makes this a solid compounder to build into."
+    "text": "Trim IONQ \u2014 despite modest gains, quantum computing is extremely early-stage with no clear profitability path, so take some profit and right-size this speculative bet."
   },
   {
-    "id": "LMT-add",
-    "action_type": "add",
+    "id": "PLTR-trim",
+    "action_type": "trim",
     "priority": "low",
-    "text": "Add to LMT \u2014 Lockheed Martin's PE of 16.5 with 5.7% free cash flow yield is attractive for a blue-chip defense company, and defense spending tailwinds remain strong."
-  },
-  {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to MSFT \u2014 at a PE of 23.3 with nearly 15% revenue growth and a consistent earnings beat streak, Microsoft is a quality compounder trading at a reasonable price."
+    "text": "Trim PLTR \u2014 the current valuation prices in years of perfect execution, so locking in some gains here protects you if growth even slightly disappoints expectations."
   }
 ]

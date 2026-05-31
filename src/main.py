@@ -238,17 +238,28 @@ def main() -> None:
         else:
             log.info("Stop levels: no cache file found — first run, will create baseline")
 
-        # Compute today's recommended stop for each position
-        from src.dashboard.renderer import _calc_stop_loss as _renderer_calc_stop
+        # Compute today's recommended stop for each position using the smart
+        # support-anchored calculation.  ETFs are skipped.
+        from src.dashboard.renderer import (
+            _calc_smart_stop_loss as _smart_stop,
+            _resolve_holding_class as _resolve_class,
+        )
         for pos in portfolio.get("positions", []):
             t = pos.get("ticker")
             if not t:
                 continue
-            mkt = market_data.get(t, {})
             holding_type = pos.get("holding_type", "medium")
+            if holding_type == "etf":
+                continue                    # ETFs never get a stop level
+            mkt = market_data.get(t, {})
             current_price = float(pos.get("currentPrice") or mkt.get("current_price") or 0)
             atr = mkt.get("atr_14")
-            today_stop = _renderer_calc_stop(current_price, atr, holding_type)
+            # Resolve holding_class from config (Claude output not yet available pre-Step 8)
+            holding_class = _resolve_class(t, pos.get("sector", ""), None)
+            today_stop = _smart_stop(
+                current_price, atr, holding_class,
+                mkt.get("sma_50"), mkt.get("sma_200"), mkt.get("base_low_26w"),
+            )
             if today_stop is None:
                 continue
 

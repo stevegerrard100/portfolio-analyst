@@ -77,15 +77,77 @@ _SECTOR_COLORS = [
     "#a5d6ff", "#7ee787", "#ffa8a8", "#c9d1d9",
 ]
 
-# ATR multipliers for stop loss: current_price - (multiplier × ATR14)
+# ATR fallback multipliers — used when no support level passes the floor check,
+# and for screener/breakout candidates (which have no holding_class).
 _STOP_MULT = {"long_term": 3.0, "medium": 2.5, "short_term": 1.5}
+_ATR_FALLBACK_MULT = {"long_term_core": 3.0, "trading": 2.5}
 
 
 def _calc_stop_loss(current_price: float, atr: float | None, holding_type: str) -> float | None:
+    """ATR-multiplier stop for screener/breakout candidates (no class data available)."""
     mult = _STOP_MULT.get(holding_type)
     if mult is None or not atr or not current_price:
         return None
     return round(current_price - mult * atr, 4)
+
+
+def _calc_smart_stop_loss(
+    current_price: float,
+    atr: float | None,
+    holding_class: str,
+    sma_50: float | None,
+    sma_200: float | None,
+    base_low_26w: float | None,
+) -> float | None:
+    """
+    Technically-informed stop loss anchored to meaningful support levels.
+
+    Step 1: Collect candidate support levels that are below current price.
+    Step 2: Walk through preferred order for holding_class; for each level,
+            place stop at level − 0.5×ATR and verify it is at least 1×ATR
+            below current price (floor check).  Accept the first level that passes.
+    Step 3: If all levels fail, fall back to ATR multiplier (3.0× for
+            long_term_core, 2.5× for trading).
+    Step 4: Return None if current_price ≤ 0 or the fallback also produces
+            an invalid value.
+
+    ETFs must be excluded by the caller (pass holding_type check first).
+    """
+    if not current_price or current_price <= 0:
+        return None
+    if not atr or atr <= 0:
+        # No ATR → no valid stop; fall straight through
+        return None
+
+    def _below_price(v: float | None) -> bool:
+        return bool(v and v > 0 and v < current_price)
+
+    # Preference order per classification
+    if holding_class == "long_term_core":
+        ordered = [sma_200, sma_50, base_low_26w]
+    else:  # trading (and any unknown class)
+        ordered = [sma_50, base_low_26w]
+
+    # Walk through levels; accept first that passes the ATR floor check.
+    # "At least 1× ATR below current price" means  stop ≤ current_price − ATR,
+    # i.e. candidate ≤ floor.  A candidate above the floor is too close.
+    for level in ordered:
+        if not _below_price(level):
+            continue
+        candidate = level - 0.5 * atr          # buffer below the support level
+        floor     = current_price - atr         # must be at or below this
+        if candidate <= floor and candidate > 0:
+            return round(candidate, 4)
+
+    # Fallback — pure ATR multiplier (backward-compatible)
+    mult     = _ATR_FALLBACK_MULT.get(holding_class, 2.5)
+    fallback = current_price - mult * atr
+    if fallback > 0:
+        return round(fallback, 4)
+
+    log.warning("_calc_smart_stop_loss: could not produce valid stop for price=%.4f atr=%.4f class=%s",
+                current_price, atr, holding_class)
+    return None
 
 
 def _macro_pills(macro: dict) -> list[dict]:
@@ -284,21 +346,29 @@ def render_dashboard(
         holding_type   = pos.get("holding_type", "medium")
         current_price  = float(pos.get("currentPrice") or mkt.get("current_price") or 0)
         atr            = mkt.get("atr_14")
-        stop_loss      = _calc_stop_loss(current_price, atr, holding_type)
         sector         = pos.get("sector", "?")
 
+        # Holding classification: config overrides → Claude → default
+        claude_class  = hdg.get("holding_class")
+        holding_class = _resolve_holding_class(t, sector, claude_class)
+
+        # Stop loss — smart (support-anchored) for equities; skip for ETFs
+        if holding_type == "etf":
+            stop_loss = None
+        else:
+            stop_loss = _calc_smart_stop_loss(
+                current_price, atr, holding_class,
+                mkt.get("sma_50"), mkt.get("sma_200"), mkt.get("base_low_26w"),
+            )
+
         # Stop level memory: stored level and change from previous
-        sl_entry   = _stop_levels.get(t, {})
-        stored_stop    = sl_entry.get("level")
-        prev_stop      = sl_entry.get("prev_level")
+        sl_entry        = _stop_levels.get(t, {})
+        stored_stop     = sl_entry.get("level")
+        prev_stop       = sl_entry.get("prev_level")
         if stored_stop and prev_stop:
             stop_change_pct = round((stored_stop - prev_stop) / prev_stop * 100, 1)
         else:
             stop_change_pct = None
-
-        # Holding classification: config overrides → Claude → default
-        claude_class = hdg.get("holding_class")
-        holding_class = _resolve_holding_class(t, sector, claude_class)
 
         holdings.append({
             "ticker":          t,

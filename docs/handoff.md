@@ -285,9 +285,17 @@ mansfield_rs = ((ratio / ratio.shift(52)) - 1) * 100
 ```
 Computed weekly; stored as both weekly (raw) and daily (linearly interpolated) series for chart embedding.
 
-**Indicators computed per ticker** (via `ta` library): MACD (12/26/9), SMA 20/50, ATR 14, Bollinger Bands (20/2). Volume ratio (5-day vs 20-day average). 52-week high/low proximity.
+**Indicators computed per ticker** (via `ta` library): MACD (12/26/9), SMA 20/50/200, ATR 14, Bollinger Bands (20/2). Volume ratio (5-day vs 20-day average). 52-week high/low proximity. 26-week base low (`base_low_26w`) — lowest weekly close over trailing 26 weeks, added in Phase 2.
 
-**ATR stop loss multipliers** (in `renderer.py`): `long_term` = 3.0×, `medium` = 2.5×, `short_term` = 1.5×. Computed as `current_price - (multiplier × ATR14)`.
+**Stop loss computation** (in `renderer.py`): Two functions exist.
+
+- `_calc_stop_loss(current_price, atr, holding_type)` — legacy ATR-multiplier method used for screener and breakout candidates (no holding_class available). Multipliers: `long_term`=3.0×, `medium`=2.5×, `short_term`=1.5×.
+
+- `_calc_smart_stop_loss(current_price, atr, holding_class, sma_50, sma_200, base_low_26w)` — Phase 2 support-anchored calculation for portfolio holdings. Steps: (1) walk through preferred support levels in order; (2) for each level below current price, compute `stop = level − 0.5×ATR`; (3) accept if `stop ≤ current_price − 1×ATR` (floor check — stop is meaningfully below price); (4) if all levels fail, fall back to `_ATR_FALLBACK_MULT` (3.0× for `long_term_core`, 2.5× for `trading`). Level preference order: `long_term_core` → SMA200 → SMA50 → 26w base low; `trading` → SMA50 → 26w base low. ETFs are excluded at the call site (never passed to this function).
+
+`base_low_26w` — lowest weekly closing price over the trailing 26 weeks, computed in `market_data.py` directly from OHLCV. Added in Phase 2.
+
+`sma_200` — 200-day SMA, added in Phase 2 to `market_data.py` alongside the existing `sma_50`.
 
 **Chart data**: Four arrays embedded per holding in the dashboard JSON:
 - `ohlcv_daily`: last 365 trading days
@@ -716,6 +724,10 @@ The Netlify function's commit message for updating `dismissed_actions.json` incl
 ### Stop Levels Cache — Never Overwrite With a Lower Value
 
 `cache/stop_levels.json` stores `{ticker: {level, prev_level}}`. The `level` field is only updated when today's recommended stop is **more than 5% higher** than the stored level. It must never be overwritten with a lower value. `prev_level` is set to the old value when a raise occurs (used for the Δ Stop column in the dashboard). On first run for a ticker, `level` is set as a baseline and `prev_level` is `null` with no notification generated.
+
+### Stop Loss Calculation — Phase 2 Smart Anchoring
+
+Portfolio holding stops (Phase 2) use `_calc_smart_stop_loss()` in `renderer.py`, which anchors to the nearest meaningful support level (SMA200, SMA50, or 26-week base low) rather than a fixed ATR multiple. ETFs are skipped entirely. The screener and breakout candidate stops still use the legacy `_calc_stop_loss()` ATR-multiplier method (those positions have no holding_class). The `main.py` pre-Step-8 stop levels block resolves `holding_class` from `config/sectors.json` (Claude output not yet available at that point); medium holdings default to `trading`.
 
 ### Holding Classification — Two-Class System
 
