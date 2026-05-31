@@ -122,10 +122,9 @@
     .filter-btn:hover, .filter-btn.active { border-color: var(--blue); color: var(--blue); background: #0c1e2e; }
 
     /* ── Holdings list ───────────────────────────────────── */
-    .h-list-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .h-list-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
     .h-list-table th { text-align: left; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 5px 8px; border-bottom: 1px solid var(--border); font-weight: 600; white-space: nowrap; }
-    .h-list-table td { padding: 6px 8px; border-bottom: 1px solid var(--surface2); vertical-align: middle; white-space: nowrap; }
-    .h-list-table tr:last-child td { border-bottom: none; }
+    .h-list-table td { padding: 6px 8px; border-bottom: 1px solid var(--surface2); vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .h-row { cursor: pointer; transition: background 0.1s; }
     .h-row:hover td, .h-row.h-row-open td { background: var(--surface2); }
     .h-ind { font-size: 11px; font-weight: 700; }
@@ -133,9 +132,11 @@
     .h-ind.r { color: var(--red); }
     .h-ind.n { color: var(--muted); }
     .hc-expand-inner { padding: 10px 8px 14px; }
-    .h-rs-cell { min-width: 58px; }
+    .h-rs-cell { min-width: 0; }
     .h-rs-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 3px; }
     .h-rs-fill { height: 100%; border-radius: 1px; }
+    /* h-section-body: flex column so each row-wrap + expand div pair stacks in order */
+    .h-section-body { display: flex; flex-direction: column; }
     .h-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .h-expand-content { display: none; width: 100%; box-sizing: border-box; padding: 0 4px 16px; border-top: 1px solid var(--border); }
     .h-expand-content.open { display: block; }
@@ -758,17 +759,31 @@
 
     // Render list once; filter by show/hide to preserve chart state
     let listRendered = false;
+
+    // Shared column widths — must be identical in every table so table-layout:fixed aligns columns
+    const COLGROUP = `<colgroup>
+      <col style="width:10%"><col style="width:14%"><col style="width:7%"><col style="width:8%">
+      <col style="width:9%"><col style="width:10%"><col style="width:7%"><col style="width:8%">
+      <col style="width:9%"><col style="width:8%">
+    </colgroup>`;
+
     const THEAD = `<thead><tr>
       <th>Ticker</th><th>Sector</th><th>P&amp;L%</th><th>P&amp;L</th>
       <th>Signal</th><th>RS</th><th>SMA50</th><th>Type</th><th>Stop</th><th>Δ Stop</th>
     </tr></thead>`;
 
-    // Table + sibling expand divs — keeps chart containers outside the scrollable table
+    // One row-wrap per holding, each containing a single-row table + its expand div.
+    // The header is a separate table at the top. All share COLGROUP for column alignment.
+    // Expand divs sit OUTSIDE each h-table-wrap (overflow-x container) so TradingView
+    // charts do not inherit the table's overflow width.
     function makeSection(holdings) {
-      const rows    = holdings.map(holdingMainRow).join('');
-      const expands = holdings.filter(h => h.ohlcv_daily?.length || h.analysis)
-                              .map(holdingExpandDiv).join('');
-      return `<div class="h-table-wrap"><table class="h-list-table">${THEAD}<tbody>${rows}</tbody></table></div>${expands}`;
+      const header = `<div class="h-table-wrap"><table class="h-list-table">${COLGROUP}${THEAD}<tbody></tbody></table></div>`;
+      const items = holdings.map(h => {
+        const hasExpand = !!(h.ohlcv_daily?.length || h.analysis);
+        return `<div class="h-table-wrap"><table class="h-list-table">${COLGROUP}<tbody>${holdingMainRow(h)}</tbody></table></div>`
+          + (hasExpand ? holdingExpandDiv(h) : '');
+      }).join('');
+      return `<div class="h-section-body">${header}${items}</div>`;
     }
 
     function renderList(filter) {
@@ -819,20 +834,33 @@
         const t = row.dataset.ticker;
         const h = sorted.find(x => x.ticker === t);
         const show = filter === 'ALL' || h?.signal === filter;
-        row.style.display = show ? '' : 'none';
+        // Hide the row's wrapping h-table-wrap div (not just the <tr>) so the
+        // empty single-row table doesn't leave a visible gap when filtered out.
+        const wrap = row.closest('.h-table-wrap');
+        (wrap || row).style.display = show ? '' : 'none';
+        const exp = container.querySelector(`.h-expand-content[data-ticker="${t}"]`);
         if (!show) {
-          const exp = container.querySelector(`.h-expand-content[data-ticker="${t}"]`);
-          if (exp) { exp.classList.remove('open'); row.classList.remove('h-row-open'); }
+          if (exp) { exp.classList.remove('open'); exp.style.display = ''; }
+          row.classList.remove('h-row-open');
+        } else if (exp) {
+          exp.style.display = '';  // restore from hidden-by-filter state
         }
       });
 
-      // Hide pie-group and section headers when all their rows are filtered out
+      // Hide pie-group and section headers when all their rows are filtered out.
+      // Check the wrapping h-table-wrap div (not the <tr>) since that's what the filter hides.
       container.querySelectorAll('.h-pie-group').forEach(grp => {
-        const any = [...grp.querySelectorAll('tr.h-row')].some(r => r.style.display !== 'none');
+        const any = [...grp.querySelectorAll('tr.h-row')].some(r => {
+          const w = r.closest('.h-table-wrap');
+          return (w || r).style.display !== 'none';
+        });
         grp.style.display = any ? '' : 'none';
       });
       container.querySelectorAll('.h-section').forEach(sec => {
-        const any = [...sec.querySelectorAll('tr.h-row')].some(r => r.style.display !== 'none');
+        const any = [...sec.querySelectorAll('tr.h-row')].some(r => {
+          const w = r.closest('.h-table-wrap');
+          return (w || r).style.display !== 'none';
+        });
         sec.style.display = any ? '' : 'none';
       });
     }
