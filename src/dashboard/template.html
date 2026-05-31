@@ -111,6 +111,11 @@
     .s-REDUCE { background: #2a1507; color: var(--orange); border: 1px solid #5a3010; }
     .s-EXIT   { background: #2a0b0b; color: var(--red);    border: 1px solid #5a1414; }
 
+    /* ── Holding type badges ─────────────────────────────── */
+    .h-type-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; letter-spacing: 0.07em; }
+    .h-type-core  { background: #0d2a14; color: #3fb950; border: 1px solid #245c2a; }
+    .h-type-trade { background: #2a1f07; color: #d29922; border: 1px solid #5a3d0a; }
+
     /* ── Filter bar ──────────────────────────────────────── */
     .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-btn { padding: 3px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.15s; }
@@ -520,7 +525,7 @@
         (highCount ? ` · ${highCount} high priority` : '');
       document.getElementById('action-board-summary').textContent = summary;
 
-      const BADGE_LABEL = { sell: 'SELL', trim: 'TRIM', add: 'ADD', buy: 'BUY', danger: 'DANGER' };
+      const BADGE_LABEL = { sell: 'SELL', trim: 'TRIM', add: 'ADD', buy: 'BUY', danger: 'DANGER', raise_stop: 'RAISE STOP' };
       const hasPat = !!(DATA.dismiss_url);
 
       document.getElementById('action-board-rows').innerHTML = actions.map(a => {
@@ -689,17 +694,21 @@
       const pnlCls   = h.pnl_pct >= 0 ? 'pos' : 'neg';
       const smaCls   = h.above_sma50  == null ? 'n' : (h.above_sma50  ? 'g' : 'r');
       const smaArrow = h.above_sma50  == null ? '—' : (h.above_sma50  ? '▲' : '▼');
-      const macdCls  = h.macd_bullish == null ? 'n' : (h.macd_bullish ? 'g' : 'r');
-      const macdArrow= h.macd_bullish == null ? '—' : (h.macd_bullish ? '▲' : '▼');
       const rsCls    = h.mansfield_rs == null ? '' : (h.mansfield_rs >= 0 ? 'pos' : 'neg');
       const rsPct    = h.mansfield_rs != null ? Math.min(100, Math.max(0, ((h.mansfield_rs+50)/200)*100)).toFixed(1) : '0';
       const rsFill   = h.mansfield_rs != null ? (h.mansfield_rs >= 0 ? '#3fb950' : '#f85149') : 'var(--border)';
-      return { pnlCls, smaCls, smaArrow, macdCls, macdArrow, rsCls, rsPct, rsFill };
+      return { pnlCls, smaCls, smaArrow, rsCls, rsPct, rsFill };
     }
 
     function holdingMainRow(h) {
-      const { pnlCls, smaCls, smaArrow, macdCls, macdArrow, rsCls, rsPct, rsFill } = _holdingCols(h);
+      const { pnlCls, smaCls, smaArrow, rsCls, rsPct, rsFill } = _holdingCols(h);
       const hasExpand = !!(h.ohlcv_daily?.length || h.analysis);
+      const isCore  = h.holding_class === 'long_term_core';
+      const typeBadge = `<span class="h-type-badge ${isCore?'h-type-core':'h-type-trade'}">${isCore?'CORE':'TRADE'}</span>`;
+      const stopDisp = h.stored_stop != null ? Number(h.stored_stop).toFixed(2) : (h.stop_loss!=null ? Number(h.stop_loss).toFixed(2) : '—');
+      const stopChg  = h.stop_change_pct != null
+        ? `<span style="font-size:11px;color:${h.stop_change_pct>0?'var(--green)':'var(--red)'}">${h.stop_change_pct>0?'↑':'↓'}${Math.abs(h.stop_change_pct).toFixed(1)}%</span>`
+        : '<span style="font-size:11px;color:var(--muted)">—</span>';
       return `<tr class="h-row" data-ticker="${esc(h.ticker)}"${!hasExpand ? ' style="cursor:default"' : ''}>
           <td><span style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(h.ticker)}</span></td>
           <td style="color:var(--muted);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${esc(h.sector)}</td>
@@ -711,9 +720,9 @@
             <div class="h-rs-bar"><div class="h-rs-fill" style="width:${rsPct}%;background:${rsFill}"></div></div>
           </td>
           <td title="${h.above_sma50==null?'No data':(h.above_sma50?'Above SMA50':'Below SMA50')}"><span class="h-ind ${smaCls}">${smaArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">SMA</span></td>
-          <td title="${h.macd_bullish==null?'No data':(h.macd_bullish?'MACD bullish':'MACD bearish')}"><span class="h-ind ${macdCls}">${macdArrow}</span><span style="font-size:10px;color:var(--muted);margin-left:2px">MACD</span></td>
-          <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${h.stop_loss!=null?Number(h.stop_loss).toFixed(2):'—'}</td>
-          <td style="font-size:11px;color:var(--muted)">${h.dist_52w_high!=null?fmt(h.dist_52w_high,{sign:true})+'%':'—'}</td>
+          <td>${typeBadge}</td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${stopDisp}</td>
+          <td>${stopChg}</td>
         </tr>`;
     }
 
@@ -734,7 +743,14 @@
           </div>
         </div>
         <div class="hc-chart" id="hc-${safeId}"></div>` : '';
+      const macdCls   = h.macd_bullish == null ? 'n' : (h.macd_bullish ? 'g' : 'r');
+      const macdArrow = h.macd_bullish == null ? '—' : (h.macd_bullish ? '▲' : '▼');
+      const detailTags = [
+        h.macd_bullish != null ? `<span class="tag ${h.macd_bullish?'g':'r'}" title="Green = bullish MACD crossover in last 5 sessions, red = bearish">MACD ${macdArrow}</span>` : '',
+        h.dist_52w_high != null ? `<span class="tag" title="Distance from 52-week high — closer to 0% is stronger">52w ${fmt(h.dist_52w_high,{sign:true})}%</span>` : '',
+      ].filter(Boolean).join('');
       return `<div class="h-expand-content" data-ticker="${esc(h.ticker)}">
+        ${detailTags ? `<div style="padding:8px 8px 4px;display:flex;gap:6px;flex-wrap:wrap">${detailTags}</div>` : ''}
         ${h.analysis ? `<div class="hc-analysis">${esc(h.analysis)}</div>` : ''}
         ${chartHtml}
       </div>`;
@@ -744,7 +760,7 @@
     let listRendered = false;
     const THEAD = `<thead><tr>
       <th>Ticker</th><th>Sector</th><th>P&amp;L%</th><th>P&amp;L</th>
-      <th>Signal</th><th>RS</th><th>SMA50</th><th>MACD</th><th>Stop</th><th>52w</th>
+      <th>Signal</th><th>RS</th><th>SMA50</th><th>Type</th><th>Stop</th><th>Δ Stop</th>
     </tr></thead>`;
 
     // Table + sibling expand divs — keeps chart containers outside the scrollable table

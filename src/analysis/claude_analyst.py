@@ -228,12 +228,16 @@ def analyse_holdings(
 
     prompt = f"""Analyse each of the following portfolio holdings. For each, provide:
 - A signal: one of HOLD / WATCH / REDUCE / ADD / EXIT
+- A holding classification: CORE (quality compounders — wide moat, strong FCF, \
+lower beta, worth holding through volatility and DCA-ing into) or TRADE \
+(cyclical, high-beta, momentum/narrative-driven — active position management matters)
 - 2–3 sentences of plain-English assessment covering technical setup, \
 fundamental health, and anything to act on
 - If a stop loss is shown, mention whether it's at risk
 
 Format your response exactly as:
-[TICKER] SIGNAL — assessment text here.
+[TICKER] SIGNAL CORE — assessment text here.
+[TICKER] SIGNAL TRADE — assessment text here.
 
 One entry per line. Use the exact ticker symbol shown in brackets.
 Do not add headers, bullet points, or any other formatting.
@@ -242,28 +246,30 @@ Portfolio positions:
 
 {positions_text}"""
 
-    raw = _call(prompt, max_tokens=max(2000, len(positions) * 120), model=MODEL_REASONING)
+    raw = _call(prompt, max_tokens=max(2000, len(positions) * 130), model=MODEL_REASONING)
 
     # Build a canonical upper→original mapping so parsed tickers can be
     # mapped back to the exact format stored in the portfolio (COPGl, SEMI.L…)
     upper_to_orig: dict[str, str] = {p["ticker"].upper(): p["ticker"] for p in positions}
 
-    # Parse [TICKER] SIGNAL — text
-    # Lookahead captures multi-line analysis; character class allows dots/hyphens
+    # Parse [TICKER] SIGNAL CLASS — text
+    # CLASS is CORE or TRADE (optional — falls back to None if absent)
     results: list[dict] = []
     pattern = re.compile(
-        r"^\[([A-Z0-9.\-]+)\]\s+([A-Z]+)\s*[—–\-]+\s*(.+?)(?=^\[[A-Z0-9]|\Z)",
+        r"^\[([A-Z0-9.\-]+)\]\s+([A-Z]+)\s+(CORE|TRADE)?\s*[—–\-]+\s*(.+?)(?=^\[[A-Z0-9]|\Z)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     parsed_uppers: set[str] = set()
 
     for m in pattern.finditer(raw):
-        upper   = m.group(1).upper()
-        signal  = m.group(2).upper()
-        analysis = _strip_md_markers(re.sub(r"\s+", " ", m.group(3)).strip())
+        upper    = m.group(1).upper()
+        signal   = m.group(2).upper()
+        cls_raw  = (m.group(3) or "").upper().strip()
+        analysis = _strip_md_markers(re.sub(r"\s+", " ", m.group(4)).strip())
+        holding_class = "long_term_core" if cls_raw == "CORE" else ("trading" if cls_raw == "TRADE" else None)
         # Restore original ticker casing (COPGl, SEMI.L etc.)
         ticker = upper_to_orig.get(upper, upper)
-        results.append({"ticker": ticker, "signal": signal, "analysis": analysis})
+        results.append({"ticker": ticker, "signal": signal, "analysis": analysis, "holding_class": holding_class})
         parsed_uppers.add(upper)
 
     # Fallback: any holding whose ticker (uppercased) wasn't parsed gets a
@@ -271,9 +277,10 @@ Portfolio positions:
     for pos in positions:
         if pos["ticker"].upper() not in parsed_uppers:
             results.append({
-                "ticker":   pos["ticker"],
-                "signal":   "HOLD",
-                "analysis": "Analysis pending — data may be incomplete.",
+                "ticker":        pos["ticker"],
+                "signal":        "HOLD",
+                "analysis":      "Analysis pending — data may be incomplete.",
+                "holding_class": None,
             })
 
     log.info("Holdings analysis: %d/%d positions parsed", len(parsed_uppers), len(positions))
@@ -352,6 +359,7 @@ def todays_actions(
     sector_flows: dict | None,
     dismissed_entries: list[dict] | None = None,
     market_data: dict | None = None,
+    raise_events: list[dict] | None = None,
 ) -> list[dict]:
     """
     Generate a prioritised action board from all pipeline signals.
@@ -396,6 +404,15 @@ def todays_actions(
         f"  HY regime: {(macro or {}).get('hy_regime','unknown')}",
     ]
 
+    # ── Stop raise events ──────────────────────────────────────────────────
+    raise_lines = []
+    for ev in (raise_events or []):
+        raise_lines.append(
+            f"  {ev['ticker']}: stop raised from {ev['old_level']:.2f} to {ev['new_level']:.2f}"
+            f" (+{ev['pct_change']:.1f}%) — write ONE sentence recommending the user raise"
+            f" their stop, stating both prices."
+        )
+
     prompt = f"""You are reviewing a portfolio investor's daily signals. Return a JSON action board — no prose, no markdown, no code fences.
 
 HOLDING SIGNALS (non-HOLD only):
@@ -404,27 +421,31 @@ HOLDING SIGNALS (non-HOLD only):
 HIGH-CONVICTION BREAKOUT CANDIDATES (stage transition + VCP/accumulation confirmed):
 {chr(10).join(breakout_lines) if breakout_lines else '  (none)'}
 
+STOP LEVEL RAISES (prices already computed — write the sentence around these exact prices):
+{chr(10).join(raise_lines) if raise_lines else '  (none)'}
+
 MACRO ENVIRONMENT:
 {chr(10).join(macro_lines)}
 
 ---
 
 Output a JSON array. Each item:
-{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"add"|"buy"|"danger", "ticker": "<ticker symbol, e.g. RGTI — use 'macro' for danger items>", "text": "<one sentence>"}}
+{{"priority": "high"|"medium"|"low", "action_type": "sell"|"trim"|"add"|"buy"|"danger"|"raise_stop", "ticker": "<ticker symbol, e.g. RGTI — use 'macro' for danger items>", "text": "<one sentence>"}}
 
-ACTION TYPES — include only these five, nothing else:
-- "sell"   — position is broken: stop loss breached, thesis failed, or EXIT signal with clear evidence. priority: high
-- "trim"   — position is significantly overextended, risk/reward has shifted, or sizing is too large given current weakness. priority: medium
-- "add"    — strong momentum or a fundamentally strong holding pulling back to support with ADD signal. priority: low
-- "buy"    — new high-conviction breakout entry from the breakout screener (stage transition + VCP/accumulation confirmed). priority: low
-- "danger" — macro warning ONLY IF: VIX > 25, OR HY spread > 500 bps, OR yield curve sharply inverted, OR 3+ macro indicators simultaneously red. Surface one prominent warning that risk-off conditions are developing. priority: high
+ACTION TYPES — include only these six, nothing else:
+- "sell"       — position is broken: stop loss breached, thesis failed, or EXIT signal with clear evidence. priority: high
+- "trim"       — position is significantly overextended, risk/reward has shifted, or sizing is too large given current weakness. priority: medium
+- "add"        — strong momentum or a fundamentally strong holding pulling back to support with ADD signal. priority: low
+- "buy"        — new high-conviction breakout entry from the breakout screener (stage transition + VCP/accumulation confirmed). priority: low
+- "danger"     — macro warning ONLY IF: VIX > 25, OR HY spread > 500 bps, OR yield curve sharply inverted, OR 3+ macro indicators simultaneously red. Surface one prominent warning that risk-off conditions are developing. priority: high
+- "raise_stop" — ONLY from the STOP LEVEL RAISES section above. One item per raise event. Use the exact prices provided. priority: medium
 
 STRICT EXCLUSION RULES — do not output any item that:
 - Concludes "keep watching", "monitor", or "no action needed today"
 - Is a sector rotation observation
 - Is a general portfolio comment without a named ticker or macro indicator
 
-OUTPUT ORDER: danger first (if present), then sell, then trim, then buy/add.
+OUTPUT ORDER: danger first (if present), then sell, then trim, then raise_stop, then buy/add.
 MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and give a concrete reason. No disclaimers."""
 
     # Build dismissal lookup: id → entry (with snoozed_price if available)
@@ -444,7 +465,7 @@ MAXIMUM 8 items. Each text must name the specific ticker or macro indicator and 
         if not isinstance(actions, list):
             actions = []
 
-        allowed_types = {"sell", "trim", "add", "buy", "danger"}
+        allowed_types = {"sell", "trim", "add", "buy", "danger", "raise_stop"}
         valid = []
         for item in actions:
             if not isinstance(item, dict) or not item.get("text"):
@@ -571,6 +592,7 @@ def run_analysis(
     screener: dict | None = None,
     breakout: dict | None = None,
     dismissed_entries: list[dict] | None = None,
+    raise_events: list[dict] | None = None,
 ) -> dict:
     """
     Run all six Claude analysis prompts and return a unified result dict.
@@ -615,6 +637,7 @@ def run_analysis(
         holdings, breakout, macro, sector_flows,
         dismissed_entries=dismissed_entries,
         market_data=market_data,
+        raise_events=raise_events,
     )
     log.info("Today's actions: %d items", len(actions))
 

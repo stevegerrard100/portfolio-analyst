@@ -19,16 +19,56 @@ def _load_ticker_to_sector() -> dict[str, str]:
         return {}
 
 
+def _load_ticker_to_holding_type() -> dict[str, str]:
+    try:
+        return json.loads(_SECTORS_JSON.read_text(encoding="utf-8")).get("ticker_to_holding_type", {})
+    except Exception:
+        return {}
+
+
 _TICKER_TO_SECTOR: dict[str, str] = _load_ticker_to_sector()
+_TICKER_TO_HOLDING_TYPE: dict[str, str] = _load_ticker_to_holding_type()
+
+# Map config holding_type values → two-class classification
+# long_term/etf → long_term_core; short_term → trading; medium → let Claude decide
+_HOLDING_TYPE_CLASS: dict[str, str | None] = {
+    "long_term":  "long_term_core",
+    "etf":        "long_term_core",
+    "short_term": "trading",
+    "medium":     None,  # deferred to Claude
+}
+
+
+def _resolve_holding_class(ticker: str, sector: str, claude_class: str | None) -> str:
+    """
+    Determine the two-class holding classification for a ticker.
+
+    Priority:
+    1. ETF sectors → always long_term_core
+    2. config/sectors.json ticker_to_holding_type with definitive mapping
+    3. Claude's classification (from analyse_holdings)
+    4. Default: trading
+    """
+    # ETFs always core
+    if sector and ("ETF" in sector.upper() or sector.upper() == "ETF"):
+        return "long_term_core"
+    config_type = _TICKER_TO_HOLDING_TYPE.get(ticker)
+    if config_type:
+        mapped = _HOLDING_TYPE_CLASS.get(config_type)
+        if mapped is not None:
+            return mapped
+    # Fall through to Claude's classification or default
+    return claude_class or "trading"
 
 _TEMPLATE = Path(__file__).parent / "template.html"
 
 _ACTION_COLORS = {
-    "sell":   "red",
-    "trim":   "red",
-    "add":    "green",
-    "buy":    "green",
-    "danger": "red",
+    "sell":       "red",
+    "trim":       "red",
+    "add":        "green",
+    "buy":        "green",
+    "danger":     "red",
+    "raise_stop": "amber",
 }
 
 _SECTOR_COLORS = [
@@ -182,6 +222,7 @@ def render_dashboard(
     macro: dict | None = None,
     sector_flows: dict | None = None,
     regret_tracker: list | None = None,
+    stop_levels: dict | None = None,
     output_path: str = "output/index.html",
 ) -> None:
     """
@@ -233,6 +274,7 @@ def render_dashboard(
 
     # --- Holdings: merge positions + analysis + market_data ---
     analysis_map = {h["ticker"]: h for h in analysis.get("holdings_analysis", [])}
+    _stop_levels = stop_levels or {}
 
     holdings = []
     for pos in sorted(positions, key=lambda p: float(p.get("market_value", 0)), reverse=True):
@@ -243,31 +285,49 @@ def render_dashboard(
         current_price  = float(pos.get("currentPrice") or mkt.get("current_price") or 0)
         atr            = mkt.get("atr_14")
         stop_loss      = _calc_stop_loss(current_price, atr, holding_type)
+        sector         = pos.get("sector", "?")
+
+        # Stop level memory: stored level and change from previous
+        sl_entry   = _stop_levels.get(t, {})
+        stored_stop    = sl_entry.get("level")
+        prev_stop      = sl_entry.get("prev_level")
+        if stored_stop and prev_stop:
+            stop_change_pct = round((stored_stop - prev_stop) / prev_stop * 100, 1)
+        else:
+            stop_change_pct = None
+
+        # Holding classification: config overrides → Claude → default
+        claude_class = hdg.get("holding_class")
+        holding_class = _resolve_holding_class(t, sector, claude_class)
 
         holdings.append({
-            "ticker":        t,
-            "signal":        hdg.get("signal", "HOLD"),
-            "analysis":      hdg.get("analysis", ""),
-            "sector":        pos.get("sector", "?"),
-            "holding_type":  holding_type,
-            "pie_name":      pos.get("pie_name"),
-            "pnl_pct":       round(float(pos.get("pnl_pct", 0)), 1),
-            "ppl":           round(float(pos.get("ppl", 0)), 0),
-            "market_value":  round(float(pos.get("market_value", 0)), 0),
-            "quantity":      pos.get("quantity", 0),
-            "avg_price":     pos.get("averagePrice", 0),
-            "current_price": current_price,
+            "ticker":          t,
+            "signal":          hdg.get("signal", "HOLD"),
+            "analysis":        hdg.get("analysis", ""),
+            "sector":          sector,
+            "holding_type":    holding_type,
+            "holding_class":   holding_class,
+            "pie_name":        pos.get("pie_name"),
+            "pnl_pct":         round(float(pos.get("pnl_pct", 0)), 1),
+            "ppl":             round(float(pos.get("ppl", 0)), 0),
+            "market_value":    round(float(pos.get("market_value", 0)), 0),
+            "quantity":        pos.get("quantity", 0),
+            "avg_price":       pos.get("averagePrice", 0),
+            "current_price":   current_price,
             # Technical indicators (None when market_data not yet fetched)
-            "mansfield_rs":  mkt.get("mansfield_rs"),
-            "above_sma50":   mkt.get("above_sma50"),
-            "macd_bullish":  mkt.get("macd_bullish"),
-            "stop_loss":     stop_loss,
-            "dist_52w_high": mkt.get("dist_52w_high"),
+            "mansfield_rs":    mkt.get("mansfield_rs"),
+            "above_sma50":     mkt.get("above_sma50"),
+            "macd_bullish":    mkt.get("macd_bullish"),
+            "stop_loss":       stop_loss,
+            "dist_52w_high":   mkt.get("dist_52w_high"),
+            # Stop level memory
+            "stored_stop":     stored_stop,
+            "stop_change_pct": stop_change_pct,
             # Chart data for TradingView Lightweight Charts
-            "ohlcv_daily":   mkt.get("ohlcv_daily"),
-            "ohlcv_weekly":  mkt.get("ohlcv_weekly"),
-            "mrs_daily":     mkt.get("mrs_daily"),
-            "mrs_weekly":    mkt.get("mrs_weekly"),
+            "ohlcv_daily":     mkt.get("ohlcv_daily"),
+            "ohlcv_weekly":    mkt.get("ohlcv_weekly"),
+            "mrs_daily":       mkt.get("mrs_daily"),
+            "mrs_weekly":      mkt.get("mrs_weekly"),
         })
 
     # --- Screener top 10 ---

@@ -34,7 +34,8 @@ Step 4  fetch_macro_data()        FRED rates, spreads, yield curve
 Step 5  fetch_all_fundamentals()  Finnhub basic/insider/earnings + yfinance FCF
 Step 6  run_screener()            S&P 500 growth screen (8h cached)
 Step 7  run_breakout_screener()   S&P 500 accumulation/breakout screen (8h cached)
-Step 8  run_analysis()            Claude 6-prompt pipeline
+Pre-8   _process_stop_levels()    Compare today's ATR stops vs stored levels; emit raise_events
+Step 8  run_analysis()            Claude 6-prompt pipeline (receives raise_events)
 Step 9  render_dashboard()        Assemble output/index.html from template
 ```
 
@@ -86,6 +87,9 @@ cache/                        Written at runtime, gitignored except where noted
   last_actions.json           Today's final actions list (force-added to git by CI)
   last_breakout_scores.json   Breakout composite scores from last run (force-added
                               to git by CI; used for score_delta on next run)
+  stop_levels.json            Stored recommended stop level per ticker (force-added
+                              to git by CI; never overwritten with a lower value;
+                              updated only when today's stop > stored × 1.05)
   dismissed_actions.json      Snoozed action IDs with expiry dates (written by
                               Netlify function via GitHub Contents API; force-added
                               by Netlify function, never by CI)
@@ -207,14 +211,14 @@ Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor per
 |---|----------|-------|--------|-----------|-------|
 | 1 | `macro_plain_english` | FRED macro dict | 2–3 paragraphs | 400 | Sonnet |
 | 2 | `sector_rotation_narrative` | Finviz perf + ETF RS | 1–2 paragraphs | 350 | Sonnet |
-| 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis}]` | max(2000, n×120) | Opus |
+| 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis, holding_class}]` | max(2000, n×130) | Opus |
 | 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 | Sonnet |
-| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
+| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector + raise_events | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
 | 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 | Opus |
 
 Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–4.
 
-**Holdings parser**: Claude returns one line per holding: `[TICKER] SIGNAL — assessment`. Signals: `HOLD / WATCH / REDUCE / ADD / EXIT`. Any unparsed holding gets a `HOLD` placeholder.
+**Holdings parser**: Claude returns one line per holding: `[TICKER] SIGNAL CLASS — assessment`. CLASS is `CORE` or `TRADE`. Signals: `HOLD / WATCH / REDUCE / ADD / EXIT`. Parsed to `holding_class`: `long_term_core` (CORE) or `trading` (TRADE). Any unparsed holding gets a `HOLD` / `None` placeholder.
 
 **`todays_actions()` — action types and rules:**
 
@@ -225,12 +229,13 @@ Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses 
 | `add` | Strong ADD signal, pullback to support | low |
 | `buy` | High-conviction breakout from screener (stage transition + VCP/accumulation) | low |
 | `danger` | VIX > 25 OR HY spread > 500bps OR sharp yield curve inversion OR 3+ macro indicators simultaneously red | high |
+| `raise_stop` | Computed by Python pre-8 step; stop raised >5% from stored level. Prices are pre-computed and passed in `raise_events`; Claude writes the sentence around them. | medium |
 
 Strict exclusions: no "keep watching" / "monitor" items, no sector rotation observations, no general portfolio comments. Maximum 8 items. Output order: danger → sell → trim → buy/add.
 
 Each action has an `id` field (`{ticker}-{action_type}`, e.g. `RGTI-sell`) used for dismissal keying. Actions matching `dismissed_entries` IDs are filtered out before being returned. Critical override: a dismissed action is reinstated (marked `priority: "critical"`) if the position has fallen a further 15% from the `snoozed_price` or the stop loss has been breached.
 
-The function returns a JSON array. The validator drops any item whose `action_type` is not in `{sell, trim, add, buy, danger}`.
+The function accepts an optional `raise_events` list (see Pre-8 stop levels section). The validator drops any item whose `action_type` is not in `{sell, trim, add, buy, danger, raise_stop}`.
 
 ### 4.2 `src/data/trading212.py`
 
@@ -425,7 +430,9 @@ Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`.
 
 **`_dismiss_url`** — embedded into the data dict from the `NETLIFY_DISMISS_URL` environment variable. If the env var is not set (e.g. local runs), the value is an empty string and all snooze buttons are hidden in the dashboard.
 
-**`_ACTION_COLORS`**: `sell → red`, `trim → red`, `add → green`, `buy → green`, `danger → red`.
+**`_ACTION_COLORS`**: `sell → red`, `trim → red`, `add → green`, `buy → green`, `danger → red`, `raise_stop → amber`.
+
+**`_resolve_holding_class(ticker, sector, claude_class)`** — resolves the two-class holding classification for a ticker. Priority: (1) ETF sectors → always `long_term_core`; (2) `config/sectors.json` `ticker_to_holding_type` with definitive mapping (`long_term`/`etf` → `long_term_core`, `short_term` → `trading`); (3) Claude's `holding_class` from `analyse_holdings`; (4) default `trading`. Holdings with `medium` in sectors.json are passed through to Claude's judgement.
 
 **`_TICKER_TO_SECTOR`** — module-level dict loaded from `config/sectors.json` at import time. Used by `_sector_rs_signal()` to resolve sector names for breakout candidates.
 
@@ -436,9 +443,12 @@ Full function signature:
 def render_dashboard(
     analysis, portfolio, market_data, screener, breakout,
     macro, sector_flows, regret_tracker,
+    stop_levels=None,
     output_path="output/index.html"
 ) -> None
 ```
+
+`stop_levels` is a `{ticker: {level, prev_level}}` dict from `cache/stop_levels.json`. Used to populate `stored_stop` and `stop_change_pct` fields on each holding.
 
 Log line at the top of `render_dashboard()` confirms the value of `NETLIFY_DISMISS_URL` for debugging CI runs.
 
@@ -574,9 +584,11 @@ The Action Board card appears at the top of Tab 1 whenever `DATA.today_actions` 
 
 ### Holdings List
 
-Each holding is a `<tr class="h-row">` in a `<table class="h-list-table">`. Columns: Ticker, Sector, P&L%, P&L£, Signal badge, RS score + inline 2px bar, SMA50 arrow, MACD arrow, Stop loss price, 52w distance from high.
+Each holding is a `<tr class="h-row">` in a `<table class="h-list-table">`. Columns: Ticker, Sector, P&L%, P&L£, Signal badge, RS score + inline 2px bar, SMA50 arrow, Type badge (CORE/TRADE), Stop loss price, Δ Stop (percentage change from previous stored stop — amber if raised, dash if no prior level).
 
-Clicking a row expands a sibling `<div class="h-expand-content">` (rendered **outside** the scrollable table wrapper) containing the Claude analysis text and a candlestick chart.
+**MACD arrow** and **52w distance** have been moved from the main row into the expanded detail view. They appear as tags at the top of the expand div when a row is clicked.
+
+Clicking a row expands a sibling `<div class="h-expand-content">` (rendered **outside** the scrollable table wrapper) containing MACD/52w tags, the Claude analysis text, and a candlestick chart.
 
 Three subsections: **Individual Holdings**, **Pie Holdings** (grouped by pie name), **ETFs**.
 
@@ -627,7 +639,7 @@ Steps:
 5. **Get today's date** — writes UTC date to `$GITHUB_OUTPUT` for the screener cache key
 6. **Restore screener cache** — `actions/cache@v4`, paths `cache/screener.json` + `cache/breakout_screener.json`, keyed on `screener-{os}-{YYYY-MM-DD}`. No `restore-keys` — strict date match ensures next-day runs always start fresh. Same-day re-runs (e.g. manual re-trigger) skip the 45-min screener entirely.
 7. **Run analysis pipeline** — `python -m src.main` with secrets: `T212_API_KEY`, `T212_API_SECRET`, `ANTHROPIC_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`, `NETLIFY_DISMISS_URL`
-8. **Persist actions cache** — `git add -f cache/last_actions.json` and `git add -f cache/last_breakout_scores.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, `git pull --rebase origin main`, then push. The `-f` flag is required because `cache/` is in `.gitignore`. **Note**: `git stash` / `git stash pop` are NOT used here — the working tree is always clean after the commit (only staged files were changed), and `git stash pop` on a clean tree exits with code 1 ("No stash entries found"), which would fail the step.
+8. **Persist actions cache** — `git add -f cache/last_actions.json`, `git add -f cache/last_breakout_scores.json`, and `git add -f cache/stop_levels.json` (force-add bypasses `.gitignore`), commit with `[skip ci]` guard, `git pull --rebase origin main`, then push. The `-f` flag is required because `cache/` is in `.gitignore`. **Note**: `git stash` / `git stash pop` are NOT used here — the working tree is always clean after the commit (only staged files were changed), and `git stash pop` on a clean tree exits with code 1 ("No stash entries found"), which would fail the step.
 9. **Deploy to GitHub Pages** — `peaceiris/actions-gh-pages@v4`, publishes `./output/` to `{repo}/markets/`, `keep_files: true`
 
 `timeout-minutes: 120` covers T212 pie fetches (32s/pie) and the screener (45+ min).
@@ -699,7 +711,15 @@ The Netlify function's commit message for updating `dismissed_actions.json` incl
 
 ### `cache/` in `.gitignore` — Force-Add for Tracked Files
 
-`cache/` is gitignored. `cache/last_actions.json` and `cache/last_breakout_scores.json` are committed by CI using `git add -f`. `cache/dismissed_actions.json` is committed by the Netlify function via the GitHub Contents API (which bypasses `.gitignore`). None of these files should be added to a `.gitignore` allowlist — force-add in CI is intentional.
+`cache/` is gitignored. `cache/last_actions.json`, `cache/last_breakout_scores.json`, and `cache/stop_levels.json` are committed by CI using `git add -f`. `cache/dismissed_actions.json` is committed by the Netlify function via the GitHub Contents API (which bypasses `.gitignore`). None of these files should be added to a `.gitignore` allowlist — force-add in CI is intentional.
+
+### Stop Levels Cache — Never Overwrite With a Lower Value
+
+`cache/stop_levels.json` stores `{ticker: {level, prev_level}}`. The `level` field is only updated when today's recommended stop is **more than 5% higher** than the stored level. It must never be overwritten with a lower value. `prev_level` is set to the old value when a raise occurs (used for the Δ Stop column in the dashboard). On first run for a ticker, `level` is set as a baseline and `prev_level` is `null` with no notification generated.
+
+### Holding Classification — Two-Class System
+
+Each individual equity holding is classified as either `long_term_core` (quality compounders) or `trading` (cyclical/momentum). ETFs are always `long_term_core`. The classification comes from Claude's `analyse_holdings` output (format: `[TICKER] SIGNAL CORE|TRADE — text`), with `config/sectors.json` `ticker_to_holding_type` overrides taking precedence: `long_term`/`etf` → `long_term_core`, `short_term` → `trading`, `medium` → deferred to Claude. The class is displayed as a `CORE` or `TRADE` badge in the portfolio tab.
 
 ---
 
@@ -768,8 +788,9 @@ Add a function to `claude_analyst.py` following the existing pattern. Call it fr
 
 1. Add the type to the `todays_actions()` prompt text in `claude_analyst.py`
 2. Add it to the `allowed_types` set in the validator
-3. Add it to `_ACTION_COLORS` in `renderer.py`
+3. Add it to `_ACTION_COLORS` in `renderer.py` (valid color values: `"red"`, `"green"`, `"amber"`)
 4. Add its badge label to `BADGE_LABEL` in `template.html`
+5. Ensure the CSS classes `action-color-<color>` and `action-border-<color>` exist in `template.html` (amber already defined)
 
 ### Adding a new ticker override (T212 format or SPAC merger)
 

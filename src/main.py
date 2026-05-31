@@ -126,6 +126,8 @@ def main() -> None:
         macro:        dict = {}
         fundamentals: dict = {}
         regret_tracker:     list = []
+        stop_levels:        dict = {}
+        raise_events:       list = []
 
         positions        = portfolio.get("positions", [])
         portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
@@ -224,6 +226,64 @@ def main() -> None:
             market_data,
         )
 
+    # ── Stop levels memory (compare today's recommended stops vs stored levels) ─
+    _stop_levels_path = _CACHE_DIR / "stop_levels.json"
+    stop_levels: dict = {}
+    raise_events: list[dict] = []
+
+    try:
+        # Load existing stored levels
+        if _stop_levels_path.exists():
+            stop_levels = json.loads(_stop_levels_path.read_text(encoding="utf-8"))
+        else:
+            log.info("Stop levels: no cache file found — first run, will create baseline")
+
+        # Compute today's recommended stop for each position
+        from src.dashboard.renderer import _calc_stop_loss as _renderer_calc_stop
+        for pos in portfolio.get("positions", []):
+            t = pos.get("ticker")
+            if not t:
+                continue
+            mkt = market_data.get(t, {})
+            holding_type = pos.get("holding_type", "medium")
+            current_price = float(pos.get("currentPrice") or mkt.get("current_price") or 0)
+            atr = mkt.get("atr_14")
+            today_stop = _renderer_calc_stop(current_price, atr, holding_type)
+            if today_stop is None:
+                continue
+
+            entry = stop_levels.get(t)
+            if entry is None:
+                # First run for this ticker: save as baseline, no notification
+                stop_levels[t] = {"level": today_stop, "prev_level": None}
+                log.info("Stop levels: %s — baseline set at %.2f", t, today_stop)
+            else:
+                stored = entry.get("level", 0)
+                if stored and today_stop > stored * 1.05:
+                    # Meaningful raise detected (>5%)
+                    pct_change = (today_stop - stored) / stored * 100
+                    raise_events.append({
+                        "ticker":     t,
+                        "old_level":  stored,
+                        "new_level":  today_stop,
+                        "pct_change": round(pct_change, 1),
+                    })
+                    stop_levels[t] = {"level": today_stop, "prev_level": stored}
+                    log.info(
+                        "Stop levels: %s RAISE %.2f → %.2f (+%.1f%%)",
+                        t, stored, today_stop, pct_change,
+                    )
+                # Never overwrite with a lower value
+
+        # Persist updated stop levels
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _stop_levels_path.write_text(json.dumps(stop_levels, indent=2), encoding="utf-8")
+        log.info("Stop levels: saved %d entries (%d raise events)", len(stop_levels), len(raise_events))
+
+    except Exception as exc:
+        log.warning("Stop levels processing failed: %s", exc)
+        raise_events = []
+
     # ── Persist breakout score snapshot (for score_delta on next run) ────────
     # Written unconditionally — covers both fresh runs and cache hits (R4.1).
     _scores_path = _CACHE_DIR / "last_breakout_scores.json"
@@ -268,6 +328,7 @@ def main() -> None:
         screener=screener,
         breakout=breakout,
         dismissed_entries=dismissed_entries,
+        raise_events=raise_events,
     )
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))
@@ -284,6 +345,7 @@ def main() -> None:
         macro=macro,
         sector_flows=sector_flows,
         regret_tracker=regret_tracker,
+        stop_levels=stop_levels,
         output_path=_OUTPUT_HTML,
     )
 
