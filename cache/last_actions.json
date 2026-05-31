@@ -1,50 +1,50 @@
 [
   {
-    "id": "RGTI-sell",
+    "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 down 25%, it's the weakest of your three quantum computing bets, a tiny company burning cash in a speculative space with no clear path to profitability, and the REDUCE signal confirms the thesis is failing."
+    "text": "Sell SGLP.L immediately \u2014 it's down 99.2% from its high with a relative strength score of -98.9, meaning it's weaker than virtually every other stock out there, and this looks like a broken instrument you should exit completely."
   },
   {
-    "id": "KTOS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell KTOS \u2014 down 28% with a REDUCE signal, and despite an exciting drone story, Kratos has a pattern of overpromising on revenue that hasn't translated into results worth holding through this kind of drawdown."
-  },
-  {
-    "id": "5UR.DE-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell 5UR.DE \u2014 down 16% on a small niche position with a REDUCE signal, the loss is outsized relative to the position size and there's no compelling reason to keep capital tied up here."
-  },
-  {
-    "id": "IONQ-trim",
+    "id": "RGTI-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 up 17% but this is a cash-burning, pre-revenue quantum computing company riding pure speculation, so lock in some of that gain before the narrative fades."
+    "text": "Trim RGTI \u2014 you're down 21.7%, revenue is actually shrinking, it's 55% off its high, and it's the weakest of your quantum computing holdings, so reduce your exposure before further deterioration."
   },
   {
-    "id": "PLTR-trim",
+    "id": "LPTH-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim PLTR \u2014 up 7% but trading at 100x+ revenue multiples means even great execution is already priced in many times over, so reduce your exposure to protect gains."
+    "text": "Trim LPTH to lock in some of that +50% gain \u2014 a PE of 131 with negative free cash flow and four consecutive earnings misses means the valuation has no fundamental support if sentiment shifts."
   },
   {
-    "id": "QBTS-trim",
+    "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 down 6.6% with limited revenue and no clear profitability path, and with RGTI already flagged for sale you should also lighten this second weak quantum position."
+    "text": "Trim SKYT into strength \u2014 a +67% gain at its 52-week high sounds great, but bearish MACD on an unprofitable company means this is the time to take some profit off the table, not add risk."
   },
   {
-    "id": "ONDS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim ONDS \u2014 down nearly 15% as a small speculative defence-tech name with limited revenue, the risk of further deterioration is high and the position isn't earning its place in your portfolio."
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to META \u2014 at a PE of 17.5 with 22% revenue growth and strong free cash flow, this is arguably the best value in big tech right now and deserves a larger position."
   },
   {
-    "id": "EL-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim EL \u2014 down 17% with weakening demand in China and travel retail, two of its most important growth drivers, suggesting the turnaround story needs more time than your capital should wait for."
+    "id": "RTX-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to RTX \u2014 a quality defense name at a reasonable PE of 23.8 with positive free cash flow and a consistent earnings beat streak makes this a solid compounder to build into."
+  },
+  {
+    "id": "LMT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to LMT \u2014 Lockheed Martin's PE of 16.5 with 5.7% free cash flow yield is attractive for a blue-chip defense company, and defense spending tailwinds remain strong."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to MSFT \u2014 at a PE of 23.3 with nearly 15% revenue growth and a consistent earnings beat streak, Microsoft is a quality compounder trading at a reasonable price."
   }
 ]
