@@ -1,50 +1,50 @@
 [
   {
-    "id": "RGTI-sell",
+    "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 down 25% with the weakest commercial business among your quantum holdings, minimal revenue, and no catalyst to reverse the decline, so cut this loss now."
+    "text": "Sell SGLP.L \u2014 it's your largest holding and it's broken: relative strength is near zero and it's nearly 100% off its high, which means the thesis has completely failed and you should free up that capital."
   },
   {
-    "id": "5UR.DE-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell 5UR.DE \u2014 down 16% and at only \u00a3235 it's too small to matter, so eliminate this dead-weight position and redeploy the capital somewhere meaningful."
+    "id": "RGTI-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim RGTI \u2014 you're down 22% and it's 55% off its high, making it the weakest position in your portfolio with no sign of recovery, so cut your losses and reduce exposure."
   },
   {
     "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim KTOS \u2014 down 28% as your worst-performing defence holding, which signals the market sees revenue or contract risks that haven't resolved, so reduce your exposure before it gets worse."
+    "text": "Trim KTOS \u2014 it's down 51% from its high with all momentum pointing down, meaning the market has repriced this stock significantly lower and you should reduce before more damage."
   },
   {
-    "id": "EL-trim",
+    "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim EL \u2014 down 17% with ongoing weakness in China and travel retail demand, and no clear sign of a turnaround, so reduce this position to limit further downside."
+    "text": "Trim GDX.L \u2014 this gold miners ETF is 22% off its high, below its 50-day average, and every momentum indicator is bearish, so lighten up until the trend stabilizes."
   },
   {
-    "id": "SILG.L-trim",
-    "action_type": "trim",
+    "id": "VST-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 down 12.4% and underperforming the metals it tracks, meaning you're paying extra volatility for worse returns, so lighten up on silver miners."
+    "text": "Raise your VST stop from $143.08 to $150.94 to lock in more of your gains while still giving the position room to breathe."
   },
   {
-    "id": "QBTS-trim",
-    "action_type": "trim",
+    "id": "LASR-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 underwater with negligible revenue and years away from commercial viability, and combined with RGTI and IONQ you have too much speculative quantum exposure."
+    "text": "Raise your LASR stop from $58.54 to $66.86 \u2014 that's a meaningful 14% bump that protects a much bigger chunk of your profit."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
+    "id": "KGS-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your KGS stop from $60.39 to $64.00 to protect your gains as this position continues to trend higher."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
     "priority": "low",
-    "text": "Trim IONQ \u2014 despite modest gains, quantum computing is extremely early-stage with no clear profitability path, so take some profit and right-size this speculative bet."
-  },
-  {
-    "id": "PLTR-trim",
-    "action_type": "trim",
-    "priority": "low",
-    "text": "Trim PLTR \u2014 the current valuation prices in years of perfect execution, so locking in some gains here protects you if growth even slightly disappoints expectations."
+    "text": "Add to META \u2014 at just 17.5x earnings with 22% revenue growth and strong free cash flow, it's one of the best values in big tech right now and the fundamentals back adding here."
   }
 ]

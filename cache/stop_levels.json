@@ -52,8 +52,8 @@
     "prev_level": null
   },
   "LASR": {
-    "level": 58.5368,
-    "prev_level": null
+    "level": 66.8585,
+    "prev_level": 58.5368
   },
   "IONQ": {
     "level": 64.2917,
@@ -124,12 +124,12 @@
     "prev_level": null
   },
   "KGS": {
-    "level": 60.3935,
-    "prev_level": null
+    "level": 63.9992,
+    "prev_level": 60.3935
   },
   "VST": {
-    "level": 143.083,
-    "prev_level": null
+    "level": 150.9436,
+    "prev_level": 143.083
   },
   "CEG": {
     "level": 250.0997,
