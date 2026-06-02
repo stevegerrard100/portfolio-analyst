@@ -3,48 +3,42 @@
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L \u2014 it's your largest holding and it's broken: relative strength is near zero and it's nearly 100% off its high, which means the thesis has completely failed and you should free up that capital."
+    "text": "SGLP.L has collapsed nearly 99% from its 52-week high with terrible relative strength \u2014 this position is effectively dead and should be sold immediately to free up whatever capital remains."
   },
   {
     "id": "RGTI-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim RGTI \u2014 you're down 22% and it's 55% off its high, making it the weakest position in your portfolio with no sign of recovery, so cut your losses and reduce exposure."
+    "text": "RGTI is down 54.5% from its high with the weakest technicals among your quantum names \u2014 trim this speculative position to limit further damage from a stock with no earnings and heavy selling pressure."
   },
   {
-    "id": "KTOS-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim KTOS \u2014 it's down 51% from its high with all momentum pointing down, meaning the market has repriced this stock significantly lower and you should reduce before more damage."
+    "text": "QBTS is 35% off its high, burning cash, and unprofitable \u2014 reduce your exposure to this speculative quantum bet before more downside materializes."
   },
   {
-    "id": "GDX.L-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim GDX.L \u2014 this gold miners ETF is 22% off its high, below its 50-day average, and every momentum indicator is bearish, so lighten up until the trend stabilizes."
-  },
-  {
-    "id": "VST-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your VST stop from $143.08 to $150.94 to lock in more of your gains while still giving the position room to breathe."
-  },
-  {
-    "id": "LASR-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your LASR stop from $58.54 to $66.86 \u2014 that's a meaningful 14% bump that protects a much bigger chunk of your profit."
-  },
-  {
-    "id": "KGS-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your KGS stop from $60.39 to $64.00 to protect your gains as this position continues to trend higher."
+    "text": "ONDS has explosive revenue growth but is unprofitable with likely unsustainable momentum \u2014 trim some gains to lock in profits and right-size a risky position."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to META \u2014 at just 17.5x earnings with 22% revenue growth and strong free cash flow, it's one of the best values in big tech right now and the fundamentals back adding here."
+    "text": "META is arguably the best big-tech value right now at a PE of just 16.6 with 22% revenue growth, strong free cash flow, and consistent earnings beats \u2014 worth adding on any pullback."
+  },
+  {
+    "id": "LMT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Lockheed Martin offers blue-chip defense stability with an attractive PE of 16, solid free cash flow near 6%, and steady fundamentals that make it worth adding to."
+  },
+  {
+    "id": "RTX-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "RTX has a reasonable PE of 23 with nearly 10% revenue growth and positive momentum, making it a solid defense holding worth building into."
   }
 ]
