@@ -1,44 +1,50 @@
 [
   {
-    "id": "SGLP.L-sell",
+    "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "SGLP.L has collapsed nearly 99% from its 52-week high with terrible relative strength \u2014 this position is effectively dead and should be sold immediately to free up whatever capital remains."
+    "text": "Sell RGTI \u2014 revenue is shrinking 34%, the company is deeply unprofitable, short interest is high, and the stock is down 20%; this is the weakest name in your portfolio with no fundamental support."
   },
   {
-    "id": "RGTI-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "RGTI is down 54.5% from its high with the weakest technicals among your quantum names \u2014 trim this speculative position to limit further damage from a stock with no earnings and heavy selling pressure."
+    "id": "RDW-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell RDW \u2014 it's down 21% with negative earnings, negative free cash flow, 18% short interest, and four straight earnings misses, which means the turnaround story isn't working."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is 35% off its high, burning cash, and unprofitable \u2014 reduce your exposure to this speculative quantum bet before more downside materializes."
+    "text": "Trim QBTS \u2014 no profits, negative free cash flow, and 15.5% short interest make this a high-risk speculative bet that deserves a smaller position size until the business proves itself."
   },
   {
-    "id": "ONDS-trim",
+    "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ONDS has explosive revenue growth but is unprofitable with likely unsustainable momentum \u2014 trim some gains to lock in profits and right-size a risky position."
+    "text": "Trim SKYT \u2014 a 70% gain at the 52-week high is great, but bearish MACD signals mean locking in some profit now protects you if the momentum fades."
+  },
+  {
+    "id": "SGLP.L-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your stop on SGLP.L from 297.26 to 26,427.41 \u2014 this is your largest holding and locking in gains at this higher level protects a significant chunk of profit."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META is arguably the best big-tech value right now at a PE of just 16.6 with 22% revenue growth, strong free cash flow, and consistent earnings beats \u2014 worth adding on any pullback."
+    "text": "Add to META \u2014 a PE of just 17 with 22% revenue growth and strong free cash flow makes this arguably the best value in big tech right now."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to MSFT \u2014 15% revenue growth, strong free cash flow, and consistent earnings beats make Microsoft a reliable core holding worth building up."
   },
   {
     "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Lockheed Martin offers blue-chip defense stability with an attractive PE of 16, solid free cash flow near 6%, and steady fundamentals that make it worth adding to."
-  },
-  {
-    "id": "RTX-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "RTX has a reasonable PE of 23 with nearly 10% revenue growth and positive momentum, making it a solid defense holding worth building into."
+    "text": "Add to LMT \u2014 Lockheed Martin's PE of 16, positive revenue growth, and steady defense spending tailwinds make it a solid value play in an uncertain market."
   }
 ]
