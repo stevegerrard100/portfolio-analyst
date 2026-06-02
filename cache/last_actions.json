@@ -3,48 +3,48 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 18%, over 50% off its high, revenue is actually shrinking, and it's the weakest quantum name you own \u2014 this thesis is broken and the position should be closed."
+    "text": "RGTI has shrinking revenue (-34%), is deeply unprofitable, and down 17.5% \u2014 the thesis here is broken and this speculative position should be exited before further damage."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RDW is down 22% with negative earnings, negative free cash flow, four straight earnings misses, and 18% short interest \u2014 there's no reason to keep holding this."
+    "text": "RDW is down 23% with four straight earnings misses, negative cash flow, and 18% short interest \u2014 this is a broken position and it's time to cut the loss."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is unprofitable with 15.5% short interest and two earnings misses, so despite flashy revenue growth, trim this speculative position before the next leg down."
+    "text": "QBTS is down 33% from highs, unprofitable with two earnings misses and high short interest \u2014 trim this speculative quantum bet to a size you're comfortable losing entirely."
   },
   {
     "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SKYT is up 71% and sitting at its 52-week high but the MACD has turned bearish \u2014 lock in some of that impressive gain before momentum fades."
-  },
-  {
-    "id": "KTOS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "KTOS is down 18% and more than 50% off its high, which is a major breakdown for a defense stock \u2014 trim to reduce exposure to what's clearly not working."
+    "text": "SKYT is up 72% and sitting at its 52-week high but MACD has turned bearish and the company is unprofitable \u2014 lock in some of that impressive gain before momentum fades."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META has a PE of just 16.6 with 22% revenue growth and strong free cash flow \u2014 this is one of the best risk-reward setups in big tech and worth adding to on this flat stretch."
-  },
-  {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "MSFT is 18% off its high with 15% revenue growth and a PE of 23, which is a rare discount on a world-class compounder worth adding to."
+    "text": "META at 16.5x earnings with 22% revenue growth and excellent free cash flow is one of the best value-for-quality setups in mega-cap tech \u2014 worth adding on any pullback."
   },
   {
     "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "LMT offers a PE of 16 with solid free cash flow and steady revenue in a defense sector with strong tailwinds \u2014 a good spot to add shares."
+    "text": "LMT offers blue-chip defense exposure at a reasonable 16x PE with solid free cash flow and steady growth \u2014 a quality add in an uncertain environment."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "MSFT at 23x earnings with 15% revenue growth and a consistent beat streak is a core quality holding worth building up."
+  },
+  {
+    "id": "RTX-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "RTX is a quality defense name at 23x earnings with steady revenue growth and positive free cash flow \u2014 a solid add for portfolio stability."
   }
 ]
