@@ -3,48 +3,48 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 54% from its high with no profits, no free cash flow, and a REDUCE signal \u2014 the huge run-up has fully reversed and this position is broken, so selling now protects what's left."
+    "text": "RGTI is down 18%, over 50% off its high, revenue is actually shrinking, and it's the weakest quantum name you own \u2014 this thesis is broken and the position should be closed."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RDW is down 22% with negative earnings, negative cash flow, 18% short interest, and four straight earnings misses \u2014 this thesis has failed and it's time to exit and stop the bleeding."
+    "text": "RDW is down 22% with negative earnings, negative free cash flow, four straight earnings misses, and 18% short interest \u2014 there's no reason to keep holding this."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is 34% below its high, unprofitable, and has 15.5% short interest with a REDUCE signal \u2014 trim this to a small speculative position at most, because the quantum computing story alone isn't enough to justify holding a full position."
+    "text": "QBTS is unprofitable with 15.5% short interest and two earnings misses, so despite flashy revenue growth, trim this speculative position before the next leg down."
   },
   {
     "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SKYT is up 70% and sitting right at its 52-week high, so consider trimming some gains here to lock in profits \u2014 when a stock runs this hard, taking some off the table is smart risk management."
+    "text": "SKYT is up 71% and sitting at its 52-week high but the MACD has turned bearish \u2014 lock in some of that impressive gain before momentum fades."
   },
   {
-    "id": "LASR-trim",
+    "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "LASR is up 74% but trades at a PE of 113 with bearish MACD turning against it \u2014 trim some profits now while you're well ahead, since that valuation leaves very little room for any stumble."
+    "text": "KTOS is down 18% and more than 50% off its high, which is a major breakdown for a defense stock \u2014 trim to reduce exposure to what's clearly not working."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "IONQ has 20% short interest, burns cash, and is unprofitable despite impressive revenue growth \u2014 with that many traders betting against it, trim to reduce your exposure to a potential sharp selloff."
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META has a PE of just 16.6 with 22% revenue growth and strong free cash flow \u2014 this is one of the best risk-reward setups in big tech and worth adding to on this flat stretch."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Microsoft is down 9% with an ADD signal, strong free cash flow, consistent earnings beats, and 15% revenue growth \u2014 this pullback in a world-class company is a chance to add shares at a discount."
+    "text": "MSFT is 18% off its high with 15% revenue growth and a PE of 23, which is a rare discount on a world-class compounder worth adding to."
   },
   {
-    "id": "ONDS-add",
+    "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "ONDS shows 605% revenue growth with very strong momentum and bullish MACD near its high \u2014 if you already own this, the signals support adding on strength, but keep the position size modest given how fast it's moved."
+    "text": "LMT offers a PE of 16 with solid free cash flow and steady revenue in a defense sector with strong tailwinds \u2014 a good spot to add shares."
   }
 ]
