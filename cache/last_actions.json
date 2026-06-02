@@ -3,48 +3,48 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is the weakest position in your portfolio \u2014 revenue is actually shrinking, you're down 18%, and with no earnings to support the valuation, the thesis here is broken and it's time to cut this loss."
+    "text": "RGTI is down 54% from its high with no profits, no free cash flow, and a REDUCE signal \u2014 the huge run-up has fully reversed and this position is broken, so selling now protects what's left."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RDW is down over 20% with negative earnings, negative free cash flow, four straight earnings misses, and 18% short interest \u2014 this is a broken stock and you should exit to protect capital."
+    "text": "RDW is down 22% with negative earnings, negative cash flow, 18% short interest, and four straight earnings misses \u2014 this thesis has failed and it's time to exit and stop the bleeding."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is 34% below its high in a highly speculative quantum computing space with no fundamental support \u2014 trim this position to reduce your exposure to a theme that's clearly out of favour right now."
+    "text": "QBTS is 34% below its high, unprofitable, and has 15.5% short interest with a REDUCE signal \u2014 trim this to a small speculative position at most, because the quantum computing story alone isn't enough to justify holding a full position."
   },
   {
-    "id": "SGLP.L-trim",
+    "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SGLP.L is a large holding down 12% with weak relative strength, meaning it's underperforming the broader market \u2014 consider trimming to right-size this position given it's dragging on your portfolio."
+    "text": "SKYT is up 70% and sitting right at its 52-week high, so consider trimming some gains here to lock in profits \u2014 when a stock runs this hard, taking some off the table is smart risk management."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Meta is arguably the best value in big tech right now at a PE of just 16.7 with 22% revenue growth and excellent cash flow \u2014 adding here on weakness makes sense for a core holding."
+    "id": "LASR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "LASR is up 74% but trades at a PE of 113 with bearish MACD turning against it \u2014 trim some profits now while you're well ahead, since that valuation leaves very little room for any stumble."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IONQ has 20% short interest, burns cash, and is unprofitable despite impressive revenue growth \u2014 with that many traders betting against it, trim to reduce your exposure to a potential sharp selloff."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Microsoft is one of the most reliable businesses in the world with 15% revenue growth and strong cash flow at a reasonable valuation \u2014 a solid place to add on any pullback."
+    "text": "Microsoft is down 9% with an ADD signal, strong free cash flow, consistent earnings beats, and 15% revenue growth \u2014 this pullback in a world-class company is a chance to add shares at a discount."
   },
   {
-    "id": "LMT-add",
+    "id": "ONDS-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Lockheed Martin is a blue-chip defence stock with a reasonable PE of 16, solid free cash flow, and steady growth \u2014 this is one of the safest places to add capital in your portfolio right now."
-  },
-  {
-    "id": "RTX-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "RTX has solid fundamentals with nearly 10% revenue growth and positive cash flow in a defence sector that has strong tailwinds \u2014 worth adding to build out your defence exposure."
+    "text": "ONDS shows 605% revenue growth with very strong momentum and bullish MACD near its high \u2014 if you already own this, the signals support adding on strength, but keep the position size modest given how fast it's moved."
   }
 ]
