@@ -360,6 +360,7 @@ def todays_actions(
     dismissed_entries: list[dict] | None = None,
     market_data: dict | None = None,
     raise_events: list[dict] | None = None,
+    high_growth: dict | None = None,
 ) -> list[dict]:
     """
     Generate a prioritised action board from all pipeline signals.
@@ -392,6 +393,17 @@ def todays_actions(
             f"{c.get('reasoning', '')[:120]}"
         )
 
+    # ── High-conviction high-growth candidates (mid/small-cap, outside S&P 500) ─
+    hg_lines = []
+    for c in (high_growth or {}).get("candidates", [])[:15]:
+        if not c.get("high_conviction"):
+            continue
+        earn_note = " [earnings soon]" if c.get("earnings_flag") else ""
+        hg_lines.append(
+            f"  {c['ticker']} (score {c.get('composite_score', 0)}{earn_note}): "
+            f"{c.get('reasoning', '')[:120]}"
+        )
+
     # ── Macro snapshot ─────────────────────────────────────────────────────
     yc     = (macro or {}).get("yield_curve", {})
     hy_bps = (macro or {}).get("hy_spread_bps")
@@ -418,8 +430,11 @@ def todays_actions(
 HOLDING SIGNALS (non-HOLD only):
 {chr(10).join(signal_lines) if signal_lines else '  (none)'}
 
-HIGH-CONVICTION BREAKOUT CANDIDATES (stage transition + VCP/accumulation confirmed):
+HIGH-CONVICTION BREAKOUT CANDIDATES — S&P 500 (stage transition + VCP/accumulation confirmed):
 {chr(10).join(breakout_lines) if breakout_lines else '  (none)'}
+
+HIGH-CONVICTION HIGH-GROWTH CANDIDATES — mid/small-cap outside S&P 500 (higher risk, higher reward):
+{chr(10).join(hg_lines) if hg_lines else '  (none)'}
 
 STOP LEVEL RAISES (prices already computed — write the sentence around these exact prices):
 {chr(10).join(raise_lines) if raise_lines else '  (none)'}
@@ -591,6 +606,7 @@ def run_analysis(
     sector_flows: dict | None = None,
     screener: dict | None = None,
     breakout: dict | None = None,
+    high_growth: dict | None = None,
     dismissed_entries: list[dict] | None = None,
     raise_events: list[dict] | None = None,
 ) -> dict:
@@ -631,13 +647,14 @@ def run_analysis(
     log.info("Claude: growth opportunities...")
     opps_text = growth_opportunities(screener or {}, portfolio_sectors, macro)
 
-    # 5 — uses holdings + breakout + macro + sector signals
+    # 5 — uses holdings + breakout + high_growth + macro + sector signals
     log.info("Claude: today's actions...")
     actions = todays_actions(
         holdings, breakout, macro, sector_flows,
         dismissed_entries=dismissed_entries,
         market_data=market_data,
         raise_events=raise_events,
+        high_growth=high_growth,
     )
     log.info("Today's actions: %d items", len(actions))
 

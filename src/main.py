@@ -1,15 +1,16 @@
 """Entry point — orchestrates the full analysis pipeline.
 
 Step sequence:
-  1. fetch_portfolio        Trading 212 (pies + direct positions)
-  2. fetch_market_data      yfinance OHLCV + Mansfield RS for all tickers
-  3. fetch_sector_data      Finviz sector perf + ETF rotation signals
-  4. fetch_macro_data       FRED rates, spreads, yield curve
-  5. fetch_all_fundamentals Finnhub + yfinance per holding
-  6. run_screener           S&P 500 growth screen (8h cached)
-  7. run_breakout_screener  S&P 500 breakout/accumulation screen (8h cached)
-  8. run_analysis           Claude 5-prompt pipeline
-  9. render_dashboard       Static HTML → output/index.html
+  1.  fetch_portfolio          Trading 212 (pies + direct positions)
+  2.  fetch_market_data        yfinance OHLCV + Mansfield RS for all tickers
+  3.  fetch_sector_data        Finviz sector perf + ETF rotation signals
+  4.  fetch_macro_data         FRED rates, spreads, yield curve
+  5.  fetch_all_fundamentals   Finnhub + yfinance per holding
+  6.  run_screener             S&P 500 growth screen (8h cached)
+  7.  run_breakout_screener    S&P 500 breakout/accumulation screen (8h cached)
+  8.  run_high_growth_screener Mid/small-cap high-growth screen (24h cached)
+  9.  run_analysis             Claude 5-prompt pipeline
+  10. render_dashboard         Static HTML → output/index.html
 """
 
 import argparse
@@ -121,6 +122,18 @@ def main() -> None:
             )
             sys.exit(1)
 
+        # High-growth cache is optional in fast mode — degrade gracefully if absent
+        _hg_cache_path = _CACHE_DIR / "high_growth_screener.json"
+        if _hg_cache_path.exists():
+            high_growth = json.loads(_hg_cache_path.read_text(encoding="utf-8"))
+            log.info(
+                "Fast mode: loading high_growth from %s (%d candidates)",
+                _hg_cache_path, len(high_growth.get("candidates", [])),
+            )
+        else:
+            high_growth = {"candidates": [], "regime": "caution"}
+            log.info("Fast mode: high_growth_screener.json absent — using empty result")
+
         market_data:  dict = {}
         sector_flows: dict = {}
         macro:        dict = {}
@@ -132,10 +145,11 @@ def main() -> None:
         positions        = portfolio.get("positions", [])
         portfolio_tickers = [_MERGER_OVERRIDES.get(p["ticker"], p["ticker"]) for p in positions]
         log.info(
-            "Fast mode: %d positions, %d screener candidates, %d breakout candidates",
+            "Fast mode: %d positions, %d screener candidates, %d breakout candidates, %d high-growth candidates",
             len(positions),
             len(screener.get("candidates", [])),
             len(breakout.get("candidates", [])),
+            len(high_growth.get("candidates", [])),
         )
 
     else:
@@ -211,12 +225,28 @@ def main() -> None:
                  screener.get("universe_size", 0))
 
         # ── 7. Breakout Watch List ────────────────────────────────────────────
-        _step(7, 9, "Breakout Watch List screener (8h cached)")
+        _step(7, 10, "Breakout Watch List screener (8h cached)")
         from src.data.breakout_screener import run_breakout_screener
         breakout = run_breakout_screener(exclude_tickers=portfolio_tickers)
         log.info("Breakout screener: %d candidates (universe=%d)",
                  len(breakout.get("candidates", [])),
                  breakout.get("universe_size", 0))
+
+        # ── 8. High-Growth Watch ──────────────────────────────────────────────
+        _step(8, 10, "High-Growth Watch screener (24h cached)")
+        high_growth: dict = {"candidates": [], "regime": "caution"}
+        try:
+            from src.data.high_growth_screener import run_high_growth_screener
+            high_growth = run_high_growth_screener(exclude_tickers=portfolio_tickers)
+            log.info(
+                "High-growth screener: %d candidates (universe=%d)",
+                len(high_growth.get("candidates", [])),
+                high_growth.get("universe_size", 0),
+            )
+        except Exception as _hg_exc:
+            log.warning(
+                "High-growth screener failed — pipeline continues without it: %s", _hg_exc
+            )
 
         # ── Regret Tracker (uses already-fetched market data) ─────────────────
         from src.data.regret_tracker import build_regret_tracker
@@ -310,8 +340,8 @@ def main() -> None:
     except Exception as exc:
         log.warning("Could not write last_breakout_scores.json: %s", exc)
 
-    # ── 8. Claude analysis ────────────────────────────────────────────────────
-    _step(8, 9, "Claude analysis (6-prompt pipeline)")
+    # ── 9. Claude analysis ────────────────────────────────────────────────────
+    _step(9, 10, "Claude analysis (6-prompt pipeline)")
 
     # Read active dismissals so todays_actions() can filter them
     dismissed_entries: list[dict] = []
@@ -338,14 +368,15 @@ def main() -> None:
         sector_flows=sector_flows,
         screener=screener,
         breakout=breakout,
+        high_growth=high_growth,
         dismissed_entries=dismissed_entries,
         raise_events=raise_events,
     )
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))
 
-    # ── 9. Render ─────────────────────────────────────────────────────────────
-    _step(9, 9, "Rendering dashboard → output/index.html")
+    # ── 10. Render ────────────────────────────────────────────────────────────
+    _step(10, 10, "Rendering dashboard → output/index.html")
     from src.dashboard.renderer import render_dashboard
     render_dashboard(
         analysis=analysis,
@@ -353,6 +384,7 @@ def main() -> None:
         market_data=market_data,
         screener=screener,
         breakout=breakout,
+        high_growth=high_growth,
         macro=macro,
         sector_flows=sector_flows,
         regret_tracker=regret_tracker,

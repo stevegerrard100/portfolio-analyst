@@ -24,26 +24,29 @@ Runs weekdays at 07:00 UTC via GitHub Actions. Total pipeline time: 40–90 minu
 
 ## 1. Architecture
 
-The pipeline runs as a single sequential process (`python -m src.main`) with nine steps:
+The pipeline runs as a single sequential process (`python -m src.main`) with ten steps:
 
 ```
-Step 1  fetch_portfolio()         Trading 212 pies + direct positions
-Step 2  fetch_market_data()       yfinance OHLCV + Mansfield RS + indicators
-Step 3  fetch_sector_data()       Finviz sector perf + SPDR ETF rotation signals
-Step 4  fetch_macro_data()        FRED rates, spreads, yield curve
-Step 5  fetch_all_fundamentals()  Finnhub basic/insider/earnings + yfinance FCF
-Step 6  run_screener()            S&P 500 growth screen (8h cached)
-Step 7  run_breakout_screener()   S&P 500 accumulation/breakout screen (8h cached)
-Pre-8   _process_stop_levels()    Compare today's ATR stops vs stored levels; emit raise_events
-Step 8  run_analysis()            Claude 6-prompt pipeline (receives raise_events)
-Step 9  render_dashboard()        Assemble output/index.html from template
+Step 1   fetch_portfolio()              Trading 212 pies + direct positions
+Step 2   fetch_market_data()            yfinance OHLCV + Mansfield RS + indicators
+Step 3   fetch_sector_data()            Finviz sector perf + SPDR ETF rotation signals
+Step 4   fetch_macro_data()             FRED rates, spreads, yield curve
+Step 5   fetch_all_fundamentals()       Finnhub basic/insider/earnings + yfinance FCF
+Step 6   run_screener()                 S&P 500 growth screen (8h cached)
+Step 7   run_breakout_screener()        S&P 500 accumulation/breakout screen (8h cached)
+Step 8   run_high_growth_screener()     Mid/small-cap high-growth screen (24h cached)
+Pre-9    _process_stop_levels()         Compare today's ATR stops vs stored levels; emit raise_events
+Step 9   run_analysis()                 Claude 6-prompt pipeline (receives raise_events + high_growth)
+Step 10  render_dashboard()             Assemble output/index.html from template
 ```
 
-Each step returns a plain dict. Steps are independent except that Step 8 receives the outputs of Steps 1–7, and Step 9 receives all outputs.
+Each step returns a plain dict. Steps are independent except that Step 9 receives the outputs of Steps 1–8, and Step 10 receives all outputs.
 
-At the start of Step 8, before calling Claude, `main.py` reads `cache/dismissed_actions.json` (if it exists) and filters to active dismissals (those whose `snoozed_until` date is today or future). These are passed to `run_analysis()` so `todays_actions()` can suppress snoozed items.
+Step 8 failure is non-fatal: `main.py` wraps the call in a `try/except` and sets `high_growth = {"candidates": [], "regime": "caution"}` on failure so the rest of the pipeline is unaffected.
 
-At the end of Step 9, `main.py` writes today's final actions list to `cache/last_actions.json` for use by the next run's `is_new` badge logic.
+At the start of Step 9, before calling Claude, `main.py` reads `cache/dismissed_actions.json` (if it exists) and filters to active dismissals (those whose `snoozed_until` date is today or future). These are passed to `run_analysis()` so `todays_actions()` can suppress snoozed items.
+
+At the end of Step 10, `main.py` writes today's final actions list to `cache/last_actions.json` for use by the next run's `is_new` badge logic.
 
 ---
 
@@ -51,7 +54,7 @@ At the end of Step 9, `main.py` writes today's final actions list to `cache/last
 
 ```
 src/
-  main.py                     Entry point; orchestrates all 9 steps
+  main.py                     Entry point; orchestrates all 10 steps
   analysis/
     claude_analyst.py         Six Claude prompts + run_analysis() orchestrator
   dashboard/
@@ -67,6 +70,7 @@ src/
     sector_flows.py           Finviz sector perf + SPDR ETF Mansfield RS
     screener.py               S&P 500 growth screen (multi-pass)
     breakout_screener.py      S&P 500 accumulation/breakout screen (5-signal, weighted /10, regime-aware)
+    high_growth_screener.py   Mid/small-cap high-growth screen (same 5-signal methodology, 24h cached)
     institutional.py          (unused in main pipeline; available for extension)
 
 netlify/
@@ -83,6 +87,8 @@ cache/                        Written at runtime, gitignored except where noted
   pie_positions.json          Raw T212 pie positions (4h TTL)
   screener.json               Screener results (8h TTL)
   breakout_screener.json      Breakout screener results (8h TTL)
+  high_growth_screener.json   High-Growth Watch results (24h TTL)
+  high_growth_universe.json   Finviz mid/small-cap ticker universe (24h TTL, separate cache)
   sec_company_tickers.json    EDGAR CIK map (7-day TTL)
   last_actions.json           Today's final actions list (force-added to git by CI)
   last_breakout_scores.json   Breakout composite scores from last run (force-added
@@ -213,7 +219,7 @@ Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor per
 | 2 | `sector_rotation_narrative` | Finviz perf + ETF RS | 1–2 paragraphs | 350 | Sonnet |
 | 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis, holding_class}]` | max(2000, n×130) | Opus |
 | 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 | Sonnet |
-| 5 | `todays_actions` | Holdings analysis + breakout + macro + sector + raise_events | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
+| 5 | `todays_actions` | Holdings analysis + breakout + high_growth + macro + sector + raise_events | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
 | 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 | Opus |
 
 Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–4.
@@ -386,7 +392,34 @@ Five-signal accumulation/early-breakout screen over the S&P 500. Weighted compos
 
 **Per-candidate dict keys** (all always present): `ticker`, `company_name`, `sector`, `mansfield_rs`, `composite_score`, `score_delta`, `high_conviction`, `regime_watchlist`, `earnings_soon`, `earnings_date`, `signals`, `reasoning`, `setup_strength`, `key_risk`, `maturity`, `base_weeks`, `base_depth_pct`, `base_tightness`, `stop_loss`, `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly`.
 
-### 4.7 `src/data/fundamentals.py`
+### 4.7 `src/data/high_growth_screener.py`
+
+Mid/small-cap high-growth screen. Same five-signal weighted methodology as `breakout_screener.py` — all signal functions, weights, regime logic, AI reasoning, and CIK deduplication are imported directly from `breakout_screener.py`. Results cached for **24 hours** (`cache/high_growth_screener.json`).
+
+**Key differences from `breakout_screener.py`:**
+
+| Aspect | Breakout Screener | High-Growth Screener |
+|--------|------------------|---------------------|
+| Universe | Fixed: S&P 500 (~500 tickers) | Dynamic: Finviz mid/small-cap US ($300M–$10B, avg vol >300k) |
+| Universe cache | N/A | `cache/high_growth_universe.json`, 24h TTL |
+| S&P 500 overlap | N/A (is the universe) | Excluded — never surfaces S&P 500 constituents |
+| Earnings-flagged | Annotated (`earnings_soon`) | Kept and annotated (`earnings_flag`) |
+| Dashboard badge | Amber ⚠ Earnings | Amber ⚠ Earnings |
+| Cache TTL | 8h | 24h |
+| Portfolio exclusion | Yes (at call time) | Yes (at call time) |
+| Score delta | Yes (`score_delta` field) | No (not tracked between runs) |
+| Schema version | 3 | 1 |
+| Failure behaviour | Returns error dict | Non-fatal: `main.py` catches exception, uses empty result |
+
+**Universe fetch (`_fetch_high_growth_universe`):** Calls Finviz via `finvizfinance.screener.overview.Overview` twice — once for `"Small ($300mln to $2bln)"` market cap, once for `"Mid ($2bln to $10bln)"`. Filters: `Average Volume: Over 300K`, `Country: USA`. S&P 500 constituents are removed from the combined result. The raw universe (before portfolio exclusion) is cached to `cache/high_growth_universe.json` for 24 hours so different pipeline runs with different portfolios can share it.
+
+**`earnings_flag` vs `earnings_soon`:** Both fields signal the same thing (Finnhub earningsCalendar event within 21 calendar days). The naming differs to make the two screeners easy to distinguish in template logic. The detection call (`_check_earnings_proximity_finnhub`) is the same function, imported from `breakout_screener.py`.
+
+**Per-candidate dict keys** (all always present): `ticker`, `company_name`, `sector`, `mansfield_rs`, `composite_score`, `high_conviction`, `regime_watchlist`, `earnings_flag`, `earnings_date`, `signals`, `reasoning`, `setup_strength`, `key_risk`, `maturity`, `base_weeks`, `base_depth_pct`, `base_tightness`, `stop_loss`, `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly`.
+
+**Fast mode**: `cache/high_growth_screener.json` is optional — if absent, fast mode proceeds with an empty result and logs a warning rather than failing.
+
+### 4.8 `src/data/fundamentals.py`
 
 | Field | Source |
 |-------|--------|
@@ -400,7 +433,7 @@ Five-signal accumulation/early-breakout screen over the S&P 500. Weighted compos
 
 yfinance calls: `ThreadPoolExecutor(max_workers=min(8, n_tickers))`. Finnhub: sequential, 1.0s sleep.
 
-### 4.8 `src/data/macro.py`
+### 4.9 `src/data/macro.py`
 
 Fetches 7 FRED series. Derives:
 - **Yield curve status**: `positive` (>50bps), `flat` (0–50bps), `inverted` (<0bps)
@@ -408,7 +441,7 @@ Fetches 7 FRED series. Derives:
 - **Rate trajectory**: `easing` / `on hold` / `tightening` (based on 12m Fed Funds change)
 - **Credit stress flag**: True if HY spread > 500bps
 
-### 4.9 `src/data/sector_flows.py`
+### 4.10 `src/data/sector_flows.py`
 
 Two inputs → one output dict:
 1. **Finviz sector performance** — 11 S&P sectors: 1d/1w/1m/3m/6m/1y
@@ -416,7 +449,7 @@ Two inputs → one output dict:
 
 Also computes a **portfolio alignment score**. The `finviz_performance` list drives the Today's Brief sector heatmap.
 
-### 4.10 `src/dashboard/renderer.py`
+### 4.11 `src/dashboard/renderer.py`
 
 Assembles the `data` dict that replaces `{{DASHBOARD_DATA}}` in `template.html`.
 
@@ -450,7 +483,7 @@ Full function signature:
 ```python
 def render_dashboard(
     analysis, portfolio, market_data, screener, breakout,
-    macro, sector_flows, regret_tracker,
+    high_growth=None, macro, sector_flows, regret_tracker,
     stop_levels=None,
     output_path="output/index.html"
 ) -> None
@@ -462,7 +495,7 @@ Log line at the top of `render_dashboard()` confirms the value of `NETLIFY_DISMI
 
 **Breakout candidate whitelist** — `renderer.py` explicitly names every field it passes from the breakout cache to the dashboard data dict. Fields not listed are silently dropped. Current whitelist: `ticker`, `company_name`, `sector`, `mansfield_rs`, `composite_score`, `score_delta`, `reasoning`, `signals`, `high_conviction`, `regime_watchlist`, `earnings_soon`, `earnings_date`, `sector_rs_signal` (computed by `_sector_rs_signal()`), `setup_strength`, `key_risk`, `maturity`, `base_weeks`, `base_depth_pct`, `base_tightness`, `stop_loss`, `ohlcv_daily`, `ohlcv_weekly`, `mrs_daily`, `mrs_weekly`. When adding new fields to `breakout_screener.py`, add them here too or they will not reach the template.
 
-### 4.11 `netlify/functions/dismiss-action.js`
+### 4.12 `netlify/functions/dismiss-action.js`
 
 Serverless POST handler deployed to Netlify. Accepts `{id, days, snoozed_price?}` from the browser, updates `cache/dismissed_actions.json` in the GitHub repo via the Contents API, and returns `{ok: true, id, snoozed_until}`.
 
@@ -553,7 +586,7 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 **Tab 3 — Opportunities**:
 - **Growth Opportunities** — full Claude opportunities narrative (no truncation)
 - **Momentum Opportunities** table — top 10 screener candidates with expandable chart rows
-- **Breakout Watch List** — top 15 breakout candidates with expandable chart rows:
+- **Breakout Watch List** — top 15 S&P 500 breakout candidates with expandable chart rows:
   - Regime warning banner (red in bear, amber in caution, hidden in bull) appears above the table
   - Table columns (9 total): Ticker, Company, Sector, Mansfield RS, Signals (badge per signal), Score /10, Base Wks, Depth %, Sector RS
   - Columns 7–9 (Base Wks, Depth %, Sector RS) are hidden on mobile via `.bk-table th:nth-child(n+7), .bk-table td:nth-child(n+7) { display: none }`
@@ -566,6 +599,11 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
     - Key risk: amber `⚠ Risk:` label + `key_risk` text (hidden if `key_risk` is null)
     - Maturity badge: Early (blue) / Developing (amber) / Extended (muted) — hidden if `maturity` is null
     - Base stats, stop loss, chart (daily/weekly toggle) as before
+- **High-Growth Watch** — top 15 mid/small-cap candidates outside the S&P 500. Identical table layout and expandable chart rows to the Breakout Watch List. Section is **hidden entirely** when `DATA.hg_candidates` is empty. Subtitle notes these are higher-risk, smaller names. Differences from Breakout Watch List:
+  - No regime banner (regime is shared with breakout screener; it would be redundant)
+  - No `score_delta` column (not tracked between runs for this universe)
+  - `earnings_flag` badge: amber `⚠ Earnings` when `earnings_flag=True` (candidates with imminent earnings are kept, not excluded)
+  - `high_conviction` badge: same green "High Conviction" badge; same score ≥ 7.0 + `rs_leading` + `stage_transition` + non-bear rule
 
 ### Action Board
 
@@ -697,6 +735,10 @@ The Finnhub earnings gate in `breakout_screener.py` runs **after** all yfinance 
 
 The gate **annotates** candidates with upcoming earnings (within 21 days) rather than excluding them. Candidates get `earnings_soon=True` and `earnings_date` (YYYY-MM-DD). This is displayed as an amber `⚠ Earnings` badge in the dashboard. All candidates have both fields (defaults: `False` / `None`).
 
+### High-Growth Watch — Earnings Candidates Kept and Flagged
+
+Candidates with an earnings event within 21 calendar days are **kept** in `high_growth_screener.py` and annotated with `earnings_flag=True` and `earnings_date`. Excluding them would drain the smaller mid/small-cap universe too aggressively. The field is named `earnings_flag` (not `earnings_soon`, which is the equivalent field in `breakout_screener.py`) so template code can distinguish the two screeners without additional metadata. Both fields default to `False` / `None` when `FINNHUB_API_KEY` is absent or the API call fails. The amber `⚠ Earnings` badge in the dashboard reads from `earnings_flag` for High-Growth Watch rows and from `earnings_soon` for Breakout Watch List rows.
+
 ### Holdings Charts Outside the Scrollable Table
 
 Expand content is a `<div class="h-expand-content">` sibling of the table wrapper, not inside `<td>`. This prevents TradingView charts from inheriting the table's full overflow width.
@@ -741,9 +783,10 @@ Each individual equity holding is classified as either `long_term_core` (quality
 |--------|-------|-------------|
 | Trading 212 pies | 1 req / 30s | `trading212.py` sleep |
 | yfinance | ~2 req/s practical | 0.5s sleep in `_download()` |
-| Finnhub (free tier) | 60 req/min | 1.0s sleep in `fundamentals.py`; 1.1s sleep in `breakout_screener.py` earnings gate |
+| Finnhub (free tier) | 60 req/min | 1.0s sleep in `fundamentals.py`; 1.1s sleep in `breakout_screener.py` and `high_growth_screener.py` earnings gates |
 | FRED | 120 req/min | No sleep needed |
-| Finviz | No stated limit | Single request per run |
+| Finviz (sector perf) | No stated limit | 1 request per run (`fetch_sector_performance` in `sector_flows.py`) |
+| Finviz (universe fetch) | No stated limit | 2 requests per run (`high_growth_screener.py`: one for small cap, one for mid cap); no API key required |
 | SEC EDGAR | 10 req/s | 0.3s sleep in `ticker_resolver.py` |
 | GitHub Contents API | 5,000 req/hr (PAT) | One call per snooze — no concern |
 
@@ -754,8 +797,9 @@ Each individual equity holding is classified as either `long_term_core` (quality
 - Step 5 (fundamentals): ~3 min
 - Step 6 (screener): 45–75 min cold; 0 if cached
 - Step 7 (breakout screener): 15–30 min cold (includes Finnhub earnings gate: ~1.1s × survivors); 0 if cached
-- Step 8 (Claude analysis): ~45s (6 API calls + 1 batch breakout call)
-- Step 9 (render): <1s
+- Step 8 (high-growth screener): 20–50 min cold (Finviz universe fetch + weekly batch download + daily analysis + Finnhub earnings gate); 0 if 24h cache warm
+- Step 9 (Claude analysis): ~50s (6 API calls + 1 batch breakout call + 1 batch high-growth call)
+- Step 10 (render): <1s
 
 ---
 

@@ -417,6 +417,20 @@
           </table>
         </div>
       </div>
+      <div id="hg-section" class="section" style="display:none">
+        <div class="card">
+          <div class="card-title">High-Growth Watch</div>
+          <p style="color:var(--muted);font-size:12px;margin-bottom:12px">Mid &amp; small-cap US stocks outside the S&amp;P&nbsp;500 — higher growth potential but also higher risk than the Breakout Watch List above. Same accumulation-base scoring methodology. Candidates with imminent earnings are kept and flagged.</p>
+          <table class="stbl bk-table">
+            <thead><tr>
+              <th>Ticker</th><th>Company</th><th>Sector</th>
+              <th>Mansfield RS</th><th>Signals</th><th>Score /10</th>
+              <th>Base Wks</th><th>Depth %</th><th>Sector RS</th>
+            </tr></thead>
+            <tbody id="hg-body"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Tab 4: Regret Tracker -->
@@ -1513,6 +1527,189 @@
       });
     });
 
+    // ── High-Growth Watch ─────────────────────────────────────────────────────
+    (function renderHighGrowth() {
+      const hgCandidates = DATA.hg_candidates || [];
+      if (!hgCandidates.length) return;
+      document.getElementById('hg-section').style.display = '';
+
+      const hgChartInstances = {};
+
+      function applyHGChartData(ticker) {
+        const inst = hgChartInstances[ticker];
+        const c    = hgCandidates.find(x => x.ticker === ticker);
+        if (!inst || !c) return;
+        const useWeekly = inst.candle === 'weekly' || inst.period === '2Y';
+        const ohlcv = filterByPeriod(useWeekly ? c.ohlcv_weekly : c.ohlcv_daily, inst.period);
+        const smaPeriod = useWeekly ? 10 : 50;
+        inst.candleSeries.setData(ohlcv);
+        inst.volSeries.setData(ohlcv.map(d => ({
+          time: d.time, value: d.volume,
+          color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
+        })));
+        inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
+        inst.chart.timeScale().fitContent();
+      }
+
+      function createHGChart(ticker, cell) {
+        const c = hgCandidates.find(x => x.ticker === ticker);
+        if (!c?.ohlcv_daily?.length) return;
+        const safeId    = 'hg-chart-' + ticker.replace(/[^A-Za-z0-9]/g, '_');
+        const container = cell.querySelector('#' + safeId);
+        if (!container) return;
+        const chart = LightweightCharts.createChart(container, {
+          autoSize: true,
+          layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
+          grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
+          crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
+          leftPriceScale:  { visible: false },
+          rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.08, bottom: 0.05 } },
+          timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
+          handleScroll: true, handleScale: true,
+        });
+        const candleSeries = chart.addCandlestickSeries({
+          upColor: '#3fb950', downColor: '#f85149',
+          borderUpColor: '#3fb950', borderDownColor: '#f85149',
+          wickUpColor: '#3fb950', wickDownColor: '#f85149',
+          priceScaleId: 'right',
+        });
+        const volSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol' });
+        chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
+        const sma50Series = chart.addLineSeries({
+          color: '#d29922', lineWidth: 1, priceScaleId: 'right', title: 'SMA50',
+          lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false,
+        });
+        if (c.stop_loss != null) {
+          candleSeries.createPriceLine({
+            price: c.stop_loss, color: '#f85149', lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            title: `Stop ${Number(c.stop_loss).toFixed(2)}`, axisLabelVisible: true,
+          });
+        }
+        hgChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series, period: '3M', candle: 'daily' };
+        applyHGChartData(ticker);
+      }
+
+      const hgbody = document.getElementById('hg-body');
+      hgCandidates.forEach(c => {
+        const safeId   = 'hg-chart-' + c.ticker.replace(/[^A-Za-z0-9]/g, '_');
+        const hasChart = !!(c.ohlcv_daily?.length);
+        const rsCol    = `<span style="color:${c.mansfield_rs>=0?'var(--green)':'var(--red)'}">${fmt(c.mansfield_rs,{sign:true})}</span>`;
+        const badges   = (c.signals||[]).map(s =>
+          `<span class="bk-badge">${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`
+        ).join('');
+
+        const hcBadge   = c.high_conviction  ? `<span class="bk-hc-badge">High Conviction</span>` : '';
+        const lwBadge   = c.regime_watchlist ? `<span class="bk-lw-badge">Leadership Watch</span>` : '';
+        const earnTitle = c.earnings_date ? ` title="Earnings: ${esc(c.earnings_date)}"` : '';
+        const earnBadge = c.earnings_flag
+          ? `<span class="bk-earn-badge"${earnTitle}>⚠ Earnings</span>` : '';
+
+        const baseWks  = c.base_weeks     != null ? String(c.base_weeks) + 'w' : '—';
+        const depthPct = c.base_depth_pct != null ? fmt(c.base_depth_pct, {dp:1}) + '%' : '—';
+
+        const mainRow = document.createElement('tr');
+        mainRow.className = 's-row' + (c.high_conviction ? ' bk-row-hc' : '');
+        mainRow.dataset.ticker = c.ticker;
+        mainRow.innerHTML = `
+          <td style="font-family:var(--mono);font-weight:700">${esc(c.ticker)}</td>
+          <td>${hcBadge}${lwBadge}${earnBadge}${esc(c.company_name)}</td>
+          <td style="color:var(--muted);font-size:12px">${esc(c.sector)}</td>
+          <td>${rsCol}</td>
+          <td>${badges}</td>
+          <td style="font-weight:700;color:var(--blue)">${c.composite_score}/10</td>
+          <td style="color:var(--muted);font-size:12px">${baseWks}</td>
+          <td style="color:var(--muted);font-size:12px">${depthPct}</td>
+          <td style="font-size:12px;white-space:nowrap">${
+            c.sector_rs_signal === 'leading' ? '<span style="color:var(--green)">▲ Leading</span>'  :
+            c.sector_rs_signal === 'lagging' ? '<span style="color:var(--red)">▼ Lagging</span>'   :
+                                               '<span style="color:var(--muted)">— Neutral</span>'
+          }</td>
+        `;
+
+        const chartControls = hasChart ? `
+          <div class="chart-controls">
+            <div class="ctrl-group" data-group="period">
+              <button class="ctrl-btn" data-period="1M">1M</button>
+              <button class="ctrl-btn active" data-period="3M">3M</button>
+              <button class="ctrl-btn" data-period="6M">6M</button>
+              <button class="ctrl-btn" data-period="1Y">1Y</button>
+              <button class="ctrl-btn" data-period="2Y">2Y</button>
+            </div>
+            <div class="ctrl-group" data-group="candle">
+              <button class="ctrl-btn active" data-candle="daily">Daily</button>
+              <button class="ctrl-btn" data-candle="weekly">Weekly</button>
+            </div>
+          </div>
+          <div class="hc-chart" id="${safeId}"></div>` : '';
+
+        const primaryReasoning = c.setup_strength
+          ? `<p class="s-reasoning">${esc(c.setup_strength)}</p>`
+          : (c.reasoning ? `<p class="s-reasoning">${esc(c.reasoning)}</p>` : '');
+        const keyRiskHtml = c.key_risk
+          ? `<p style="margin:6px 0 0;font-size:12px"><span style="color:#e6ac00;font-weight:700">⚠ Risk:</span> <span style="color:var(--muted)">${esc(c.key_risk)}</span></p>`
+          : '';
+        const maturityColours = { Early: 'var(--blue)', Developing: '#e6ac00', Extended: 'var(--muted)' };
+        const maturityHtml = c.maturity
+          ? `<span style="display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;border:1px solid currentColor;color:${maturityColours[c.maturity]||'var(--muted)'};margin-top:6px">${esc(c.maturity)}</span>`
+          : '';
+
+        const detailRow = document.createElement('tr');
+        detailRow.className = 's-detail';
+        detailRow.dataset.ticker = c.ticker;
+        detailRow.style.display = 'none';
+        detailRow.innerHTML = `<td colspan="9"><div class="s-detail-inner">
+          ${primaryReasoning}
+          ${keyRiskHtml}
+          ${maturityHtml}
+          ${chartControls}
+        </div></td>`;
+
+        hgbody.appendChild(mainRow);
+        hgbody.appendChild(detailRow);
+
+        mainRow.addEventListener('click', () => {
+          const isOpen = detailRow.style.display !== 'none';
+          detailRow.style.display = isOpen ? 'none' : '';
+          if (!isOpen && hasChart) {
+            if (!hgChartInstances[c.ticker]) {
+              const cell = detailRow.querySelector('td');
+              setTimeout(() => createHGChart(c.ticker, cell), 30);
+            } else {
+              hgChartInstances[c.ticker].chart.timeScale().fitContent();
+            }
+          }
+        });
+
+        detailRow.addEventListener('click', e => {
+          const btn = e.target.closest('.ctrl-btn');
+          if (!btn) return;
+          e.stopPropagation();
+          const inst = hgChartInstances[c.ticker];
+          if (!inst) return;
+          if (btn.dataset.period) {
+            if (btn.dataset.period === '2Y') {
+              detailRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+              detailRow.querySelector('[data-candle="weekly"]').classList.add('active');
+              inst.candle = 'weekly';
+            }
+            detailRow.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            inst.period = btn.dataset.period;
+          }
+          if (btn.dataset.candle) {
+            detailRow.querySelectorAll('[data-candle]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            inst.candle = btn.dataset.candle;
+          }
+          applyHGChartData(c.ticker);
+        });
+      });
+
+      // Expose instances so switchTab can fit them on tab activation
+      window._hgChartInstances = hgChartInstances;
+    })();
+
     // ── Regret Tracker ───────────────────────────────────────────────────────
     // NOTE: The "Regret Tracker" tab button is static HTML and is always
     // rendered regardless of whether DATA.regret_tracker is empty.
@@ -1557,6 +1754,7 @@
       if (tabId === 'opportunities') requestAnimationFrame(() => {
         Object.values(screenerChartInstances).forEach(i => i.chart.timeScale().fitContent());
         Object.values(breakoutChartInstances).forEach(i => i.chart.timeScale().fitContent());
+        Object.values(window._hgChartInstances || {}).forEach(i => i.chart.timeScale().fitContent());
       });
     }
 

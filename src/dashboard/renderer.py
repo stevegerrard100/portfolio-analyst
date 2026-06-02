@@ -281,6 +281,7 @@ def render_dashboard(
     market_data: dict | None = None,
     screener: dict | None = None,
     breakout: dict | None = None,
+    high_growth: dict | None = None,
     macro: dict | None = None,
     sector_flows: dict | None = None,
     regret_tracker: list | None = None,
@@ -296,6 +297,7 @@ def render_dashboard(
         market_data:   {ticker: {mansfield_rs, stop_loss, macd_bullish, above_sma50, dist_52w_high}}
         screener:      Output of run_screener()
         breakout:      Output of run_breakout_screener()
+        high_growth:   Output of run_high_growth_screener()
         macro:         Output of fetch_macro_data()
         sector_flows:  Output of fetch_sector_data()
         output_path:   Destination path for index.html
@@ -305,6 +307,7 @@ def render_dashboard(
     market_data  = market_data  or {}
     screener     = screener     or {}
     breakout     = breakout     or {}
+    high_growth  = high_growth  or {}
     macro        = macro        or {}
     sector_flows = sector_flows or {}
 
@@ -458,6 +461,37 @@ def render_dashboard(
             "mrs_weekly":       c.get("mrs_weekly"),
         })
 
+    # --- High-Growth Watch (top 15, outside S&P 500) ---
+    hg_candidates = []
+    for c in high_growth.get("candidates", [])[:15]:
+        ticker = c["ticker"]
+        sector = c.get("sector", "?")
+        hg_candidates.append({
+            "ticker":           ticker,
+            "company_name":     c.get("company_name") or ticker,
+            "sector":           sector,
+            "mansfield_rs":     round(float(c.get("mansfield_rs", 0)), 1),
+            "composite_score":  c.get("composite_score", 0),
+            "reasoning":        c.get("reasoning", ""),
+            "signals":          c.get("signals", []),
+            "high_conviction":  bool(c.get("high_conviction", False)),
+            "regime_watchlist": bool(c.get("regime_watchlist", False)),
+            "earnings_flag":    bool(c.get("earnings_flag", False)),
+            "earnings_date":    c.get("earnings_date"),
+            "sector_rs_signal": _sector_rs_signal(ticker, sector, sector_flows),
+            "setup_strength":   c.get("setup_strength"),
+            "key_risk":         c.get("key_risk"),
+            "maturity":         c.get("maturity"),
+            "base_weeks":       c.get("base_weeks"),
+            "base_depth_pct":   c.get("base_depth_pct"),
+            "base_tightness":   c.get("base_tightness"),
+            "stop_loss":        c.get("stop_loss"),
+            "ohlcv_daily":      c.get("ohlcv_daily"),
+            "ohlcv_weekly":     c.get("ohlcv_weekly"),
+            "mrs_daily":        c.get("mrs_daily"),
+            "mrs_weekly":       c.get("mrs_weekly"),
+        })
+
     # --- Meta ---
     gen_at = analysis.get("generated_at", datetime.now().isoformat())
     try:
@@ -489,6 +523,7 @@ def render_dashboard(
         "screener_candidates":  screener_candidates,
         "breakout_candidates":  breakout_candidates,
         "breakout_regime":      breakout_regime,
+        "hg_candidates":        hg_candidates,
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
         "today_actions":        _build_today_actions(analysis.get("actions", []), market_data or {}),
@@ -504,7 +539,7 @@ def render_dashboard(
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
     log.info(
-        "Dashboard written → %s  (%d holdings, %d screener picks, %d breakout picks, %d regret entries)",
+        "Dashboard written → %s  (%d holdings, %d screener picks, %d breakout picks, %d high-growth picks, %d regret entries)",
         output_path, len(holdings), len(screener_candidates), len(breakout_candidates),
-        len(regret_tracker or []),
+        len(hg_candidates), len(regret_tracker or []),
     )
