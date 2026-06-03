@@ -3,48 +3,48 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 down 25% with tiny revenue, ongoing losses, and the weakest performer among your quantum bets, meaning the thesis here is not working and capital is better deployed elsewhere."
+    "text": "RGTI is down 18% and a massive 52% off its high with declining revenue and no profitability \u2014 this thesis is broken, so sell and redeploy the capital somewhere stronger."
   },
   {
-    "id": "KTOS-sell",
+    "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell KTOS \u2014 down 28% despite a perfect macro backdrop for defence spending, which means something company-specific is broken and the market is telling you this name can't execute."
+    "text": "RDW has missed earnings four straight quarters, is burning cash, and has 18% short interest betting against it \u2014 cut this loss at down 24% before it gets worse."
   },
   {
-    "id": "LASR-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LASR \u2014 up 75% on a tiny position, so lock in some of that extraordinary gain now because small-cap defence names can reverse sharply and this run may not last."
+    "text": "QBTS has no profits, 15.5% short interest, and consecutive earnings misses \u2014 trim this speculative position to a size you'd be comfortable losing entirely."
   },
   {
     "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SKYT \u2014 up 63% on a small position, so take partial profits while the domestic semiconductor hype is still strong rather than risk giving back the entire move."
+    "text": "SKYT is up 72% and sitting at its 52-week high but the MACD just turned bearish \u2014 lock in some of that gain by trimming before momentum fades."
   },
   {
-    "id": "PLTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim PLTR \u2014 the valuation is extremely stretched relative to actual revenue and earnings, so reducing your exposure now protects you if the market reprices this name closer to reality."
-  },
-  {
-    "id": "EL-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim EL \u2014 down 17% with weakening fundamentals in China and no clear catalyst for a turnaround, so reduce your exposure before this becomes a deeper value trap."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
+    "id": "MSFT-add",
+    "action_type": "add",
     "priority": "low",
-    "text": "Sell QBTS \u2014 slightly underwater with no meaningful revenue and driven entirely by hype cycles, this is dead money at best and a deeper loss at worst."
+    "text": "Microsoft is down 10% but the MACD has turned bullish and it's back above its 50-day average \u2014 this pullback in a world-class business is a good spot to add shares."
   },
   {
-    "id": "ONDS-sell",
-    "action_type": "sell",
+    "id": "META-add",
+    "action_type": "add",
     "priority": "low",
-    "text": "Sell ONDS \u2014 down 15% as a speculative small-cap with limited liquidity and no demonstrated path to profitability, cut the loss before it grows."
+    "text": "Meta trades at just 16.5 times earnings with 22% revenue growth and strong free cash flow \u2014 that's a rare combination of value and growth worth adding to."
+  },
+  {
+    "id": "LMT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Lockheed Martin is a blue-chip defense name with a reasonable PE of 16 and steady cash flow \u2014 a reliable compounder at a fair price deserves more capital."
+  },
+  {
+    "id": "RTX-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "RTX is down 17% and below its 50-day average, but defense spending tailwinds and solid fundamentals make this dip a buying opportunity for patient investors."
   }
 ]
