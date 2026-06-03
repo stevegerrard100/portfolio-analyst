@@ -3,48 +3,48 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 18% and a massive 52% off its high with declining revenue and no profitability \u2014 this thesis is broken, so sell and redeploy the capital somewhere stronger."
+    "text": "Sell RGTI now \u2014 it's down 52% from its high with shrinking fundamentals, no profits, and no sign of recovery, making this a broken position you should exit to protect what's left."
   },
   {
-    "id": "RDW-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RDW has missed earnings four straight quarters, is burning cash, and has 18% short interest betting against it \u2014 cut this loss at down 24% before it gets worse."
-  },
-  {
-    "id": "QBTS-trim",
+    "id": "ONDS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS has no profits, 15.5% short interest, and consecutive earnings misses \u2014 trim this speculative position to a size you'd be comfortable losing entirely."
+    "text": "Trim ONDS because despite explosive revenue growth, the stock has gotten ahead of itself and the signal says reduce \u2014 lock in some of those gains before momentum fades."
   },
   {
-    "id": "SKYT-trim",
+    "id": "LPTH-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SKYT is up 72% and sitting at its 52-week high but the MACD just turned bearish \u2014 lock in some of that gain by trimming before momentum fades."
+    "text": "Trim LPTH since it's up 49% but carries a PE of 124 with negative cash flow \u2014 that's a fragile setup, so take some profit off the table while you're still ahead."
   },
   {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Microsoft is down 10% but the MACD has turned bullish and it's back above its 50-day average \u2014 this pullback in a world-class business is a good spot to add shares."
+    "id": "LASR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim LASR because the 76% gain is great but a PE of 113 and bearish MACD momentum suggest the easy money has been made \u2014 reduce your exposure before a pullback erases your profits."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Meta trades at just 16.5 times earnings with 22% revenue growth and strong free cash flow \u2014 that's a rare combination of value and growth worth adding to."
+    "text": "Add to META \u2014 at a PE of just 16.5 with 22% revenue growth, consistent earnings beats, and strong cash flow, it's the best value among the mega-cap tech names right now."
   },
   {
     "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Lockheed Martin is a blue-chip defense name with a reasonable PE of 16 and steady cash flow \u2014 a reliable compounder at a fair price deserves more capital."
+    "text": "Add to LMT \u2014 a PE of 16, nearly 6% free cash flow yield, and a steady defense business make Lockheed Martin one of the most reliable positions to build during uncertain times."
+  },
+  {
+    "id": "MSFT-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to MSFT \u2014 at a PE of 23 with 15% revenue growth, bullish momentum turning positive, and a consistent earnings beat streak, Microsoft is a core holding worth building."
   },
   {
     "id": "RTX-add",
     "action_type": "add",
     "priority": "low",
-    "text": "RTX is down 17% and below its 50-day average, but defense spending tailwinds and solid fundamentals make this dip a buying opportunity for patient investors."
+    "text": "Add to RTX \u2014 Raytheon's reasonable PE of 23, steady revenue growth, and strong defense positioning make it a solid buy as defense spending continues to grow globally."
   }
 ]
