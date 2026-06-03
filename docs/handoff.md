@@ -410,8 +410,12 @@ Mid/small-cap high-growth screen. Same five-signal weighted methodology as `brea
 | Score delta | Yes (`score_delta` field) | No (not tracked between runs) |
 | Schema version | 3 | 1 |
 | Failure behaviour | Returns error dict | Non-fatal: `main.py` catches exception, uses empty result |
+| Gate 1 — None stats | Allowed through (`is not None and`) | Excluded (`is None or`) — see below |
+| Gate 1 — profile=None | Silently skipped, uncounted | Counted in `gate1_excluded`, logged at DEBUG |
 
 **Universe fetch (`_fetch_high_growth_universe`):** Calls Finviz via `finvizfinance.screener.overview.Overview` twice — once for `"Small ($300mln to $2bln)"` market cap, once for `"Mid ($2bln to $10bln)"`. Filters: `Average Volume: Over 300K`, `Country: USA`. S&P 500 constituents are removed from the combined result. The raw universe (before portfolio exclusion) is cached to `cache/high_growth_universe.json` for 24 hours so different pipeline runs with different portfolios can share it.
+
+**Gate 1 — None semantics differ from `breakout_screener.py`:** The breakout screener uses `if base_weeks is not None and base_weeks < 6` (allow through when `None` — S&P 500 stocks always have history, so `None` is an edge case). The HG screener uses `if base_weeks is None or base_weeks < 6` — for the mid/small-cap universe, `None` means the stock lacks sufficient listing history to form a valid base, which is a disqualifier. Same inversion applies to `base_depth_pct`. Additionally, `profile is None` (yfinance rate-limit failure or missing data on an individual daily fetch) is counted in `gate1_excluded` and logged at DEBUG level; in the breakout screener it is silently skipped. This prevents the "0 excluded, 0 passed through" log pattern that would otherwise appear when rate-limit failures absorb all daily-fetch slots.
 
 **`earnings_flag` vs `earnings_soon`:** Both fields signal the same thing (Finnhub earningsCalendar event within 21 calendar days). The naming differs to make the two screeners easy to distinguish in template logic. The detection call (`_check_earnings_proximity_finnhub`) is the same function, imported from `breakout_screener.py`.
 
@@ -734,6 +738,14 @@ Both `breakout_screener.py` (`CACHE_SCHEMA_VERSION = 3`) and `screener.py` (`CAC
 The Finnhub earnings gate in `breakout_screener.py` runs **after** all yfinance gates, not before. This is intentional (R1): yfinance gates reduce ~500 tickers to ~25–40 survivors, then Finnhub is called only for those survivors. Reversing the order would burn ~500 Finnhub calls per run against the free-tier 60/min limit.
 
 The gate **annotates** candidates with upcoming earnings (within 21 days) rather than excluding them. Candidates get `earnings_soon=True` and `earnings_date` (YYYY-MM-DD). This is displayed as an amber `⚠ Earnings` badge in the dashboard. All candidates have both fields (defaults: `False` / `None`).
+
+### High-Growth Watch — Gate 1 None Semantics Are Inverted vs Breakout Screener
+
+`breakout_screener.py` gate 1 uses `is not None and condition` — when `base_weeks` or `base_depth_pct` is `None` the candidate is **allowed through**. This is safe for S&P 500 stocks, which always have years of trading history; `None` there indicates a computation edge case rather than a data problem.
+
+`high_growth_screener.py` gate 1 uses `is None or condition` — `None` stats **exclude** the candidate. In the mid/small-cap universe many listings are recent; `None` base stats genuinely mean the stock lacks the history needed to form a valid accumulation base. Allowing those through silently (as the breakout screener does) causes them to pass gate 1 with `gate1_excluded = 0`, fail all five signal checks with `score = 0.0`, and be dropped uncounted — producing a misleading "0 excluded, 0 passed through" log pattern.
+
+`profile is None` (individual yfinance fetch failure — rate-limit or missing data) is also counted in `gate1_excluded` in the HG screener and logged at DEBUG level. In the breakout screener it is silently skipped. Do not change this behaviour when editing the HG screener — silent skips make rate-limit problems invisible in the log.
 
 ### High-Growth Watch — Earnings Candidates Kept and Flagged
 
