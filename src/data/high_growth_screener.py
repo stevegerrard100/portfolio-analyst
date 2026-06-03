@@ -63,7 +63,7 @@ HG_UNIVERSE_CACHE     = CACHE_DIR / "high_growth_universe.json"
 HG_CACHE_HOURS        = 24
 HG_UNIVERSE_CACHE_HOURS = 24
 
-CACHE_SCHEMA_VERSION = 1
+CACHE_SCHEMA_VERSION = 2
 
 
 # ---------------------------------------------------------------------------
@@ -307,6 +307,7 @@ def run_high_growth_screener(
                 "base_weeks":     base_stats["base_weeks"],
                 "base_depth_pct": base_stats["base_depth_pct"],
                 "base_tightness": base_stats["base_tightness"],
+                "base_low":       base_stats.get("base_low"),
                 "s_rs_leading":   s_rs_leading,
                 "s5_pivot_hint":  s5_hint,
                 "initial_score":  initial_score,
@@ -402,6 +403,8 @@ def run_high_growth_screener(
                 "base_weeks":           c.get("base_weeks"),
                 "base_depth_pct":       c.get("base_depth_pct"),
                 "base_tightness":       c.get("base_tightness"),
+                "base_low":             c.get("base_low"),
+                "pivot_price":          c.get("bph"),
                 "technical_reasoning":  _breakout_reasoning(c["current_rs"], signals, vp),
                 "stop_loss":            _calc_stop_loss(profile["price"], profile["atr_14"]),
                 "ohlcv_daily":          profile["ohlcv_daily"],
@@ -501,10 +504,13 @@ def run_high_growth_screener(
             "base_weeks":      c.get("base_weeks"),
             "base_depth_pct":  c.get("base_depth_pct"),
             "base_tightness":  c.get("base_tightness"),
-            "reasoning":       c["technical_reasoning"],
-            "setup_strength":  ai_result.get("setup_strength"),
-            "key_risk":        ai_result.get("key_risk"),
-            "maturity":        ai_result.get("maturity"),
+            "base_low":        c.get("base_low"),
+            "pivot_price":     c.get("pivot_price"),
+            "reasoning":            c["technical_reasoning"],
+            "plain_english_summary": ai_result.get("plain_english_summary"),
+            "setup_strength":       ai_result.get("setup_strength"),
+            "key_risk":             ai_result.get("key_risk"),
+            "maturity":             ai_result.get("maturity"),
             "stop_loss":       c["stop_loss"],
             "ohlcv_daily":     c["ohlcv_daily"],
             "ohlcv_weekly":    c["ohlcv_weekly"],

@@ -1322,6 +1322,13 @@
       rs_leading:          'RS↑Lead',
       pivot_proximity:     'Pivot',
     };
+    const BREAKOUT_SIGNAL_TIPS = {
+      stage_transition:    'Price is above its rising 150-day average and outperforming the market — the stock is in a healthy uptrend',
+      vcp:                 'Volume has been shrinking during the pullback — sellers are losing interest, which often precedes a move higher',
+      volume_accumulation: 'More shares are being bought on up days than sold on down days — quiet accumulation by larger investors',
+      rs_leading:          'Relative strength is near a 52-week high while the price is still below its peak — the stock is leading the market before the breakout',
+      pivot_proximity:     'Price is within striking distance of the level where the last consolidation began — a breakout point',
+    };
 
     // R8: Regime warning banner
     (function() {
@@ -1357,6 +1364,30 @@
         color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
       })));
       inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
+      // SMA 150 and base annotations — daily view only
+      if (!useWeekly) {
+        inst.sma150Series.setData(filterByPeriod(calcSMA(c.ohlcv_daily || [], 150), inst.period));
+        if (inst.baseLowLine) { inst.candleSeries.removePriceLine(inst.baseLowLine); inst.baseLowLine = null; }
+        if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
+        if (c.base_low    != null) {
+          inst.baseLowLine = inst.candleSeries.createPriceLine({
+            price: c.base_low, color: '#3fb950', lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            title: 'Base Low', axisLabelVisible: false,
+          });
+        }
+        if (c.pivot_price != null) {
+          inst.pivotLine = inst.candleSeries.createPriceLine({
+            price: c.pivot_price, color: '#e6ac00', lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            title: 'Pivot / Breakout Level', axisLabelVisible: false,
+          });
+        }
+      } else {
+        inst.sma150Series.setData([]);
+        if (inst.baseLowLine) { inst.candleSeries.removePriceLine(inst.baseLowLine); inst.baseLowLine = null; }
+        if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
+      }
       inst.chart.timeScale().fitContent();
     }
 
@@ -1394,6 +1425,15 @@
         priceLineVisible:   false,
         crosshairMarkerVisible: false,
       });
+      const sma150Series = chart.addLineSeries({
+        color:              '#58a6ff',
+        lineWidth:          1,
+        priceScaleId:       'right',
+        title:              'SMA 150',
+        lastValueVisible:   false,
+        priceLineVisible:   false,
+        crosshairMarkerVisible: false,
+      });
       if (c.stop_loss != null) {
         candleSeries.createPriceLine({
           price: c.stop_loss, color: '#f85149', lineWidth: 1,
@@ -1401,7 +1441,11 @@
           title: `Stop ${Number(c.stop_loss).toFixed(2)}`, axisLabelVisible: true,
         });
       }
-      breakoutChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series, period: '3M', candle: 'daily' };
+      breakoutChartInstances[ticker] = {
+        chart, candleSeries, volSeries, sma50Series, sma150Series,
+        baseLowLine: null, pivotLine: null,
+        period: '3M', candle: 'daily',
+      };
       applyBreakoutChartData(ticker);
     }
 
@@ -1410,9 +1454,10 @@
       const safeId   = 'bk-chart-' + c.ticker.replace(/[^A-Za-z0-9]/g, '_');
       const hasChart = !!(c.ohlcv_daily?.length);
       const rsCol    = `<span style="color:${c.mansfield_rs>=0?'var(--green)':'var(--red)'}">${fmt(c.mansfield_rs,{sign:true})}</span>`;
-      const badges   = (c.signals||[]).map(s =>
-        `<span class="bk-badge">${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`
-      ).join('');
+      const badges   = (c.signals||[]).map(s => {
+        const tip = BREAKOUT_SIGNAL_TIPS[s] ? ` title="${BREAKOUT_SIGNAL_TIPS[s]}"` : '';
+        return `<span class="bk-badge"${tip}>${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`;
+      }).join('');
 
       const hcBadge   = c.high_conviction  ? `<span class="bk-hc-badge">High Conviction</span>` : '';
       const lwBadge   = c.regime_watchlist ? `<span class="bk-lw-badge">Leadership Watch</span>` : '';
@@ -1463,6 +1508,10 @@
         </div>
         <div class="hc-chart" id="${safeId}"></div>` : '';
 
+      // Plain-English summary — most prominent, shown first
+      const plainEnglishHtml = c.plain_english_summary
+        ? `<p style="margin:0 0 10px;font-size:14px;font-weight:600;line-height:1.5;color:var(--text)">${esc(c.plain_english_summary)}</p>`
+        : '';
       // R6.4: structured AI reasoning — fallback to raw reasoning if setup_strength absent (R6.5)
       const primaryReasoning = c.setup_strength
         ? `<p class="s-reasoning">${esc(c.setup_strength)}</p>`
@@ -1480,6 +1529,7 @@
       detailRow.dataset.ticker = c.ticker;
       detailRow.style.display = 'none';
       detailRow.innerHTML = `<td colspan="9"><div class="s-detail-inner">
+        ${plainEnglishHtml}
         ${primaryReasoning}
         ${keyRiskHtml}
         ${maturityHtml}
@@ -1548,6 +1598,30 @@
           color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
         })));
         inst.sma50Series.setData(calcSMA(ohlcv, smaPeriod));
+        // SMA 150 and base annotations — daily view only
+        if (!useWeekly) {
+          inst.sma150Series.setData(filterByPeriod(calcSMA(c.ohlcv_daily || [], 150), inst.period));
+          if (inst.baseLowLine) { inst.candleSeries.removePriceLine(inst.baseLowLine); inst.baseLowLine = null; }
+          if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
+          if (c.base_low    != null) {
+            inst.baseLowLine = inst.candleSeries.createPriceLine({
+              price: c.base_low, color: '#3fb950', lineWidth: 1,
+              lineStyle: LightweightCharts.LineStyle.Dashed,
+              title: 'Base Low', axisLabelVisible: false,
+            });
+          }
+          if (c.pivot_price != null) {
+            inst.pivotLine = inst.candleSeries.createPriceLine({
+              price: c.pivot_price, color: '#e6ac00', lineWidth: 1,
+              lineStyle: LightweightCharts.LineStyle.Dashed,
+              title: 'Pivot / Breakout Level', axisLabelVisible: false,
+            });
+          }
+        } else {
+          inst.sma150Series.setData([]);
+          if (inst.baseLowLine) { inst.candleSeries.removePriceLine(inst.baseLowLine); inst.baseLowLine = null; }
+          if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
+        }
         inst.chart.timeScale().fitContent();
       }
 
@@ -1579,6 +1653,10 @@
           color: '#d29922', lineWidth: 1, priceScaleId: 'right', title: 'SMA50',
           lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false,
         });
+        const sma150Series = chart.addLineSeries({
+          color: '#58a6ff', lineWidth: 1, priceScaleId: 'right', title: 'SMA 150',
+          lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false,
+        });
         if (c.stop_loss != null) {
           candleSeries.createPriceLine({
             price: c.stop_loss, color: '#f85149', lineWidth: 1,
@@ -1586,7 +1664,11 @@
             title: `Stop ${Number(c.stop_loss).toFixed(2)}`, axisLabelVisible: true,
           });
         }
-        hgChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series, period: '3M', candle: 'daily' };
+        hgChartInstances[ticker] = {
+          chart, candleSeries, volSeries, sma50Series, sma150Series,
+          baseLowLine: null, pivotLine: null,
+          period: '3M', candle: 'daily',
+        };
         applyHGChartData(ticker);
       }
 
@@ -1595,9 +1677,10 @@
         const safeId   = 'hg-chart-' + c.ticker.replace(/[^A-Za-z0-9]/g, '_');
         const hasChart = !!(c.ohlcv_daily?.length);
         const rsCol    = `<span style="color:${c.mansfield_rs>=0?'var(--green)':'var(--red)'}">${fmt(c.mansfield_rs,{sign:true})}</span>`;
-        const badges   = (c.signals||[]).map(s =>
-          `<span class="bk-badge">${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`
-        ).join('');
+        const badges   = (c.signals||[]).map(s => {
+          const tip = BREAKOUT_SIGNAL_TIPS[s] ? ` title="${BREAKOUT_SIGNAL_TIPS[s]}"` : '';
+          return `<span class="bk-badge"${tip}>${BREAKOUT_SIGNAL_LABELS[s]||s}</span>`;
+        }).join('');
 
         const hcBadge   = c.high_conviction  ? `<span class="bk-hc-badge">High Conviction</span>` : '';
         const lwBadge   = c.regime_watchlist ? `<span class="bk-lw-badge">Leadership Watch</span>` : '';
@@ -1643,6 +1726,10 @@
           </div>
           <div class="hc-chart" id="${safeId}"></div>` : '';
 
+        // Plain-English summary — most prominent, shown first
+        const plainEnglishHtml = c.plain_english_summary
+          ? `<p style="margin:0 0 10px;font-size:14px;font-weight:600;line-height:1.5;color:var(--text)">${esc(c.plain_english_summary)}</p>`
+          : '';
         const primaryReasoning = c.setup_strength
           ? `<p class="s-reasoning">${esc(c.setup_strength)}</p>`
           : (c.reasoning ? `<p class="s-reasoning">${esc(c.reasoning)}</p>` : '');
@@ -1659,6 +1746,7 @@
         detailRow.dataset.ticker = c.ticker;
         detailRow.style.display = 'none';
         detailRow.innerHTML = `<td colspan="9"><div class="s-detail-inner">
+          ${plainEnglishHtml}
           ${primaryReasoning}
           ${keyRiskHtml}
           ${maturityHtml}

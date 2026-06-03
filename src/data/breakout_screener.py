@@ -56,7 +56,7 @@ BREAKOUT_CACHE_HOURS = 8
 # renamed keys) so stale caches are auto-discarded on the next run.
 # Improvements 2-5 all add fields to the result dict, so start at 3 to ensure
 # caches written before those improvements are invalidated automatically.
-CACHE_SCHEMA_VERSION = 3
+CACHE_SCHEMA_VERSION = 4
 
 
 def _calc_stop_loss(price: float, atr: float | None) -> float | None:
@@ -118,6 +118,7 @@ def _compute_base_stats(weekly_close: pd.Series, bph: float | None) -> dict:
         "base_weeks":     base_weeks,
         "base_depth_pct": base_depth_pct,
         "base_tightness": base_tightness,
+        "base_low":       base_low,
     }
 
 
@@ -523,7 +524,7 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
     """
     Single Claude API call to generate structured reasoning for all breakout candidates.
 
-    Returns {ticker: {"setup_strength": str|None, "key_risk": str|None, "maturity": str|None}}.
+    Returns {ticker: {"plain_english_summary": str|None, "setup_strength": str|None, "key_risk": str|None, "maturity": str|None}}.
     Tickers absent from the result (or with parse failures) will have all three fields as None,
     causing the dashboard to fall back to technical_reasoning (R6.5).
     """
@@ -562,6 +563,12 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
             "For each stock below provide a structured assessment using EXACTLY this format "
             "— no deviations, no extra text between entries:\n\n"
             "###TICKER\n"
+            "PLAIN_ENGLISH: <2-3 sentences in plain, jargon-free language explaining what the "
+            "stock has been doing and why it looks interesting right now. Write as if explaining "
+            "to a friend who has never heard of technical analysis — no ticker symbols, no signal "
+            "names (VCP, stage analysis, etc.), no unexplained jargon. Do mention concrete "
+            "observations like 'trading volume has been shrinking' or 'the stock has been "
+            "holding steady just below its recent high' to give the reader a vivid picture.>\n"
             "SETUP: <1-2 sentences. Explain what specifically makes this setup attractive "
             "by focusing on the interplay between relative strength, base quality, and volume "
             "behaviour. Do not mechanically restate signal names.>\n"
@@ -574,8 +581,8 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
             + "\n\n".join(lines)
         )
 
-        # Cap at model output limit — 280 tokens × N candidates (R6.2)
-        max_tokens = min(_MAX_TOKENS_OUTPUT, 280 * len(candidates))
+        # Cap at model output limit — 400 tokens × N candidates (increased for PLAIN_ENGLISH field)
+        max_tokens = min(_MAX_TOKENS_OUTPUT, 400 * len(candidates))
         client     = anthropic.Anthropic(api_key=api_key)
         msg        = client.messages.create(
             model="claude-sonnet-4-6",
@@ -593,6 +600,9 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
             ticker = parts[i].strip()
             block  = parts[i + 1]
             try:
+                plain_m = re.search(
+                    r"PLAIN_ENGLISH:\s*(.+?)(?=\nSETUP:|\nRISK:|\nMATURITY:|\Z)", block, re.DOTALL
+                )
                 setup_m = re.search(
                     r"SETUP:\s*(.+?)(?=\nRISK:|\nMATURITY:|\Z)", block, re.DOTALL
                 )
@@ -603,12 +613,18 @@ def _batch_enrich_reasoning_via_ai(candidates: list[dict]) -> dict[str, dict]:
                     r"MATURITY:\s*(Early|Developing|Extended)", block, re.IGNORECASE
                 )
                 result[ticker] = {
-                    "setup_strength": setup_m.group(1).strip() if setup_m else None,
-                    "key_risk":       risk_m.group(1).strip()  if risk_m  else None,
-                    "maturity":       mat_m.group(1).strip().capitalize() if mat_m else None,
+                    "plain_english_summary": plain_m.group(1).strip() if plain_m else None,
+                    "setup_strength":        setup_m.group(1).strip() if setup_m else None,
+                    "key_risk":              risk_m.group(1).strip()  if risk_m  else None,
+                    "maturity":              mat_m.group(1).strip().capitalize() if mat_m else None,
                 }
             except Exception:
-                result[ticker] = {"setup_strength": None, "key_risk": None, "maturity": None}
+                result[ticker] = {
+                    "plain_english_summary": None,
+                    "setup_strength":        None,
+                    "key_risk":              None,
+                    "maturity":              None,
+                }
             i += 2
 
         enriched = sum(1 for v in result.values() if v.get("setup_strength"))
@@ -852,6 +868,7 @@ def run_breakout_screener(
                 "base_weeks":     base_stats["base_weeks"],
                 "base_depth_pct": base_stats["base_depth_pct"],
                 "base_tightness": base_stats["base_tightness"],
+                "base_low":       base_stats.get("base_low"),
                 "s_rs_leading":   s_rs_leading,
                 "s5_pivot_hint":  s5_hint,
                 "initial_score":  initial_score,
@@ -943,6 +960,8 @@ def run_breakout_screener(
                 "base_weeks":           c.get("base_weeks"),
                 "base_depth_pct":       c.get("base_depth_pct"),
                 "base_tightness":       c.get("base_tightness"),
+                "base_low":             c.get("base_low"),
+                "pivot_price":          c.get("bph"),
                 "technical_reasoning":  _breakout_reasoning(c["current_rs"], signals, vp),
                 "stop_loss":            _calc_stop_loss(profile["price"], profile["atr_14"]),
                 "ohlcv_daily":          profile["ohlcv_daily"],
@@ -1048,11 +1067,14 @@ def run_breakout_screener(
             "base_weeks":      c.get("base_weeks"),
             "base_depth_pct":  c.get("base_depth_pct"),
             "base_tightness":  c.get("base_tightness"),
+            "base_low":        c.get("base_low"),
+            "pivot_price":     c.get("pivot_price"),
             # R6.3: structured AI fields; reasoning is the plain-text fallback (R6.5)
-            "reasoning":       c["technical_reasoning"],
-            "setup_strength":  ai_result.get("setup_strength"),
-            "key_risk":        ai_result.get("key_risk"),
-            "maturity":        ai_result.get("maturity"),
+            "reasoning":            c["technical_reasoning"],
+            "plain_english_summary": ai_result.get("plain_english_summary"),
+            "setup_strength":       ai_result.get("setup_strength"),
+            "key_risk":             ai_result.get("key_risk"),
+            "maturity":             ai_result.get("maturity"),
             "stop_loss":       c["stop_loss"],
             "ohlcv_daily":     c["ohlcv_daily"],
             "ohlcv_weekly":    c["ohlcv_weekly"],
