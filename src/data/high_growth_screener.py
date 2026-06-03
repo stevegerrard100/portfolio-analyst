@@ -332,17 +332,41 @@ def run_high_growth_screener(
         try:
             profile = _breakout_profile(ticker)
             if profile is None:
+                # Counts as a gate 1 exclusion — no data = no valid setup.
+                # Unlike the breakout screener (S&P 500 stocks always have history),
+                # the HG universe includes newer listings where a failed download
+                # means the stock genuinely lacks the history needed for scoring.
+                log.debug("Gate 1 fail: %s — daily profile unavailable (rate limit or missing data)", ticker)
+                gate1_excluded += 1
                 continue
 
+            # Gate 1: minimum base quality.
+            # NOTE: unlike breakout_screener.py, None here means the stock lacks
+            # sufficient listing history to form a valid base — that is a disqualifier,
+            # not an edge case to allow through.  We use `is None or` (not `is not None and`)
+            # so that missing stats exclude the candidate rather than passing it silently
+            # through to a score-0 dead end.
             base_weeks     = c.get("base_weeks")
             base_depth_pct = c.get("base_depth_pct")
-            if base_weeks is not None and base_weeks < 6:
+            if base_weeks is None or base_weeks < 6:
+                log.debug(
+                    "Gate 1 fail: %s — base_weeks=%s < 6 or missing (insufficient base length)",
+                    ticker, base_weeks,
+                )
                 gate1_excluded += 1
                 continue
-            if base_depth_pct is not None and base_depth_pct < 10.0:
+            if base_depth_pct is None or base_depth_pct < 10.0:
+                log.debug(
+                    "Gate 1 fail: %s — base_depth_pct=%s < 10%% or missing (too shallow or no data)",
+                    ticker, base_depth_pct,
+                )
                 gate1_excluded += 1
                 continue
-            if base_depth_pct is not None and base_depth_pct > 55.0:
+            if base_depth_pct > 55.0:
+                log.debug(
+                    "Gate 1 fail: %s — base_depth_pct=%.1f%% > 55%% (too deep, likely distribution)",
+                    ticker, base_depth_pct,
+                )
                 gate1_excluded += 1
                 continue
 
@@ -391,7 +415,8 @@ def run_high_growth_screener(
             continue
 
     log.info(
-        "High-growth gate 1: %d excluded (base too short/shallow/deep)", gate1_excluded
+        "High-growth gate 1: %d excluded (missing data, base too short/shallow/deep)",
+        gate1_excluded,
     )
     log.info("High-growth pre-candidates after daily gates: %d", len(pre_candidates))
 

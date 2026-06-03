@@ -1,50 +1,50 @@
 [
   {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "SGLP.L is essentially dead money \u2014 sitting 99% off its 52-week high with a relative strength near rock bottom, meaning almost everything else in the market is outperforming it, so it's time to exit and free up that capital."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI's revenue is shrinking by 34%, the company is deeply unprofitable, short interest is high at 15%, and it's sitting 52% below its peak \u2014 this isn't a dip worth holding through, cut the loss now."
+    "text": "Sell RGTI \u2014 down 25% with tiny revenue, ongoing losses, and the weakest performer among your quantum bets, meaning the thesis here is not working and capital is better deployed elsewhere."
   },
   {
-    "id": "RDW-trim",
+    "id": "KTOS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell KTOS \u2014 down 28% despite a perfect macro backdrop for defence spending, which means something company-specific is broken and the market is telling you this name can't execute."
+  },
+  {
+    "id": "LASR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "RDW is down 23% with negative earnings, negative cash flow, 18% short interest, and four straight earnings misses \u2014 reduce your exposure here because the fundamentals keep deteriorating with no sign of a turnaround."
+    "text": "Trim LASR \u2014 up 75% on a tiny position, so lock in some of that extraordinary gain now because small-cap defence names can reverse sharply and this run may not last."
   },
   {
     "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SKYT is up 72% and sitting at its 52-week high, but momentum just turned bearish on MACD and the company is deeply unprofitable \u2014 consider locking in some of that impressive gain before the pullback takes it away."
+    "text": "Trim SKYT \u2014 up 63% on a small position, so take partial profits while the domestic semiconductor hype is still strong rather than risk giving back the entire move."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Meta at a PE of just 16.5 with 22% revenue growth and a streak of earnings beats makes it arguably the cheapest mega-cap tech name out there \u2014 adding here on strength makes sense."
+    "id": "PLTR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim PLTR \u2014 the valuation is extremely stretched relative to actual revenue and earnings, so reducing your exposure now protects you if the market reprices this name closer to reality."
   },
   {
-    "id": "LMT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Lockheed Martin's PE of 16, steady revenue growth, strong 5.8% free cash flow yield, and low short interest make it a reliable defense holding worth building up during a supportive rate-easing environment."
+    "id": "EL-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim EL \u2014 down 17% with weakening fundamentals in China and no clear catalyst for a turnaround, so reduce your exposure before this becomes a deeper value trap."
   },
   {
-    "id": "MSFT-add",
-    "action_type": "add",
+    "id": "QBTS-sell",
+    "action_type": "sell",
     "priority": "low",
-    "text": "Microsoft at a PE of 23 with 15% revenue growth, consistent earnings beats, and MACD turning bullish is showing fresh upward momentum in a rock-solid business \u2014 a good spot to add shares."
+    "text": "Sell QBTS \u2014 slightly underwater with no meaningful revenue and driven entirely by hype cycles, this is dead money at best and a deeper loss at worst."
   },
   {
-    "id": "RTX-add",
-    "action_type": "add",
+    "id": "ONDS-sell",
+    "action_type": "sell",
     "priority": "low",
-    "text": "RTX trades at a reasonable PE of 23 with solid revenue growth and positive free cash flow in a defense sector that continues to benefit from rising global spending \u2014 worth adding to your position."
+    "text": "Sell ONDS \u2014 down 15% as a speculative small-cap with limited liquidity and no demonstrated path to profitability, cut the loss before it grows."
   }
 ]
