@@ -1371,16 +1371,16 @@
         if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
         if (c.base_low    != null) {
           inst.baseLowLine = inst.candleSeries.createPriceLine({
-            price: c.base_low, color: '#3fb950', lineWidth: 1,
+            price: c.base_low, color: '#ef4444', lineWidth: 1,
             lineStyle: LightweightCharts.LineStyle.Dashed,
-            title: 'Base Low', axisLabelVisible: false,
+            title: 'Invalidation Level', axisLabelVisible: false,
           });
         }
         if (c.pivot_price != null) {
           inst.pivotLine = inst.candleSeries.createPriceLine({
-            price: c.pivot_price, color: '#e6ac00', lineWidth: 1,
+            price: c.pivot_price, color: '#22c55e', lineWidth: 1,
             lineStyle: LightweightCharts.LineStyle.Dashed,
-            title: 'Pivot / Breakout Level', axisLabelVisible: false,
+            title: 'Breakout Entry', axisLabelVisible: false,
           });
         }
       } else {
@@ -1605,16 +1605,16 @@
           if (inst.pivotLine)   { inst.candleSeries.removePriceLine(inst.pivotLine);   inst.pivotLine   = null; }
           if (c.base_low    != null) {
             inst.baseLowLine = inst.candleSeries.createPriceLine({
-              price: c.base_low, color: '#3fb950', lineWidth: 1,
+              price: c.base_low, color: '#ef4444', lineWidth: 1,
               lineStyle: LightweightCharts.LineStyle.Dashed,
-              title: 'Base Low', axisLabelVisible: false,
+              title: 'Invalidation Level', axisLabelVisible: false,
             });
           }
           if (c.pivot_price != null) {
             inst.pivotLine = inst.candleSeries.createPriceLine({
-              price: c.pivot_price, color: '#e6ac00', lineWidth: 1,
+              price: c.pivot_price, color: '#22c55e', lineWidth: 1,
               lineStyle: LightweightCharts.LineStyle.Dashed,
-              title: 'Pivot / Breakout Level', axisLabelVisible: false,
+              title: 'Breakout Entry', axisLabelVisible: false,
             });
           }
         } else {
