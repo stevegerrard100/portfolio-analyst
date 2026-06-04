@@ -1058,13 +1058,15 @@
         crosshairMarkerVisible: false,
       });
 
-      if (h.stop_loss != null) {
+      // Use stored_stop (ratcheted level) when available, same as the Stop column display
+      const stopForChart = h.stored_stop != null ? h.stored_stop : h.stop_loss;
+      if (stopForChart != null) {
         candleSeries.createPriceLine({
-          price:            h.stop_loss,
+          price:            stopForChart,
           color:            '#f85149',
           lineWidth:        1,
           lineStyle:        LightweightCharts.LineStyle.Dashed,
-          title:            `Stop ${Number(h.stop_loss).toFixed(2)}`,
+          title:            `Stop ${Number(stopForChart).toFixed(2)}`,
           axisLabelVisible: true,
         });
       }
