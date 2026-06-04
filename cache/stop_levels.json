@@ -1,1 +1,118 @@
-{}
+{
+  "SGLP.L": {
+    "level": 26303.1688,
+    "prev_level": null
+  },
+  "SKYT": {
+    "level": 32.2052,
+    "prev_level": null
+  },
+  "ONDS": {
+    "level": 9.4961,
+    "prev_level": null
+  },
+  "GDX.L": {
+    "level": 89.5522,
+    "prev_level": null
+  },
+  "RTX": {
+    "level": 168.3116,
+    "prev_level": null
+  },
+  "LMT": {
+    "level": 462.904,
+    "prev_level": null
+  },
+  "COPG.L": {
+    "level": 46.9805,
+    "prev_level": null
+  },
+  "QBTS": {
+    "level": 19.2476,
+    "prev_level": null
+  },
+  "MU": {
+    "level": 577.361,
+    "prev_level": null
+  },
+  "LPTH": {
+    "level": 12.4944,
+    "prev_level": null
+  },
+  "AMD": {
+    "level": 340.2417,
+    "prev_level": null
+  },
+  "NOW": {
+    "level": 95.0365,
+    "prev_level": null
+  },
+  "CEG": {
+    "level": 226.424,
+    "prev_level": null
+  },
+  "KTOS": {
+    "level": 49.9972,
+    "prev_level": null
+  },
+  "COHR": {
+    "level": 316.0553,
+    "prev_level": null
+  },
+  "GDXJ.L": {
+    "level": 96.0204,
+    "prev_level": null
+  },
+  "KO": {
+    "level": 71.8882,
+    "prev_level": null
+  },
+  "LASR": {
+    "level": 67.3385,
+    "prev_level": null
+  },
+  "IONQ": {
+    "level": 44.0714,
+    "prev_level": null
+  },
+  "RGTI": {
+    "level": 17.273,
+    "prev_level": null
+  },
+  "SILG.L": {
+    "level": 28.1591,
+    "prev_level": null
+  },
+  "GEV": {
+    "level": 600.2891,
+    "prev_level": null
+  },
+  "MSFT": {
+    "level": 400.3864,
+    "prev_level": null
+  },
+  "AMZN": {
+    "level": 228.5562,
+    "prev_level": null
+  },
+  "GOOGL": {
+    "level": 297.8978,
+    "prev_level": null
+  },
+  "META": {
+    "level": 516.9596,
+    "prev_level": null
+  },
+  "AAPL": {
+    "level": 261.4186,
+    "prev_level": null
+  },
+  "TSLA": {
+    "level": 387.7931,
+    "prev_level": null
+  },
+  "NVDA": {
+    "level": 198.8819,
+    "prev_level": null
+  }
+}

@@ -1,50 +1,44 @@
 [
   {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L now \u2014 it's lost 99.2% from its high with the worst possible relative strength score, which means this investment is essentially destroyed and holding further just risks losing what little remains."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 you're down 26%, it's 57% off its high, revenue is actually shrinking, the company is unprofitable, and there's no sign of a turnaround, so this thesis is broken."
+    "text": "RGTI is down 26% and 57% off its high with shrinking revenue and deep losses \u2014 this thesis is broken and the position should be closed before further damage."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim IONQ to lock in some of your 29% gain \u2014 it's unprofitable with nearly 20% short interest (meaning a lot of traders are betting against it), and quantum computing stocks remain highly speculative."
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "QBTS is 38% off its high with negative cash flow and repeated earnings misses \u2014 quantum computing speculation isn't paying off and it's time to cut this loss."
   },
   {
-    "id": "LPTH-trim",
+    "id": "SKYT-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LPTH to protect your 38.5% gain \u2014 a PE of 120 with negative free cash flow and four straight earnings misses means this stock is priced for perfection but delivering disappointment."
+    "text": "SKYT is up 64% and near its 52-week high but MACD just turned bearish \u2014 consider locking in some of that profit before momentum fades."
   },
   {
     "id": "LASR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LASR to bank some of your 70% profit \u2014 a tiny company trading at 113 times earnings with negative free cash flow can give back gains very quickly if sentiment shifts."
+    "text": "LASR is up 72.5% but trades at a PE of 111 on a tiny \u00a3246 position \u2014 take some profit off the table since a stock this expensive can reverse quickly."
   },
   {
-    "id": "COHR-raise_stop",
-    "action_type": "raise_stop",
+    "id": "IONQ-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your COHR stop from $295.92 to $313.89 to lock in more profit as the stock trends higher \u2014 this tightens your safety net by about 6%."
+    "text": "IONQ is deeply unprofitable with no clear path to earnings, and quantum computing stocks are getting punished broadly \u2014 trim to reduce your exposure to this speculative theme."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Microsoft while it's 21% off its high at a PE of 22 (cheap for Microsoft) with its momentum indicator turning positive \u2014 this is a rare chance to buy a best-in-class company on sale."
+    "text": "Microsoft is 20% off its high which is rare for a company growing revenue 15% with strong free cash flow \u2014 this pullback in a best-in-class name is worth adding to."
   },
   {
     "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Lockheed Martin \u2014 at just 16 times earnings with steady revenue growth and a healthy 5.8% free cash flow yield (cash the business generates relative to its price), it's a reliable compounder in a strong defence spending environment."
+    "text": "Lockheed Martin at a PE of 16.2 with solid cash flow and steady growth is a good value in a defensive name \u2014 worth building this position while it's reasonably priced."
   }
 ]
