@@ -1,50 +1,50 @@
 [
   {
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell SGLP.L now \u2014 it's lost 99.2% from its high with the worst possible relative strength score, which means this investment is essentially destroyed and holding further just risks losing what little remains."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 52% from its high with shrinking fundamentals, no profits, and no sign of recovery, making this a broken position you should exit to protect what's left."
+    "text": "Sell RGTI \u2014 you're down 26%, it's 57% off its high, revenue is actually shrinking, the company is unprofitable, and there's no sign of a turnaround, so this thesis is broken."
   },
   {
-    "id": "ONDS-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim ONDS because despite explosive revenue growth, the stock has gotten ahead of itself and the signal says reduce \u2014 lock in some of those gains before momentum fades."
+    "text": "Trim IONQ to lock in some of your 29% gain \u2014 it's unprofitable with nearly 20% short interest (meaning a lot of traders are betting against it), and quantum computing stocks remain highly speculative."
   },
   {
     "id": "LPTH-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LPTH since it's up 49% but carries a PE of 124 with negative cash flow \u2014 that's a fragile setup, so take some profit off the table while you're still ahead."
+    "text": "Trim LPTH to protect your 38.5% gain \u2014 a PE of 120 with negative free cash flow and four straight earnings misses means this stock is priced for perfection but delivering disappointment."
   },
   {
     "id": "LASR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LASR because the 76% gain is great but a PE of 113 and bearish MACD momentum suggest the easy money has been made \u2014 reduce your exposure before a pullback erases your profits."
+    "text": "Trim LASR to bank some of your 70% profit \u2014 a tiny company trading at 113 times earnings with negative free cash flow can give back gains very quickly if sentiment shifts."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to META \u2014 at a PE of just 16.5 with 22% revenue growth, consistent earnings beats, and strong cash flow, it's the best value among the mega-cap tech names right now."
-  },
-  {
-    "id": "LMT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to LMT \u2014 a PE of 16, nearly 6% free cash flow yield, and a steady defense business make Lockheed Martin one of the most reliable positions to build during uncertain times."
+    "id": "COHR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your COHR stop from $295.92 to $313.89 to lock in more profit as the stock trends higher \u2014 this tightens your safety net by about 6%."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to MSFT \u2014 at a PE of 23 with 15% revenue growth, bullish momentum turning positive, and a consistent earnings beat streak, Microsoft is a core holding worth building."
+    "text": "Consider adding to Microsoft while it's 21% off its high at a PE of 22 (cheap for Microsoft) with its momentum indicator turning positive \u2014 this is a rare chance to buy a best-in-class company on sale."
   },
   {
-    "id": "RTX-add",
+    "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to RTX \u2014 Raytheon's reasonable PE of 23, steady revenue growth, and strong defense positioning make it a solid buy as defense spending continues to grow globally."
+    "text": "Consider adding to Lockheed Martin \u2014 at just 16 times earnings with steady revenue growth and a healthy 5.8% free cash flow yield (cash the business generates relative to its price), it's a reliable compounder in a strong defence spending environment."
   }
 ]
