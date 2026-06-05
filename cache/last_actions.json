@@ -1,44 +1,50 @@
 [
   {
-    "id": "RGTI-sell",
+    "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 26% and 57% off its high with shrinking revenue and deep losses \u2014 this thesis is broken and the position should be closed before further damage."
+    "text": "Sell SGLP.L now \u2014 it's nearly 100% off its 52-week high with rock-bottom relative strength, meaning this position is essentially broken and there's no reason to hold on hoping for a recovery."
   },
   {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "QBTS is 38% off its high with negative cash flow and repeated earnings misses \u2014 quantum computing speculation isn't paying off and it's time to cut this loss."
-  },
-  {
-    "id": "SKYT-trim",
+    "id": "RGTI-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SKYT is up 64% and near its 52-week high but MACD just turned bearish \u2014 consider locking in some of that profit before momentum fades."
+    "text": "Trim RGTI because you're down 27% in a stock with shrinking revenue, deep losses, and 15% short interest \u2014 this is the weakest holding in your portfolio and the thesis isn't working."
+  },
+  {
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim QBTS since it's deeply unprofitable with repeated earnings misses and 15.5% short interest, meaning a lot of professional money is betting against it \u2014 reduce your exposure before the crowd gets louder."
   },
   {
     "id": "LASR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "LASR is up 72.5% but trades at a PE of 111 on a tiny \u00a3246 position \u2014 take some profit off the table since a stock this expensive can reverse quickly."
+    "text": "Trim LASR to lock in some of that 69% gain \u2014 with a PE of 111, tiny free cash flow, and only \u00a3240 in the position, it makes sense to take profits on a stock this speculative."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "IONQ is deeply unprofitable with no clear path to earnings, and quantum computing stocks are getting punished broadly \u2014 trim to reduce your exposure to this speculative theme."
+    "id": "NVDA-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to NVDA \u2014 a PE of 17 with 65% revenue growth makes this arguably the best value in your portfolio, and the AI chip leader deserves a larger position at these prices."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to META \u2014 at a PE of just 17 with 22% revenue growth and a consistent earnings beat streak, it's one of the cheapest big tech names you can own right now."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Microsoft is 20% off its high which is rare for a company growing revenue 15% with strong free cash flow \u2014 this pullback in a best-in-class name is worth adding to."
+    "text": "Add to MSFT while it's down 12% \u2014 a PE of 22 for a company growing revenue 15% with strong free cash flow is a rare discount on one of the highest-quality businesses in the world."
   },
   {
     "id": "LMT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Lockheed Martin at a PE of 16.2 with solid cash flow and steady growth is a good value in a defensive name \u2014 worth building this position while it's reasonably priced."
+    "text": "Add to LMT \u2014 a PE of 16 with nearly 6% free cash flow yield makes Lockheed Martin attractively valued as a steady defense blue chip in an uncertain world."
   }
 ]
