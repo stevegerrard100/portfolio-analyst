@@ -1815,19 +1815,109 @@
         document.getElementById('regret-empty').style.display = 'block';
         return;
       }
-      document.getElementById('regret-body').innerHTML = entries.map(e => {
-        const pct    = e.pct_diff;
-        const cls    = pct > 0 ? 'neg' : (pct < 0 ? 'pos' : '');
-        const sign   = pct > 0 ? '+' : '';
-        return `<tr>
+
+      const regretChartInstances = {};
+
+      function createRegretChart(ticker, cell) {
+        const e = entries.find(x => x.ticker === ticker);
+        if (!e?.ohlcv_daily?.length) return;
+        const safeId    = 'rgt-chart-' + ticker.replace(/[^A-Za-z0-9]/g, '_');
+        const container = cell.querySelector('#' + safeId);
+        if (!container) return;
+
+        const chart = LightweightCharts.createChart(container, {
+          autoSize: true,
+          layout:   { background: { color: '#0d1117' }, textColor: '#8b949e', fontSize: 11 },
+          grid:     { vertLines: { color: '#1c2128' }, horzLines: { color: '#1c2128' } },
+          crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
+          leftPriceScale:  { visible: false },
+          rightPriceScale: { borderColor: '#30363d', scaleMargins: { top: 0.08, bottom: 0.05 } },
+          timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
+          handleScroll: true, handleScale: true,
+        });
+        const candleSeries = chart.addCandlestickSeries({
+          upColor: '#3fb950', downColor: '#f85149',
+          borderUpColor: '#3fb950', borderDownColor: '#f85149',
+          wickUpColor: '#3fb950', wickDownColor: '#f85149',
+          priceScaleId: 'right',
+        });
+        const volSeries = chart.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol' });
+        chart.priceScale('vol').applyOptions({ scaleMargins: { top: 0.85, bottom: 0 }, visible: false });
+        const sma50Series = chart.addLineSeries({
+          color: '#d29922', lineWidth: 1, priceScaleId: 'right', title: 'SMA50',
+          lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false,
+        });
+
+        const ohlcv = e.ohlcv_daily;
+        candleSeries.setData(ohlcv);
+        volSeries.setData(ohlcv.map(d => ({
+          time: d.time, value: d.volume,
+          color: d.close >= d.open ? '#1a3a1f88' : '#2e0b0b88',
+        })));
+        sma50Series.setData(calcSMA(ohlcv, 50));
+
+        if (e.sell_price != null) {
+          candleSeries.createPriceLine({
+            price: e.sell_price, color: '#f85149', lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            title: `Sold ${Number(e.sell_price).toFixed(2)}`, axisLabelVisible: true,
+          });
+        }
+
+        chart.timeScale().fitContent();
+        regretChartInstances[ticker] = { chart, candleSeries, volSeries, sma50Series };
+      }
+
+      const rgbody = document.getElementById('regret-body');
+      entries.forEach(e => {
+        const pct      = e.pct_diff;
+        const cls      = pct > 0 ? 'neg' : (pct < 0 ? 'pos' : '');
+        const sign     = pct > 0 ? '+' : '';
+        const hasChart = !!(e.ohlcv_daily?.length);
+        const safeId   = 'rgt-chart-' + e.ticker.replace(/[^A-Za-z0-9]/g, '_');
+
+        const mainRow = document.createElement('tr');
+        mainRow.className = 's-row';
+        if (!hasChart) mainRow.style.cursor = 'default';
+        mainRow.dataset.ticker = e.ticker;
+        mainRow.innerHTML = `
           <td style="font-family:var(--mono);font-weight:700;font-size:12px">${esc(e.ticker)}</td>
           <td style="color:var(--muted);font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.company_name || e.ticker)}</td>
           <td style="font-size:12px;color:var(--muted)">${esc(e.sell_date)}</td>
           <td style="font-family:var(--mono);font-size:12px">${Number(e.sell_price).toFixed(2)}</td>
           <td style="font-family:var(--mono);font-size:12px">${Number(e.current_price).toFixed(2)}</td>
           <td class="${cls}" style="font-weight:700;font-size:13px">${sign}${Number(e.pct_diff).toFixed(1)}%</td>
-        </tr>`;
-      }).join('');
+        `;
+
+        rgbody.appendChild(mainRow);
+
+        if (!hasChart) return;
+
+        const detailRow = document.createElement('tr');
+        detailRow.className = 's-detail';
+        detailRow.dataset.ticker = e.ticker;
+        detailRow.style.display = 'none';
+        detailRow.innerHTML = `<td colspan="6"><div class="s-detail-inner">
+          <div class="hc-chart" id="${safeId}"></div>
+        </div></td>`;
+        rgbody.appendChild(detailRow);
+
+        mainRow.addEventListener('click', () => {
+          const isOpen = detailRow.style.display !== 'none';
+          detailRow.style.display = isOpen ? 'none' : '';
+          if (!isOpen) {
+            if (!regretChartInstances[e.ticker]) {
+              const cell = detailRow.querySelector('td');
+              setTimeout(() => createRegretChart(e.ticker, cell), 30);
+            } else {
+              regretChartInstances[e.ticker].chart.timeScale().fitContent();
+            }
+          }
+        });
+      });
+
+      // Expose instances so switchTab can fit them on tab activation
+      window._regretChartInstances = regretChartInstances;
     })();
 
     // ── Tab switching ─────────────────────────────────────────────────────────
@@ -1845,6 +1935,9 @@
         Object.values(screenerChartInstances).forEach(i => i.chart.timeScale().fitContent());
         Object.values(breakoutChartInstances).forEach(i => i.chart.timeScale().fitContent());
         Object.values(window._hgChartInstances || {}).forEach(i => i.chart.timeScale().fitContent());
+      });
+      if (tabId === 'regret') requestAnimationFrame(() => {
+        Object.values(window._regretChartInstances || {}).forEach(i => i.chart.timeScale().fitContent());
       });
     }
 

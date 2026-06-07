@@ -536,7 +536,14 @@ def render_dashboard(
         "dismiss_url":          os.environ.get("NETLIFY_DISMISS_URL", ""),
     }
 
-    data["regret_tracker"] = regret_tracker or []
+    _mkt = market_data or {}
+    data["regret_tracker"] = [
+        {
+            **entry,
+            "ohlcv_daily": (_mkt.get(entry.get("ticker", "")) or {}).get("ohlcv_daily"),
+        }
+        for entry in (regret_tracker or [])
+    ]
 
     template = _TEMPLATE.read_text(encoding="utf-8")
     html = template.replace("{{DASHBOARD_DATA}}", json.dumps(data, indent=2, ensure_ascii=False))
