@@ -1,50 +1,44 @@
 [
   {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell RGTI now \u2014 down 36.5% with revenue shrinking 34%, negative earnings, negative free cash flow, and 25% short interest, this is a broken position with no fundamental support to justify holding."
+  },
+  {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L now \u2014 it's nearly 100% off its 52-week high with rock-bottom relative strength, meaning this position is essentially broken and there's no reason to hold on hoping for a recovery."
+    "text": "Sell SGLP.L \u2014 down nearly 15% with rock-bottom relative strength and a 99% drop from its 52-week high, this commodity holding's thesis has completely failed."
   },
   {
-    "id": "RGTI-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim RGTI because you're down 27% in a stock with shrinking revenue, deep losses, and 15% short interest \u2014 this is the weakest holding in your portfolio and the thesis isn't working."
+    "text": "Trim IONQ to reduce your exposure \u2014 negative earnings, negative free cash flow, 20% short interest, and speculative quantum computing fundamentals make this too risky at current sizing."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS since it's deeply unprofitable with repeated earnings misses and 15.5% short interest, meaning a lot of professional money is betting against it \u2014 reduce your exposure before the crowd gets louder."
+    "text": "Trim QBTS \u2014 down 21% with a 47% drop from highs, negative earnings, negative free cash flow, and 15.5% short interest all point to deteriorating risk/reward that warrants a smaller position."
   },
   {
-    "id": "LASR-trim",
+    "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim LASR to lock in some of that 69% gain \u2014 with a PE of 111, tiny free cash flow, and only \u00a3240 in the position, it makes sense to take profits on a stock this speculative."
-  },
-  {
-    "id": "NVDA-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to NVDA \u2014 a PE of 17 with 65% revenue growth makes this arguably the best value in your portfolio, and the AI chip leader deserves a larger position at these prices."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to META \u2014 at a PE of just 17 with 22% revenue growth and a consistent earnings beat streak, it's one of the cheapest big tech names you can own right now."
+    "text": "Trim KTOS \u2014 down 24.5% and 55% from highs with an expensive PE of 54.5, high short interest, and no dividend, the risk here outweighs the defense sector appeal right now."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to MSFT while it's down 12% \u2014 a PE of 22 for a company growing revenue 15% with strong free cash flow is a rare discount on one of the highest-quality businesses in the world."
+    "text": "Add to MSFT on this pullback \u2014 a 14% decline in a company growing revenue at 15% with strong free cash flow is a rare opportunity to build a position in one of the highest-quality names in the market."
   },
   {
-    "id": "LMT-add",
+    "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to LMT \u2014 a PE of 16 with nearly 6% free cash flow yield makes Lockheed Martin attractively valued as a steady defense blue chip in an uncertain world."
+    "text": "Add to NOW \u2014 ServiceNow is down 16.5% and 46% off highs, which is an oversized punishment for a company with strong growth, making this pullback an attractive entry point to increase your position."
   }
 ]
