@@ -1,44 +1,44 @@
 [
   {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell RGTI now \u2014 down 36.5% with revenue shrinking 34%, negative earnings, negative free cash flow, and 25% short interest, this is a broken position with no fundamental support to justify holding."
-  },
-  {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L \u2014 down nearly 15% with rock-bottom relative strength and a 99% drop from its 52-week high, this commodity holding's thesis has completely failed."
+    "text": "SGLP.L has lost nearly 99% from its high with a relative strength score of -98.9 \u2014 this position is effectively destroyed and should be sold immediately to free up whatever capital remains."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim IONQ to reduce your exposure \u2014 negative earnings, negative free cash flow, 20% short interest, and speculative quantum computing fundamentals make this too risky at current sizing."
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "RGTI is down 36.5% and 63% off its high with shrinking revenue of -34%, a PE of -101, and no path to profitability visible \u2014 sell now before more capital evaporates."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 down 21% with a 47% drop from highs, negative earnings, negative free cash flow, and 15.5% short interest all point to deteriorating risk/reward that warrants a smaller position."
+    "text": "QBTS is down 21.6% with negative earnings, negative cash flow, and 15.5% short interest meaning professionals are betting against it \u2014 trim your exposure to limit further downside risk."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IONQ has no earnings, no free cash flow, and nearly 20% short interest \u2014 despite a small recent bounce, the risk profile is too high to hold a full position so trim it back."
   },
   {
     "id": "KTOS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim KTOS \u2014 down 24.5% and 55% from highs with an expensive PE of 54.5, high short interest, and no dividend, the risk here outweighs the defense sector appeal right now."
+    "text": "KTOS is down 24.5% and 55% off its high with an expensive PE of 54.5 and bearish technicals across the board \u2014 reduce your position size until the trend stabilizes."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to MSFT on this pullback \u2014 a 14% decline in a company growing revenue at 15% with strong free cash flow is a rare opportunity to build a position in one of the highest-quality names in the market."
+    "text": "MSFT is one of the highest-quality companies in the world and being 22.6% off its highs is a rare discount \u2014 consider adding to your position while it's pulled back like this."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to NOW \u2014 ServiceNow is down 16.5% and 46% off highs, which is an oversized punishment for a company with strong growth, making this pullback an attractive entry point to increase your position."
+    "text": "NOW has excellent fundamentals with 21% revenue growth and is nearly 46% off its high \u2014 this kind of pullback in a proven grower is worth adding to if you have a long time horizon."
   }
 ]
