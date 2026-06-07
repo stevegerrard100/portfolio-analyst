@@ -52,6 +52,10 @@ class T212AuthError(Exception):
     """401 from T212 — credentials need to be regenerated."""
 
 
+class T212RateLimitError(Exception):
+    """429 from T212 — rate limit exhausted."""
+
+
 class T212Error(Exception):
     """General Trading 212 API error."""
 
@@ -255,7 +259,8 @@ class Trading212Client:
         remaining = resp.headers.get("x-ratelimit-remaining")
         if remaining is not None:
             try:
-                if int(remaining) < 5:
+                self._last_rate_remaining = int(remaining)
+                if self._last_rate_remaining < 5:
                     log.warning("T212 rate limit low (%s remaining) — pausing 2s", remaining)
                     time.sleep(2)
             except ValueError:
@@ -267,6 +272,9 @@ class Trading212Client:
                 "Regenerate: Trading 212 app → Settings → API Beta → Create new key.\n"
                 "Note: live and demo accounts use SEPARATE keys."
             )
+
+        if resp.status_code == 429:
+            raise T212RateLimitError(f"T212 429 rate limit on {endpoint}")
 
         if resp.status_code == 404 and allow_404_empty:
             log.info("T212 %s returned 404 — treating as empty", endpoint)
@@ -331,7 +339,24 @@ class Trading212Client:
         while True:
             page += 1
             log.info("T212: order history page %d — %s", page, endpoint)
-            raw = self._get(endpoint)
+            try:
+                raw = self._get(endpoint)
+            except T212RateLimitError:
+                log.warning(
+                    "T212: order history page %d — 429 rate limit hit, waiting 30s before retry",
+                    page,
+                )
+                time.sleep(30)
+                raw = self._get(endpoint)  # raises on second failure
+
+            # Conditional sleep: pause if the rate limit is running low after this page
+            _remaining = getattr(self, "_last_rate_remaining", None)
+            if _remaining is not None and _remaining <= 5:
+                log.info(
+                    "T212: order history page %d — rate limit low (%d remaining), pausing 2s",
+                    page, _remaining,
+                )
+                time.sleep(2)
 
             if isinstance(raw, list):
                 # Older API versions returned a bare list
