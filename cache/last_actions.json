@@ -3,42 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 down 36.5% with revenue shrinking 34%, the company is burning cash, and 15% of shares are being bet against it, meaning the market expects more pain ahead."
+    "text": "Sell RGTI now \u2014 down 37% with revenue shrinking by 34%, no profits, heavy short interest, and no sign of a turnaround, meaning the original reason to own this has completely fallen apart."
   },
   {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L \u2014 down nearly 15% with the weakest possible relative strength reading, this commodity holding has no momentum and no reason to keep holding through further decline."
-  },
-  {
-    "id": "QBTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim QBTS \u2014 the company is losing money, down 21.6% with nearly 47% off its highs and heavy short interest at 15.5%, meaning too much risk to hold a full position."
-  },
-  {
-    "id": "KTOS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim KTOS \u2014 down 24.5% and more than 55% off its high is a severe drawdown, and even a compelling defense drone story doesn't justify this level of loss without reducing exposure."
+    "text": "Sell SGLP.L \u2014 it's down nearly 15% with a relative strength reading in the bottom 1% of all stocks and sitting 99% off its 52-week high, which means this position is fundamentally broken."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 despite a small 6.2% gain, the company loses money, burns cash, and has 10% short interest, so take some off the table before the next downdraft."
+    "text": "Trim IONQ significantly \u2014 it's a money-losing company down 21% with 20% short interest (meaning one in five shares is bet against it), so reduce your exposure to limit further damage from this speculative position."
+  },
+  {
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim QBTS \u2014 the company is unprofitable, has missed earnings twice recently, carries 15.5% short interest, and you're down 21%, so cutting your position size here protects you if the decline continues."
+  },
+  {
+    "id": "KTOS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim KTOS \u2014 down 24% and more than 55% off its highs with a very expensive valuation of 54 times earnings for a company with modest growth, meaning the risk far outweighs the reward at this size."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to MSFT \u2014 Microsoft is a premier business down 14.2% and 22.6% off its high, which is a rare pullback worth leaning into given its strong fundamentals and dominant market position."
+    "text": "Consider adding to MSFT on this 14% pullback \u2014 with 15% revenue growth, massive free cash flow, and its position as a leader in AI and cloud, this dip in one of the world's best companies looks like a buying opportunity."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to NOW \u2014 ServiceNow is down 16.5% but the fundamentals remain strong, making this a quality name worth building into while it's trading at a discount."
+    "text": "Consider adding to NOW \u2014 despite being down 16%, ServiceNow is growing revenue at 21% and the business fundamentals are strong, making this pullback a chance to buy a premium software company at a better price."
   }
 ]
