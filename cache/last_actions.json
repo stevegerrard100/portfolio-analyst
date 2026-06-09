@@ -1,38 +1,38 @@
 [
   {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L now \u2014 it's down 15%, sitting 99% off its 52-week high with rock-bottom strength, meaning this position is fundamentally broken and unlikely to recover anytime soon."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 revenue is shrinking by 34%, it's deeply unprofitable, 61% off its high, and 15% short interest means big traders are betting against it too."
+    "text": "RGTI is down nearly 40% with revenue shrinking, heavy cash burn, and 65% off its high \u2014 the thesis is broken and this position should be closed to stop further damage."
   },
   {
-    "id": "QBTS-trim",
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "QBTS is down 21% with negative free cash flow, two earnings misses, and nearly half off its high \u2014 this speculative bet isn't working and should be exited before losses deepen."
+  },
+  {
+    "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS because it's unprofitable, burning cash, and has 15.5% short interest \u2014 speculative quantum names like this carry outsized risk in a choppy market."
+    "text": "GDX.L is your weakest technical position at down 18.6% with a bearish MACD and 33% off its high \u2014 trim this to reduce exposure while it's in a clear downtrend."
   },
   {
-    "id": "IONQ-trim",
+    "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ given it's unprofitable with nearly 20% short interest, meaning one in five available shares is being bet against, which creates serious downside pressure."
+    "text": "NCLP.L is down 17.4% and 30% off its high, the worst-performing ETF you own \u2014 reduce this position since a diversified fund shouldn't be drawing down this hard."
   },
   {
-    "id": "KTOS-trim",
+    "id": "SGLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim KTOS \u2014 down 56% from its high with a stretched PE of 149 means you're paying a premium price for a stock in a technical freefall, so reduce your exposure."
+    "text": "SGLP.L is down 16% and sitting 22% below its 52-week high \u2014 trim this commodities holding to manage the significant drawdown risk."
   },
   {
-    "id": "MSFT-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to MSFT \u2014 a 24% pullback in one of the world's most profitable and durable businesses is a rare chance to buy quality at a discount while the macro backdrop of easing rates supports growth stocks."
+    "text": "Adobe trades at just 9x earnings with 10.5% revenue growth and excellent cash flow \u2014 this is the strongest value opportunity in your portfolio and worth adding to on this pullback."
   }
 ]
