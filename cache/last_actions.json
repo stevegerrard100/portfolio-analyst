@@ -3,36 +3,36 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down nearly 40% with revenue shrinking, heavy cash burn, and 65% off its high \u2014 the thesis is broken and this position should be closed to stop further damage."
+    "text": "RGTI is down nearly 40% with revenue shrinking by 34%, no path to profitability, and the highest short interest in your portfolio \u2014 this position is broken and should be closed to stop further damage."
   },
   {
-    "id": "QBTS-sell",
+    "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "QBTS is down 21% with negative free cash flow, two earnings misses, and nearly half off its high \u2014 this speculative bet isn't working and should be exited before losses deepen."
+    "text": "SGLP.L is your largest holding and it's down 16% with the worst relative strength score possible at -99, meaning it's underperforming nearly everything else in the market \u2014 cut this to protect your capital."
+  },
+  {
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "QBTS is down 22% with no earnings, 17% short interest, and back-to-back earnings misses \u2014 trim this speculative position significantly before it does more damage."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IONQ is up 8% but has no earnings, burns cash, and carries 16% short interest \u2014 take some profit on this speculative winner before the crowd bets against it successfully."
   },
   {
     "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GDX.L is your weakest technical position at down 18.6% with a bearish MACD and 33% off its high \u2014 trim this to reduce exposure while it's in a clear downtrend."
+    "text": "GDX.L is down nearly 19% with bearish technicals across the board \u2014 reduce your exposure here since the trend is clearly working against you right now."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "NCLP.L is down 17.4% and 30% off its high, the worst-performing ETF you own \u2014 reduce this position since a diversified fund shouldn't be drawing down this hard."
-  },
-  {
-    "id": "SGLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "SGLP.L is down 16% and sitting 22% below its 52-week high \u2014 trim this commodities holding to manage the significant drawdown risk."
-  },
-  {
-    "id": "ADBE-add",
+    "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe trades at just 9x earnings with 10.5% revenue growth and excellent cash flow \u2014 this is the strongest value opportunity in your portfolio and worth adding to on this pullback."
+    "text": "NOW is down 17% but has 21% revenue growth and strong free cash flow \u2014 this is a high-quality company on sale, and adding at these levels improves your average cost on a fundamentally sound business."
   }
 ]
