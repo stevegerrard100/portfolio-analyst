@@ -3,36 +3,24 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 37% with shrinking revenue, no profits, nearly 19% short interest, and bearish signals everywhere, meaning the thesis here is broken and staying in just risks more damage."
+    "text": "Sell RGTI \u2014 it's your worst position at nearly 38% down, the stock is 65% off its high, and revenue is actually shrinking, which means the basic business case is falling apart."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS significantly \u2014 this speculative quantum computing stock has no earnings, nearly 17% short interest (meaning a lot of pros are betting against it), and the risk of further sharp drops is high."
+    "text": "Trim QBTS \u2014 this speculative quantum computing stock is nearly 50% off its high, loses money, burns cash, and carries significant short interest, so reducing your exposure here lowers your risk meaningfully."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
+    "id": "MU-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Trim IONQ for the same reasons as QBTS \u2014 no profits, ~16% short interest, and recent weakness make this a position where you want less money at risk, not more."
-  },
-  {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim NCLP.L \u2014 it's the weakest ETF in your portfolio, down 18% and sitting 31% below its yearly high with bearish momentum, so reducing your exposure here limits further bleeding."
+    "text": "Raise your MU stop from $577.36 to $615.70 \u2014 this locks in more of your gains and keeps you protected if the stock reverses."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 trading at under 9x earnings with double-digit revenue and cash flow growth is genuinely cheap for a company of this quality, which is rare."
-  },
-  {
-    "id": "NOW-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to NOW \u2014 ServiceNow is growing revenue at 21% with strong cash flow generation, and it remains one of the most dependable enterprise software businesses you can own."
+    "text": "Consider adding to ADBE \u2014 with a PE of just 8.8, double-digit revenue growth, and excellent free cash flow, it looks genuinely undervalued compared to its quality."
   }
 ]
