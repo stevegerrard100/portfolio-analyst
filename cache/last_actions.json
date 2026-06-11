@@ -3,24 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 it's your worst position at nearly 38% down, the stock is 65% off its high, and revenue is actually shrinking, which means the basic business case is falling apart."
+    "text": "Sell RGTI now \u2014 revenue is shrinking by 34%, the company is burning cash, short interest is 19%, and it's down 65% from its high, which means the original reason to own this stock is broken."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim QBTS \u2014 this speculative quantum computing stock is nearly 50% off its high, loses money, burns cash, and carries significant short interest, so reducing your exposure here lowers your risk meaningfully."
+    "priority": "high",
+    "text": "Trim QBTS because it's a cash-burning quantum computing stock down 21% with a negative earnings ratio of -60, nearly half off its high \u2014 reduce your exposure to limit further damage while keeping a small position if you still believe long-term."
   },
   {
-    "id": "MU-raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L as this ETF is down 18.5% and sitting 32% below its 52-week high with bearish momentum, meaning the trend is clearly working against you and it makes sense to lighten up."
+  },
+  {
+    "id": "SGLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim SGLP.L because as your largest holding it's down over 20% with bearish momentum signals \u2014 having too much of your portfolio in a single struggling position magnifies your overall risk significantly."
+  },
+  {
+    "id": "IONQ-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your MU stop from $577.36 to $615.70 \u2014 this locks in more of your gains and keeps you protected if the stock reverses."
+    "text": "Raise your IONQ stop from $44.07 to $46.68 to lock in more of your small 6.5% gain, since this cash-burning stock with 15.6% short interest could reverse quickly."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 with a PE of just 8.8, double-digit revenue growth, and excellent free cash flow, it looks genuinely undervalued compared to its quality."
+    "text": "Consider adding to ADBE \u2014 it looks oversold at nearly 46% off its high, yet the business is strong with a low PE of 8.5, solid 10.5% revenue growth, and excellent cash flow, making this a quality name at a discounted price."
+  },
+  {
+    "id": "NOW-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to NOW \u2014 despite being down 50% from its highs, ServiceNow's fundamentals are excellent with 21% revenue growth, so this pullback in a best-in-class software company looks like a chance to buy strength on sale."
   }
 ]
