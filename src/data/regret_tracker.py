@@ -136,14 +136,9 @@ def build_regret_tracker(
         return []
 
     result = []
-    for i, (ticker, sell) in enumerate(sells.items()):
+    for ticker, sell in sells.items():
         mkt = market_data.get(ticker, {})
         current_price = mkt.get("current_price")
-        if i < 5:
-            log.info(
-                "Regret tracker sample[%d]: ticker=%s  raw current_price=%r",
-                i, ticker, current_price,
-            )
         if (
             current_price is None
             or math.isnan(float(current_price))
