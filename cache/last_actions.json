@@ -3,36 +3,30 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down nearly 40% with revenue shrinking by 34%, no path to profitability, and the highest short interest in your portfolio \u2014 this position is broken and should be closed to stop further damage."
+    "text": "Sell RGTI now \u2014 it's your worst performer at -38%, revenue is shrinking, there are no profits, and nearly 19% of shares are being bet against it, meaning the thesis here is broken."
   },
   {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "SGLP.L is your largest holding and it's down 16% with the worst relative strength score possible at -99, meaning it's underperforming nearly everything else in the market \u2014 cut this to protect your capital."
+    "text": "Sell SGLP.L \u2014 it's your largest holding but down 19% with the worst possible relative strength score of -99, meaning it's weaker than virtually every other investment out there, and that outsized position size is dragging the whole portfolio."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is down 22% with no earnings, 17% short interest, and back-to-back earnings misses \u2014 trim this speculative position significantly before it does more damage."
+    "text": "Trim QBTS significantly \u2014 it's down 20% with no earnings, negative cash flow, and 16.8% short interest, so reduce your exposure before this speculative bet does more damage."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is up 8% but has no earnings, burns cash, and carries 16% short interest \u2014 take some profit on this speculative winner before the crowd bets against it successfully."
+    "text": "Trim IONQ to lock in some of your 10% gain \u2014 it has no profits, negative cash flow, and 17% short interest, so take some money off the table while you're still ahead on this speculative name."
   },
   {
-    "id": "GDX.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "GDX.L is down nearly 19% with bearish technicals across the board \u2014 reduce your exposure here since the trend is clearly working against you right now."
-  },
-  {
-    "id": "NOW-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "NOW is down 17% but has 21% revenue growth and strong free cash flow \u2014 this is a high-quality company on sale, and adding at these levels improves your average cost on a fundamentally sound business."
+    "text": "Add to ADBE \u2014 Adobe is trading at a PE of just 8.8 with double-digit revenue and free cash flow growth, making it look like a genuine quality bargain while the rest of your portfolio is heavy on unprofitable speculation."
   }
 ]
