@@ -1,16 +1,17 @@
 """Entry point — orchestrates the full analysis pipeline.
 
 Step sequence:
-  1.  fetch_portfolio          Trading 212 (pies + direct positions)
-  2.  fetch_market_data        yfinance OHLCV + Mansfield RS for all tickers
-  3.  fetch_sector_data        Finviz sector perf + ETF rotation signals
-  4.  fetch_macro_data         FRED rates, spreads, yield curve
-  5.  fetch_all_fundamentals   Finnhub + yfinance per holding
-  6.  run_screener             S&P 500 growth screen (8h cached)
-  7.  run_breakout_screener    S&P 500 breakout/accumulation screen (8h cached)
-  8.  run_high_growth_screener Mid/small-cap high-growth screen (24h cached)
-  9.  run_analysis             Claude 5-prompt pipeline
-  10. render_dashboard         Static HTML → output/index.html
+  1.   fetch_portfolio          Trading 212 (pies + direct positions)
+  2.   fetch_market_data        yfinance OHLCV + Mansfield RS for all tickers
+  3.   fetch_sector_data        Finviz sector perf + ETF rotation signals
+  4.   fetch_macro_data         FRED rates, spreads, yield curve
+  4b.  fetch_macro_news         Current macro/Fed news headlines (web search)
+  5.   fetch_all_fundamentals   Finnhub + yfinance per holding
+  6.   run_screener             S&P 500 growth screen (8h cached)
+  7.   run_breakout_screener    S&P 500 breakout/accumulation screen (8h cached)
+  8.   run_high_growth_screener Mid/small-cap high-growth screen (24h cached)
+  9.   run_analysis             Claude 6-prompt pipeline
+  10.  render_dashboard         Static HTML → output/index.html
 """
 
 import argparse
@@ -138,6 +139,7 @@ def main() -> None:
         sector_flows: dict = {}
         macro:        dict = {}
         fundamentals: dict = {}
+        macro_news:   list = []
         regret_tracker:     list = []
         stop_levels:        dict = {}
         raise_events:       list = []
@@ -210,6 +212,16 @@ def main() -> None:
                      yc.get("spread_bps", "?"),
                      macro.get("rate_trajectory", "?"))
 
+        # ── 4b. Macro news ────────────────────────────────────────────────────
+        log.info("━━━ Step 4b — fetch_macro_news() (web search)")
+        macro_news: list = []
+        try:
+            from src.data.macro_news import fetch_macro_news
+            macro_news = fetch_macro_news()
+            log.info("Macro news: %d result(s)", len(macro_news))
+        except Exception as _mn_exc:
+            log.warning("Macro news fetch failed — pipeline continues without it: %s", _mn_exc)
+
         # ── 5. Fundamentals ───────────────────────────────────────────────────
         _step(5, 10, "Fundamentals (Finnhub + yfinance)")
         from src.data.fundamentals import fetch_all_fundamentals
@@ -255,6 +267,7 @@ def main() -> None:
             set(portfolio_tickers),
             market_data,
         )
+        log.info("Regret tracker diagnostic: first 20 market_data keys = %s", list(market_data.keys())[:20])
 
     # ── Stop levels memory (compare today's recommended stops vs stored levels) ─
     _stop_levels_path = _CACHE_DIR / "stop_levels.json"
@@ -371,6 +384,7 @@ def main() -> None:
         high_growth=high_growth,
         dismissed_entries=dismissed_entries,
         raise_events=raise_events,
+        macro_news=macro_news,
     )
     log.info("Analysis complete: %d holdings analysed",
              len(analysis.get("holdings_analysis", [])))

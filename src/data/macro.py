@@ -4,6 +4,7 @@ import logging
 import os
 
 import pandas as pd
+import yfinance as yf
 from fredapi import Fred
 
 log = logging.getLogger(__name__)
@@ -13,9 +14,9 @@ FRED_SERIES = {
     "treasury_10y": "DGS10",          # 10-year Treasury yield
     "treasury_2y":  "DGS2",           # 2-year Treasury yield
     "yield_spread": "T10Y2Y",         # 10yr minus 2yr
-    "vix":          "VIXCLS",         # VIX closing level
     "fed_funds":    "DFF",            # Fed Funds Effective Rate
     "cpi":          "CPIAUCSL",       # CPI (monthly)
+    # VIX is fetched from yfinance ^VIX below; FRED VIXCLS used only as fallback
 }
 
 
@@ -97,6 +98,24 @@ def fetch_macro_data() -> dict:
         snap = _series_snapshot(fred, name, series_id)
         if snap:
             raw[name] = snap
+
+    # --- VIX: yfinance ^VIX preferred; FRED VIXCLS as fallback ---
+    try:
+        _vix_hist = yf.Ticker("^VIX").history(period="5d")
+        if _vix_hist.empty:
+            raise ValueError("empty history")
+        _vix_close = float(_vix_hist["Close"].dropna().iloc[-1])
+        _vix_date = _vix_hist.index[-1].strftime("%Y-%m-%d")
+        raw["vix"] = {"current": round(_vix_close, 2), "last_updated": _vix_date, "series_id": "^VIX"}
+        log.debug("VIX source: yfinance ^VIX = %.2f (as of %s)", _vix_close, _vix_date)
+    except Exception as _vix_exc:
+        log.debug("VIX: yfinance failed (%s) — trying FRED VIXCLS fallback", _vix_exc)
+        _fred_vix = _series_snapshot(fred, "vix", "VIXCLS")
+        if _fred_vix:
+            raw["vix"] = _fred_vix
+            log.debug("VIX source: FRED VIXCLS fallback = %.2f", _fred_vix["current"])
+        else:
+            log.debug("VIX: both sources failed — VIX will be absent from macro dict")
 
     # --- Derived indicators ---
     result: dict = {"series": raw}

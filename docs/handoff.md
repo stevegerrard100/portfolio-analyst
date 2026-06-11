@@ -31,6 +31,7 @@ Step 1   fetch_portfolio()              Trading 212 pies + direct positions
 Step 2   fetch_market_data()            yfinance OHLCV + Mansfield RS + indicators
 Step 3   fetch_sector_data()            Finviz sector perf + SPDR ETF rotation signals
 Step 4   fetch_macro_data()             FRED rates, spreads, yield curve
+Step 4b  fetch_macro_news()             Current macro/Fed news headlines (web search)
 Step 5   fetch_all_fundamentals()       Finnhub basic/insider/earnings + yfinance FCF
 Step 6   run_screener()                 S&P 500 growth screen (8h cached)
 Step 7   run_breakout_screener()        S&P 500 accumulation/breakout screen (8h cached)
@@ -67,6 +68,7 @@ src/
     ticker_resolver.py        Dynamic defunct/renamed ticker resolution
     fundamentals.py           Finnhub + yfinance per-holding fundamentals
     macro.py                  FRED macro series
+    macro_news.py             Anthropic web search — current macro/Fed headlines (Step 4b)
     sector_flows.py           Finviz sector perf + SPDR ETF Mansfield RS
     screener.py               S&P 500 growth screen (multi-pass)
     breakout_screener.py      S&P 500 accumulation/breakout screen (5-signal, weighted /10, regime-aware)
@@ -142,7 +144,8 @@ docs/
 
 ### FRED (Federal Reserve Economic Data)
 - **Key**: `FRED_API_KEY`
-- Series fetched: Fed Funds Rate, 10yr/2yr Treasury yields, yield spread (T10Y2Y), VIX, HY credit spread (BAMLH0A0HYM2), CPI
+- Series fetched: Fed Funds Rate, 10yr/2yr Treasury yields, yield spread (T10Y2Y), HY credit spread (BAMLH0A0HYM2), CPI (6 series — VIX is no longer fetched from FRED)
+- **VIX**: fetched separately from yfinance `^VIX` (5-day history, most recent close). FRED `VIXCLS` used as fallback if yfinance fails. Stored under `series["vix"]["current"]` — no downstream changes required.
 - Used to compute: yield curve status (positive/flat/inverted), HY regime (tight/normal/stress), rate trajectory (easing/on hold/tightening), credit stress flag
 - Also drives the macro data pills displayed on the Today's Brief tab
 
@@ -166,7 +169,8 @@ docs/
   - `MODEL_REASONING = "claude-opus-4-6"` — decision-grade prompts: `analyse_holdings`, `todays_verdict`, `todays_actions`
   - `MODEL_PROSE = "claude-sonnet-4-6"` — descriptive prompts: `macro_plain_english`, `sector_rotation_narrative`, `growth_opportunities`
 - Breakout screener uses one additional batched call for candidate reasoning — always on `claude-sonnet-4-6` (hardcoded, do not change).
-- Total token usage (main pipeline): ~4,000–7,000 input + ~3,000–5,000 output per run.
+- **Web search tool** (`"type": "web_search_20250305"`): used in `macro_news.py` (Step 4b) for four sequential news searches on `MODEL_PROSE`. Non-fatal — failure returns an empty list.
+- Total token usage (main pipeline): ~4,000–7,000 input + ~3,000–5,000 output per run (Step 4b adds ~4 × ~300 tokens output).
 
 ### GitHub Contents API (via Netlify function)
 - Used only for action dismissals. The Netlify function reads and writes `cache/dismissed_actions.json` directly to the `main` branch via `PUT /repos/{owner}/{repo}/contents/{path}`.
@@ -209,6 +213,14 @@ Called in `main.py` after Step 7, before Claude analysis. Returns a sorted list 
 
 ---
 
+### 4.0b `src/data/macro_news.py`
+
+Fetches current macro and Fed news headlines using the Anthropic web search tool (`"type": "web_search_20250305"`). Called as Step 4b in `main.py`, between `fetch_macro_data()` and `fetch_all_fundamentals()`.
+
+**`fetch_macro_news() -> list[dict]`** runs four sequential Claude API calls (each with the web search tool enabled on `MODEL_PROSE`) covering the Fed rate outlook, nonfarm payrolls, CPI, and GDP. Each call uses a system prompt instructing Claude to return a JSON object with `headline` (≤15 words) and `summary` (≤40 words). A 1-second sleep separates each search. Results are collected as `[{"query": ..., "headline": ..., "summary": ...}]`. Any individual search failure or unparseable response is skipped; the function never raises and may return an empty list. The results are passed into `run_analysis()` and used to enrich two Claude prompts: `macro_plain_english()` (woven into the narrative) and `todays_actions()` (surfaced as a possible `danger` item if materially relevant). Step 4b is non-fatal — `main.py` wraps the call in `try/except` and sets `macro_news = []` on failure.
+
+---
+
 ### 4.1 `src/analysis/claude_analyst.py`
 
 Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor persona):
@@ -220,9 +232,11 @@ Six-prompt pipeline, all using the same `SYSTEM_PROMPT` (non-expert investor per
 | 3 | `analyse_holdings` | All positions (batched) | `[{ticker, signal, analysis, holding_class}]` | max(2000, n×130) | Opus |
 | 4 | `growth_opportunities` | Screener top 10 | 2–3 paragraphs | 700 | Sonnet |
 | 5 | `todays_actions` | Holdings analysis + breakout + high_growth + macro + sector + raise_events | `[{priority, action_type, text, id}]` JSON | 2000 | Opus |
-| 6 | `todays_verdict` | Summaries of 1–4 | 1 paragraph ≤100 words | 250 | Opus |
+| 6 | `todays_verdict` | Summaries of 1–4 + actions list (from prompt 5) | 1 paragraph ≤100 words | 250 | Opus |
 
-Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–4.
+Prompts 1 and 2 run first (independent). Prompt 3 is independent. Prompt 4 uses macro context. Prompt 5 uses all pipeline signals. Prompt 6 synthesises 1–5: the actions list from prompt 5 is serialised into the verdict prompt as `- [ACTION_TYPE] text` lines, preceded by "The following actions have already been recommended today:" and followed by "Your verdict must be consistent with these actions. Do not contradict them." This prevents the verdict from contradicting the action board (e.g. saying "no immediate action needed" when a SELL or DANGER item was just generated).
+
+**Macro prompt — explicit unit formatting**: The `macro_plain_english()` and `todays_actions()` prompts both include a leading instruction: `"Use only the exact figures below — do not invent or estimate any numbers."` CPI is formatted explicitly as `"CPI YoY: X.X% (annual rate)"` — the raw CPIAUCSL index level is converted to a YoY percentage (`(current / prior_12m − 1) × 100`) before being injected into the prompt, preventing Claude from misreading an index value (e.g. 315.6) as an inflation rate. This replaces the earlier `CPI (annual): {level} (12m change: {points})` format that could produce hallucinated CPI figures.
 
 **Holdings parser**: Claude returns one line per holding: `[TICKER] SIGNAL CLASS — assessment`. CLASS is `CORE` or `TRADE`. Signals: `HOLD / WATCH / REDUCE / ADD / EXIT`. Parsed to `holding_class`: `long_term_core` (CORE) or `trading` (TRADE). Any unparsed holding gets a `HOLD` / `None` placeholder.
 
@@ -439,7 +453,7 @@ yfinance calls: `ThreadPoolExecutor(max_workers=min(8, n_tickers))`. Finnhub: se
 
 ### 4.9 `src/data/macro.py`
 
-Fetches 7 FRED series. Derives:
+Fetches 6 FRED series (VIX sourced from yfinance `^VIX` instead — see VIX note in Data Sources). Derives:
 - **Yield curve status**: `positive` (>50bps), `flat` (0–50bps), `inverted` (<0bps)
 - **HY regime**: `tight` (<300bps), `normal` (300–500bps), `stress` (>500bps)
 - **Rate trajectory**: `easing` / `on hold` / `tightening` (based on 12m Fed Funds change)

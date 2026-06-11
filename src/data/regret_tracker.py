@@ -10,6 +10,7 @@ the list so main.py can add them to the yfinance batch).
 import logging
 
 from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
+from src.data.trading212 import normalise_ticker
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +44,8 @@ def get_exited_tickers(order_history: list[dict], current_tickers: set[str]) -> 
         filled_at = order.get("filled_at", "")
         if not filled_at or filled_at[:10] < _CUTOFF:
             continue
-        ticker = _resolve(order.get("ticker", ""))
+        raw = order.get("ticker", "")
+        ticker = _resolve(normalise_ticker(raw)) if raw else ""
         if ticker:
             sold.add(ticker)
 
@@ -106,7 +108,7 @@ def build_regret_tracker(
         if not raw_ticker:
             continue
 
-        ticker = _resolve(raw_ticker)
+        ticker = _resolve(normalise_ticker(raw_ticker))
         all_sell_count += 1
         sells_all_tickers.add(ticker)
 
@@ -132,12 +134,34 @@ def build_regret_tracker(
     if not sells:
         return []
 
+    log.info(
+        "Regret tracker: market_data has %d keys (sample): %s",
+        len(market_data), sorted(market_data.keys())[:15],
+    )
+    log.info("Regret tracker: looking up keys: %s", sorted(sells.keys()))
+
     result = []
+    _mkt_keys_sample = sorted(market_data.keys())[:10]
     for ticker, sell in sells.items():
+        _key_exists = ticker in market_data
+        log.info(
+            "Regret tracker lookup: ticker=%r  exists_in_market_data=%s",
+            ticker, _key_exists,
+        )
+        if not _key_exists:
+            log.info(
+                "Regret tracker miss: ticker=%r not found; first 10 market_data keys: %s",
+                ticker, _mkt_keys_sample,
+            )
         mkt = market_data.get(ticker, {})
         current_price = mkt.get("current_price")
         if current_price is None:
-            log.warning("Regret tracker: no current price for %s — skipping", ticker)
+            similar = [k for k in market_data if ticker.split(".")[0] in k]
+            log.warning(
+                "Regret tracker: no current price for %s — not in market_data "
+                "(%d keys total, similar: %s)",
+                ticker, len(market_data), similar,
+            )
             continue
         if sell["sell_price"] <= 0:
             log.warning("Regret tracker: zero sell price for %s — skipping", ticker)

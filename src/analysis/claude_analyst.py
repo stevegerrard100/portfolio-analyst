@@ -78,7 +78,7 @@ def _strip_md_markers(text: str) -> str:
 # 1. Macro plain English
 # ---------------------------------------------------------------------------
 
-def macro_plain_english(macro: dict) -> str:
+def macro_plain_english(macro: dict, macro_news: list | None = None) -> str:
     """
     Translate FRED macro data into a plain-English market environment summary.
     Returns 2-3 paragraph string.
@@ -91,9 +91,20 @@ def macro_plain_english(macro: dict) -> str:
     def s(name, field="current"):
         return _fmt_num(series.get(name, {}).get(field))
 
-    prompt = f"""Here is today's macroeconomic data pulled from FRED:
+    # Compute CPI YoY explicitly — CPIAUCSL is an index level, not a percentage
+    _cpi = series.get("cpi", {})
+    _cpi_cur = _cpi.get("current")
+    _cpi_prior = _cpi.get("prior_12m")
+    if _cpi_cur and _cpi_prior and _cpi_prior != 0:
+        _cpi_yoy = round((_cpi_cur / _cpi_prior - 1) * 100, 1)
+        cpi_yoy_str = f"CPI YoY: {_cpi_yoy}% (annual rate)"
+    else:
+        cpi_yoy_str = "CPI YoY: n/a"
 
-Fed Funds Rate: {s('fed_funds')}% (3m change: {s('fed_funds', 'change_3m')}pp)
+    prompt = f"""Here is today's macroeconomic data pulled from FRED:
+Use only the exact figures below — do not invent or estimate any numbers.
+
+Fed Funds Rate: {s('fed_funds')}% (annual rate, 3m change: {s('fed_funds', 'change_3m')}pp)
 Rate trajectory: {macro.get('rate_trajectory', 'unknown')}
 
 10yr Treasury: {s('treasury_10y')}% | 2yr Treasury: {s('treasury_2y')}%
@@ -104,7 +115,18 @@ HY Credit Spread: {macro.get('hy_spread_bps', 'n/a')} bps \
 — regime: {macro.get('hy_regime', 'unknown')}
 
 VIX: {s('vix')} (3m ago: {s('vix', 'prior_3m')})
-CPI (annual): {s('cpi')} (12m change: {s('cpi', 'change_12m')})
+{cpi_yoy_str}"""
+
+    if macro_news:
+        news_lines = "\n".join(f"- {n['headline']}: {n['summary']}" for n in macro_news)
+        prompt += f"""
+
+Recent macro developments (use these to add context to your narrative, do not contradict the data above):
+{news_lines}
+
+Weave these developments into your narrative as one coherent story — do not list them as bullet points."""
+
+    prompt += """
 
 Write a 2–3 paragraph plain-English summary covering:
 1. What the rate environment means for investors right now
@@ -361,6 +383,7 @@ def todays_actions(
     market_data: dict | None = None,
     raise_events: list[dict] | None = None,
     high_growth: dict | None = None,
+    macro_news: list | None = None,
 ) -> list[dict]:
     """
     Generate a prioritised action board from all pipeline signals.
@@ -408,12 +431,23 @@ def todays_actions(
     yc     = (macro or {}).get("yield_curve", {})
     hy_bps = (macro or {}).get("hy_spread_bps")
     vix_v  = (macro or {}).get("series", {}).get("vix", {}).get("current")
+    _ma_series = (macro or {}).get("series", {})
+    _ma_cpi = _ma_series.get("cpi", {})
+    _ma_cpi_cur   = _ma_cpi.get("current")
+    _ma_cpi_prior = _ma_cpi.get("prior_12m")
+    if _ma_cpi_cur and _ma_cpi_prior and _ma_cpi_prior != 0:
+        _ma_cpi_yoy = round((_ma_cpi_cur / _ma_cpi_prior - 1) * 100, 1)
+        cpi_yoy_line = f"  CPI YoY: {_ma_cpi_yoy}% (annual rate)"
+    else:
+        cpi_yoy_line = "  CPI YoY: n/a"
     macro_lines = [
+        "  Use only the exact figures below — do not invent or estimate any numbers.",
         f"  Yield curve: {yc.get('status','unknown')} ({yc.get('spread_bps','?')} bps)",
         f"  HY spread: {hy_bps} bps" if hy_bps else "  HY spread: n/a",
         f"  VIX: {vix_v}" if vix_v else "  VIX: n/a",
         f"  Rate trajectory: {(macro or {}).get('rate_trajectory','unknown')}",
         f"  HY regime: {(macro or {}).get('hy_regime','unknown')}",
+        cpi_yoy_line,
     ]
 
     # ── Stop raise events ──────────────────────────────────────────────────
@@ -423,6 +457,15 @@ def todays_actions(
             f"  {ev['ticker']}: stop raised from {ev['old_level']:.2f} to {ev['new_level']:.2f}"
             f" (+{ev['pct_change']:.1f}%) — write ONE sentence recommending the user raise"
             f" their stop, stating both prices."
+        )
+
+    news_block = ""
+    if macro_news:
+        news_items = "\n".join(f"  - {n['headline']}: {n['summary']}" for n in macro_news)
+        news_block = (
+            f"\nRECENT MACRO NEWS (if any item materially changes the rate or growth outlook, "
+            f"you may generate a `danger` action item to reflect it — only if genuinely warranted, "
+            f"not as a default):\n{news_items}\n"
         )
 
     prompt = f"""You are reviewing a portfolio investor's daily signals. Return a JSON action board — no prose, no markdown, no code fences.
@@ -441,7 +484,7 @@ STOP LEVEL RAISES (prices already computed — write the sentence around these e
 
 MACRO ENVIRONMENT:
 {chr(10).join(macro_lines)}
-
+{news_block}
 ---
 
 Output a JSON array. Each item:
@@ -534,6 +577,7 @@ def todays_verdict(
     portfolio: dict,
     macro: dict | None,
     analysis_summaries: dict,
+    actions: list | None = None,
 ) -> str:
     """
     One crisp paragraph summarising the portfolio's overall positioning and the
@@ -541,6 +585,8 @@ def todays_verdict(
 
     analysis_summaries: dict with keys 'macro', 'sectors', 'opportunities'
                         (shortened versions of earlier outputs)
+    actions: the list returned by todays_actions() — injected into the prompt
+             so the verdict cannot contradict the action board
     """
     account = portfolio.get("account", {})
     positions = portfolio.get("positions", [])
@@ -569,7 +615,20 @@ def todays_verdict(
     sector_blurb = analysis_summaries.get("sectors", "")[:200]
     opps_blurb = analysis_summaries.get("opportunities", "")[:200]
 
-    prompt = f"""Portfolio snapshot:
+    if actions:
+        action_lines = "\n".join(
+            f"- [{a['action_type'].upper()}] {a['text']}" for a in actions
+        )
+        actions_preamble = (
+            f"The following actions have already been recommended today:\n"
+            f"{action_lines}\n"
+            f"Your verdict must be consistent with these actions. "
+            f"Do not contradict them.\n\n"
+        )
+    else:
+        actions_preamble = ""
+
+    prompt = f"""{actions_preamble}Portfolio snapshot:
   Total value: {currency} {total:,.0f}
   Unrealised P&L: {currency} {unrealised:+,.0f} ({pct_gain:+.1f}%)
   Realised P&L (all time): {currency} {realised:+,.0f}
@@ -609,6 +668,7 @@ def run_analysis(
     high_growth: dict | None = None,
     dismissed_entries: list[dict] | None = None,
     raise_events: list[dict] | None = None,
+    macro_news: list | None = None,
 ) -> dict:
     """
     Run all six Claude analysis prompts and return a unified result dict.
@@ -629,7 +689,7 @@ def run_analysis(
 
     # 1 & 2 — independent
     log.info("Claude: macro narrative...")
-    macro_text = macro_plain_english(macro or {})
+    macro_text = macro_plain_english(macro or {}, macro_news)
 
     log.info("Claude: sector rotation narrative...")
     sector_text = sector_rotation_narrative(sector_flows or {}, macro or {})
@@ -655,10 +715,11 @@ def run_analysis(
         market_data=market_data,
         raise_events=raise_events,
         high_growth=high_growth,
+        macro_news=macro_news,
     )
     log.info("Today's actions: %d items", len(actions))
 
-    # 6 — synthesises 1-4
+    # 6 — synthesises 1-5
     log.info("Claude: today's verdict...")
     verdict = todays_verdict(
         portfolio,
@@ -668,6 +729,7 @@ def run_analysis(
             "sectors":       sector_text,
             "opportunities": opps_text,
         },
+        actions=actions,
     )
 
     log.info("Claude analysis complete")
