@@ -1,44 +1,38 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "CPI just jumped to 4.2% \u2014 a 3-year high \u2014 while the Fed is stuck holding rates at 3.5\u20133.75% with no cuts expected through 2027, meaning inflation is running hot with no relief valve, which pressures growth stocks and speculative holdings especially hard."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 revenue is shrinking by 34%, the company is burning cash, short interest is 19%, and it's down 65% from its high, which means the original reason to own this stock is broken."
+    "text": "Rigetti is down 36% and 63% off its high with shrinking revenue, no profits, and negative cash flow \u2014 this is a broken thesis and the EXIT signal says get out now to preserve what capital remains."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
-    "priority": "high",
-    "text": "Trim QBTS because it's a cash-burning quantum computing stock down 21% with a negative earnings ratio of -60, nearly half off its high \u2014 reduce your exposure to limit further damage while keeping a small position if you still believe long-term."
+    "priority": "medium",
+    "text": "QBTS is down 20% and nearly 47% off its high with no earnings and negative cash flow \u2014 reduce your exposure here because speculative cash-burning stocks face extra headwinds when inflation is elevated and rate cuts are off the table."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L as this ETF is down 18.5% and sitting 32% below its 52-week high with bearish momentum, meaning the trend is clearly working against you and it makes sense to lighten up."
-  },
-  {
-    "id": "SGLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim SGLP.L because as your largest holding it's down over 20% with bearish momentum signals \u2014 having too much of your portfolio in a single struggling position magnifies your overall risk significantly."
-  },
-  {
-    "id": "IONQ-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your IONQ stop from $44.07 to $46.68 to lock in more of your small 6.5% gain, since this cash-burning stock with 15.6% short interest could reverse quickly."
+    "text": "NCLP.L is down 18% and 31% off its high with every technical indicator pointing bearish \u2014 trim this position to limit further losses since there's no sign yet of a bottom forming."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 it looks oversold at nearly 46% off its high, yet the business is strong with a low PE of 8.5, solid 10.5% revenue growth, and excellent cash flow, making this a quality name at a discounted price."
+    "text": "Adobe is 47% off its high but has rock-solid fundamentals with strong profitability and cash flow \u2014 this is a quality business on sale, and adding at these levels gives you a better average cost in a proven money-maker."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to NOW \u2014 despite being down 50% from its highs, ServiceNow's fundamentals are excellent with 21% revenue growth, so this pullback in a best-in-class software company looks like a chance to buy strength on sale."
+    "text": "ServiceNow is 51% off its high which looks scary, but the underlying business is excellent with strong growth and margins \u2014 adding here means buying a best-in-class software company at a meaningful discount."
   }
 ]
