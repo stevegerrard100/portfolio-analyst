@@ -3,30 +3,36 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's your worst performer at -38%, revenue is shrinking, there are no profits, and nearly 19% of shares are being bet against it, meaning the thesis here is broken."
-  },
-  {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L \u2014 it's your largest holding but down 19% with the worst possible relative strength score of -99, meaning it's weaker than virtually every other investment out there, and that outsized position size is dragging the whole portfolio."
+    "text": "Sell RGTI now \u2014 it's down 37% with shrinking revenue, no profits, nearly 19% short interest, and bearish signals everywhere, meaning the thesis here is broken and staying in just risks more damage."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS significantly \u2014 it's down 20% with no earnings, negative cash flow, and 16.8% short interest, so reduce your exposure before this speculative bet does more damage."
+    "text": "Trim QBTS significantly \u2014 this speculative quantum computing stock has no earnings, nearly 17% short interest (meaning a lot of pros are betting against it), and the risk of further sharp drops is high."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ to lock in some of your 10% gain \u2014 it has no profits, negative cash flow, and 17% short interest, so take some money off the table while you're still ahead on this speculative name."
+    "text": "Trim IONQ for the same reasons as QBTS \u2014 no profits, ~16% short interest, and recent weakness make this a position where you want less money at risk, not more."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 it's the weakest ETF in your portfolio, down 18% and sitting 31% below its yearly high with bearish momentum, so reducing your exposure here limits further bleeding."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 Adobe is trading at a PE of just 8.8 with double-digit revenue and free cash flow growth, making it look like a genuine quality bargain while the rest of your portfolio is heavy on unprofitable speculation."
+    "text": "Consider adding to ADBE \u2014 trading at under 9x earnings with double-digit revenue and cash flow growth is genuinely cheap for a company of this quality, which is rare."
+  },
+  {
+    "id": "NOW-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to NOW \u2014 ServiceNow is growing revenue at 21% with strong cash flow generation, and it remains one of the most dependable enterprise software businesses you can own."
   }
 ]
