@@ -267,7 +267,6 @@ def main() -> None:
             set(portfolio_tickers),
             market_data,
         )
-        log.info("Regret tracker diagnostic: first 20 market_data keys = %s", list(market_data.keys())[:20])
 
     # ── Stop levels memory (compare today's recommended stops vs stored levels) ─
     _stop_levels_path = _CACHE_DIR / "stop_levels.json"

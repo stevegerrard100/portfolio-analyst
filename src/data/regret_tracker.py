@@ -8,6 +8,7 @@ the list so main.py can add them to the yfinance batch).
 """
 
 import logging
+import math
 
 from src.data.ticker_resolver import _TICKER_OVERRIDES as _MERGER_OVERRIDES
 from src.data.trading212 import normalise_ticker
@@ -134,33 +135,23 @@ def build_regret_tracker(
     if not sells:
         return []
 
-    log.info(
-        "Regret tracker: market_data has %d keys (sample): %s",
-        len(market_data), sorted(market_data.keys())[:15],
-    )
-    log.info("Regret tracker: looking up keys: %s", sorted(sells.keys()))
-
     result = []
-    _mkt_keys_sample = sorted(market_data.keys())[:10]
-    for ticker, sell in sells.items():
-        _key_exists = ticker in market_data
-        log.info(
-            "Regret tracker lookup: ticker=%r  exists_in_market_data=%s",
-            ticker, _key_exists,
-        )
-        if not _key_exists:
-            log.info(
-                "Regret tracker miss: ticker=%r not found; first 10 market_data keys: %s",
-                ticker, _mkt_keys_sample,
-            )
+    for i, (ticker, sell) in enumerate(sells.items()):
         mkt = market_data.get(ticker, {})
         current_price = mkt.get("current_price")
-        if current_price is None:
-            similar = [k for k in market_data if ticker.split(".")[0] in k]
+        if i < 5:
+            log.info(
+                "Regret tracker sample[%d]: ticker=%s  raw current_price=%r",
+                i, ticker, current_price,
+            )
+        if (
+            current_price is None
+            or math.isnan(float(current_price))
+            or float(current_price) <= 0
+        ):
             log.warning(
-                "Regret tracker: no current price for %s — not in market_data "
-                "(%d keys total, similar: %s)",
-                ticker, len(market_data), similar,
+                "Regret tracker: invalid current_price for %s (raw=%r) — skipping",
+                ticker, current_price,
             )
             continue
         if sell["sell_price"] <= 0:
