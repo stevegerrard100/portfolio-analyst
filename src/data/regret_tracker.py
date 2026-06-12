@@ -123,7 +123,7 @@ def build_regret_tracker(
                 "company_name":  order.get("name") or ticker,
                 "sell_date":     filled_at[:10],
                 "sell_price":    float(order.get("fill_price", 0) or 0),
-                "sell_quantity": float(order.get("quantity", 0) or 0),
+                "net_value_gbp": float(order.get("net_value_gbp", 0) or 0),
                 "filled_at":     filled_at,
             }
 
@@ -155,15 +155,13 @@ def build_regret_tracker(
             continue
 
         pct_diff = (float(current_price) / sell["sell_price"] - 1) * 100
-        sq = sell.get("sell_quantity", 0)
-        sp = sell["sell_price"]
-        sale_value = round(sq * sp, 2) if sq and sp else None
+        nv = sell.get("net_value_gbp", 0)
+        sale_value = round(abs(nv), 2) if nv else None
         result.append({
             "ticker":        ticker,
             "company_name":  sell["company_name"],
             "sell_date":     sell["sell_date"],
-            "sell_price":    round(sp, 4),
-            "sell_quantity": sq,
+            "sell_price":    round(sell["sell_price"], 4),
             "sale_value":    sale_value,
             "current_price": round(float(current_price), 4),
             "pct_diff":      round(pct_diff, 1),
