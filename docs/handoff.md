@@ -197,6 +197,8 @@ Called in `main.py` after Step 7, before Claude analysis. Returns a sorted list 
 | `company_name` | From the T212 `instrument.fullName` field |
 | `sell_date` | YYYY-MM-DD of most recent sell |
 | `sell_price` | Per-share fill price in the stock's native currency |
+| `sell_quantity` | `filledQuantity` from the order (number of shares sold) |
+| `sale_value` | `sell_quantity × sell_price`, rounded to 2 dp; `None` if either is zero/missing |
 | `current_price` | From `market_data[ticker]["current_price"]` |
 | `pct_diff` | `(current / sell − 1) × 100`, rounded to 1 dp |
 

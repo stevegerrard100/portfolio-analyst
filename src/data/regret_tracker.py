@@ -119,11 +119,12 @@ def build_regret_tracker(
         # Keep most recent sell for each exited ticker
         if ticker not in sells or filled_at > sells[ticker]["filled_at"]:
             sells[ticker] = {
-                "ticker":       ticker,
-                "company_name": order.get("name") or ticker,
-                "sell_date":    filled_at[:10],
-                "sell_price":   float(order.get("fill_price", 0) or 0),
-                "filled_at":    filled_at,
+                "ticker":        ticker,
+                "company_name":  order.get("name") or ticker,
+                "sell_date":     filled_at[:10],
+                "sell_price":    float(order.get("fill_price", 0) or 0),
+                "sell_quantity": float(order.get("quantity", 0) or 0),
+                "filled_at":     filled_at,
             }
 
     log.info(
@@ -154,11 +155,16 @@ def build_regret_tracker(
             continue
 
         pct_diff = (float(current_price) / sell["sell_price"] - 1) * 100
+        sq = sell.get("sell_quantity", 0)
+        sp = sell["sell_price"]
+        sale_value = round(sq * sp, 2) if sq and sp else None
         result.append({
             "ticker":        ticker,
             "company_name":  sell["company_name"],
             "sell_date":     sell["sell_date"],
-            "sell_price":    round(sell["sell_price"], 4),
+            "sell_price":    round(sp, 4),
+            "sell_quantity": sq,
+            "sale_value":    sale_value,
             "current_price": round(float(current_price), 4),
             "pct_diff":      round(pct_diff, 1),
         })
