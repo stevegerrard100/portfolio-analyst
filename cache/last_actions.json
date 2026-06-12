@@ -1,38 +1,32 @@
 [
   {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L now \u2014 it's down nearly 20% and sitting 99% below its 52-week high, which means this investment is essentially broken with no realistic path to recovery in a reasonable timeframe."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 your worst holding at -35%, with revenue shrinking by 34%, deep cash burn, and no profitability in sight, this is a failed thesis that's only eating into your capital."
+    "text": "Sell RGTI \u2014 it's down 35% and 63% off its highs with no earnings, no free cash flow, and the worst performance in your portfolio, so it's time to cut this loss and move on."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 it's down 20%, the company is losing money with negative free cash flow, and at 168x-type valuations on speculative quantum computing hopes, your risk here is too high relative to what you're getting."
+    "text": "Trim QBTS \u2014 this quantum computing stock is down 19% and nearly 47% off its highs with no profitability in sight, so reduce your exposure before it gets worse."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ while you still have a 12% gain \u2014 the company is still unprofitable with negative earnings and cash burn, and locking in some profit on a speculative quantum stock in this environment is the smart move."
+    "text": "Trim IONQ \u2014 despite being up 13%, it's deeply unprofitable with negative earnings and cash flow, and quantum computing as a group is getting hit hard, so take some risk off the table."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of just 8.3 with 10.5% revenue growth and excellent free cash flow makes this look like a genuinely undervalued quality name that the market has mispriced during the broader pullback."
+    "text": "Consider adding to ADBE \u2014 a PE of just 8.1 with 10%+ revenue growth makes this one of the cheapest quality names in your portfolio, and the pullback looks like an opportunity rather than a problem."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to NOW \u2014 despite being down 19%, ServiceNow's 21% revenue growth and strong free cash flow signal a healthy business on sale, making this pullback a potential opportunity to build your position."
+    "text": "Consider adding to NOW \u2014 ServiceNow's 21% revenue growth and strong fundamentals are intact despite being 51% off its highs, which is an unusually steep discount for a best-in-class software company."
   }
 ]
