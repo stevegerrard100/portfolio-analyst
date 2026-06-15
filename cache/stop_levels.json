@@ -28,8 +28,8 @@
     "prev_level": null
   },
   "QBTS": {
-    "level": 19.2476,
-    "prev_level": null
+    "level": 20.3858,
+    "prev_level": 19.2476
   },
   "MU": {
     "level": 615.7036,
@@ -121,6 +121,10 @@
   },
   "RDW": {
     "level": 12.0508,
+    "prev_level": null
+  },
+  "RKLB": {
+    "level": 55.152,
     "prev_level": null
   }
 }

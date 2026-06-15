@@ -1,32 +1,50 @@
 [
   {
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell SGLP.L \u2014 it's your biggest holding and it's down 17.4%, sitting 99% below its yearly high, which means the investment thesis is broken and holding on risks even deeper losses."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 it's down 35% and 63% off its highs with no earnings, no free cash flow, and the worst performance in your portfolio, so it's time to cut this loss and move on."
+    "text": "Sell RGTI \u2014 you're down 31%, revenue is shrinking by 34%, nearly a quarter of shares are being bet against by short sellers, and there's no fundamental reason to expect a turnaround."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 this quantum computing stock is down 19% and nearly 47% off its highs with no profitability in sight, so reduce your exposure before it gets worse."
+    "text": "Trim QBTS \u2014 it's a speculative stock with no profits, negative cash flow, and nearly 48% off its highs, so reduce your exposure before more downside hits."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 despite being up 13%, it's deeply unprofitable with negative earnings and cash flow, and quantum computing as a group is getting hit hard, so take some risk off the table."
+    "text": "Trim IONQ \u2014 another unprofitable quantum bet that's 30% off its highs with 15.6% short interest, meaning professional traders are actively betting against it."
+  },
+  {
+    "id": "RDW-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim RDW \u2014 the company is losing money, burning cash, and 22.4% of its shares are sold short, which is one of the highest levels in your portfolio and signals serious skepticism from the market."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 this ETF is down 14% on your position and trading below its 50-day average with bearish momentum, so lighten up until the trend stabilizes."
+  },
+  {
+    "id": "QBTS-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your QBTS stop from $19.25 to $20.39 to lock in more protection on this volatile position in case it drops further."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of just 8.1 with 10%+ revenue growth makes this one of the cheapest quality names in your portfolio, and the pullback looks like an opportunity rather than a problem."
-  },
-  {
-    "id": "NOW-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to NOW \u2014 ServiceNow's 21% revenue growth and strong fundamentals are intact despite being 51% off its highs, which is an unusually steep discount for a best-in-class software company."
+    "text": "Add to ADBE \u2014 at a P/E of just 7.5 with nearly 12% free cash flow yield and solid revenue growth, Adobe looks meaningfully underpriced relative to its quality."
   }
 ]
