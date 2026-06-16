@@ -76,8 +76,8 @@
     "prev_level": 44.0714
   },
   "RGTI": {
-    "level": 17.273,
-    "prev_level": null
+    "level": 18.2118,
+    "prev_level": 17.273
   },
   "SILG.L": {
     "level": 28.1591,
@@ -124,7 +124,7 @@
     "prev_level": null
   },
   "RKLB": {
-    "level": 55.152,
-    "prev_level": null
+    "level": 95.9053,
+    "prev_level": 55.152
   }
 }
