@@ -16,8 +16,8 @@
     "prev_level": null
   },
   "RTX": {
-    "level": 168.3116,
-    "prev_level": null
+    "level": 179.2287,
+    "prev_level": 168.3116
   },
   "LMT": {
     "level": 462.904,
@@ -32,16 +32,16 @@
     "prev_level": 19.2476
   },
   "MU": {
-    "level": 615.7036,
-    "prev_level": 577.361
+    "level": 666.115,
+    "prev_level": 615.7036
   },
   "LPTH": {
     "level": 12.4944,
     "prev_level": null
   },
   "AMD": {
-    "level": 340.2417,
-    "prev_level": null
+    "level": 382.1102,
+    "prev_level": 340.2417
   },
   "NOW": {
     "level": 95.0365,
@@ -56,8 +56,8 @@
     "prev_level": null
   },
   "COHR": {
-    "level": 316.0553,
-    "prev_level": null
+    "level": 334.9455,
+    "prev_level": 316.0553
   },
   "GDXJ.L": {
     "level": 96.0204,

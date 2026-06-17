@@ -1,50 +1,50 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "CPI just hit a 3-year high of 4.2% with the Fed stuck at 3.50\u20133.75% and markets pricing in no cuts through 2027 \u2014 this means borrowing costs stay elevated longer, which is especially painful for unprofitable growth stocks in your portfolio."
-  },
-  {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "SGLP.L is your largest position and it's down nearly 15% with a rock-bottom relative strength score of -99, meaning it's weaker than virtually every other stock \u2014 exit this position to stop the bleeding on your biggest bet."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Rigetti is down 30% with shrinking revenue, no profits, nearly 19% short interest, and insider selling \u2014 this stock has no working thesis left and should be sold."
+    "text": "Sell RGTI now \u2014 it's down 35% with shrinking revenue, deep losses, nearly 19% short interest, and insider selling, meaning the thesis is broken and there's no reason to hold."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Redwire has missed earnings four times in a row, burns cash, has 22% short interest, and insiders are selling \u2014 there's nothing to hold onto here, sell it."
+    "text": "Sell RDW immediately \u2014 it's down 20%, burning cash, has 22% short interest and insider selling, which is about as many red flags as one stock can wave at once."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is a speculative quantum computing stock with no profits, negative cash flow, and very high short interest \u2014 in a high-inflation, no-rate-cuts environment, trim this position to reduce your exposure to money-losing companies."
+    "text": "Trim QBTS to reduce your exposure \u2014 it's down 18% with no profits, 17% short interest, insider selling, and back-to-back earnings misses, so cut your risk here before it gets worse."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IonQ has exciting revenue growth but no profits, heavy cash burn, and 16% short interest \u2014 with rates staying high for longer, trim this speculative position to a size you can afford to lose."
+    "text": "Trim IONQ because it's unprofitable with nearly 16% short interest and sitting below key moving averages \u2014 speculative quantum plays deserve smaller position sizes in this environment."
   },
   {
-    "id": "RKLB-raise_stop",
+    "id": "AMD-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your RKLB stop from $55.15 to $95.91 to lock in a big chunk of your gains while still giving this high-growth name room to run."
+    "text": "Raise your AMD stop from $340.24 to $382.11 to lock in more of your gains while still giving the position room to run."
+  },
+  {
+    "id": "RTX-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your RTX stop from $168.31 to $179.23 to protect additional profit as this defense name continues trending higher."
+  },
+  {
+    "id": "MU-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MU stop from $615.70 to $666.12 to secure more upside in a stock that's been climbing steadily."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe is unusually cheap at 7.5x earnings with a 12% free cash flow yield and steady 10% revenue growth \u2014 this kind of profitable, cash-rich company is exactly what holds up when inflation stays sticky."
+    "text": "Consider adding to ADBE \u2014 at a PE of just 7.5 with nearly 12% free cash flow yield and steady revenue growth, it looks meaningfully undervalued for a best-in-class software company."
   }
 ]
