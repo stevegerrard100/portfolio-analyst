@@ -1,50 +1,50 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "CPI has surged to 4.2% \u2014 a 3-year high driven by energy costs \u2014 and the Fed under new Chair Warsh is now openly considering a rate hike, which could pressure stock valuations broadly and hurt unprofitable growth names in particular."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 35% with shrinking revenue, deep losses, nearly 19% short interest, and insider selling, meaning the thesis is broken and there's no reason to hold."
+    "text": "Sell RGTI \u2014 it's down 36% and 64% off its high with declining revenue, burning cash, and 19% short interest, meaning the market is actively betting against it and the fundamentals give no reason to hold on."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RDW immediately \u2014 it's down 20%, burning cash, has 22% short interest and insider selling, which is about as many red flags as one stock can wave at once."
+    "text": "Sell RDW \u2014 four straight earnings misses, negative earnings, cash-burning operations, and very high short interest add up to a broken thesis with no clear path to recovery."
+  },
+  {
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell SGLP.L \u2014 a relative strength score of -99 means this commodity holding is performing worse than virtually everything else in the market, and sitting below its 50-day average confirms the downtrend is intact."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS to reduce your exposure \u2014 it's down 18% with no profits, 17% short interest, insider selling, and back-to-back earnings misses, so cut your risk here before it gets worse."
+    "text": "Trim QBTS \u2014 it's down 21% and nearly 49% off its high with no earnings, 17% short interest, and insider selling, so reducing your exposure here limits damage while the picture remains ugly."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ because it's unprofitable with nearly 16% short interest and sitting below key moving averages \u2014 speculative quantum plays deserve smaller position sizes in this environment."
+    "text": "Trim IONQ \u2014 despite impressive 202% revenue growth, the stock is deeply unprofitable with 16% short interest, and in a rising-rate environment the market punishes money-losing companies the hardest."
   },
   {
-    "id": "AMD-raise_stop",
+    "id": "IONQ-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your AMD stop from $340.24 to $382.11 to lock in more of your gains while still giving the position room to run."
-  },
-  {
-    "id": "RTX-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your RTX stop from $168.31 to $179.23 to protect additional profit as this defense name continues trending higher."
-  },
-  {
-    "id": "MU-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your MU stop from $615.70 to $666.12 to secure more upside in a stock that's been climbing steadily."
+    "text": "Raise your IONQ stop from $46.68 to $49.13 \u2014 this tightens your safety net by 5.2% so you lock in more of your remaining position if the stock drops further."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 at a PE of just 7.5 with nearly 12% free cash flow yield and steady revenue growth, it looks meaningfully undervalued for a best-in-class software company."
+    "text": "Consider adding to ADBE \u2014 a PE of 7.1 is remarkably low for a company of Adobe's quality and profitability, and if that number checks out it represents a genuinely unusual value opportunity even in a tougher rate environment."
   }
 ]
