@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI has surged to 4.2% \u2014 a 3-year high driven by energy costs \u2014 and the Fed under new Chair Warsh is now openly considering a rate hike, which could pressure stock valuations broadly and hurt unprofitable growth names in particular."
+    "text": "CPI just hit a 3-year high of 4.2% and the Fed under new Chair Warsh has removed rate cut expectations entirely, pushing them to 2027-2028 with possible hikes ahead \u2014 this means borrowing costs stay elevated longer, which is especially painful for your unprofitable, cash-burning holdings like QBTS, IONQ, and RGTI."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 it's down 36% and 64% off its high with declining revenue, burning cash, and 19% short interest, meaning the market is actively betting against it and the fundamentals give no reason to hold on."
+    "text": "Rigetti is down 34% with shrinking revenue (-34% growth), the heaviest short interest in your portfolio, deep cash burn, and no path to profitability \u2014 exit this position entirely before it deteriorates further."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RDW \u2014 four straight earnings misses, negative earnings, cash-burning operations, and very high short interest add up to a broken thesis with no clear path to recovery."
-  },
-  {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L \u2014 a relative strength score of -99 means this commodity holding is performing worse than virtually everything else in the market, and sitting below its 50-day average confirms the downtrend is intact."
+    "text": "Redwire has negative earnings, cash-burning operations, very high short interest, and nearly every signal pointing against it \u2014 close this position and redeploy the capital."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 it's down 21% and nearly 49% off its high with no earnings, 17% short interest, and insider selling, so reducing your exposure here limits damage while the picture remains ugly."
+    "text": "This quantum computing stock is down 18% with no profits, heavy cash burn, and nearly the highest short interest in your portfolio \u2014 in a rising-rate environment, reduce your exposure meaningfully."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 despite impressive 202% revenue growth, the stock is deeply unprofitable with 16% short interest, and in a rising-rate environment the market punishes money-losing companies the hardest."
+    "text": "IonQ shares the same toxic profile as QBTS \u2014 no earnings, heavy cash burn, and very high short interest \u2014 so trim this position to limit your downside in speculative, unprofitable names."
   },
   {
-    "id": "IONQ-raise_stop",
-    "action_type": "raise_stop",
+    "id": "SGLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your IONQ stop from $46.68 to $49.13 \u2014 this tightens your safety net by 5.2% so you lock in more of your remaining position if the stock drops further."
+    "text": "As your largest holding it's down 16% with a relative strength score of -99, meaning it's underperforming nearly everything \u2014 reduce your outsized position to bring your portfolio risk back into balance."
+  },
+  {
+    "id": "NOW-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "ServiceNow is down 26% but has 21% revenue growth and excellent free cash flow \u2014 this quality pullback in a proven business is worth adding to at these levels."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of 7.1 is remarkably low for a company of Adobe's quality and profitability, and if that number checks out it represents a genuinely unusual value opportunity even in a tougher rate environment."
+    "text": "Adobe appears unusually cheap with a reported PE of just 7 \u2014 double-check that figure, but if accurate this is a compelling opportunity to add to a high-quality software name at a deep discount."
   }
 ]
