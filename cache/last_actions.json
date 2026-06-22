@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI just hit a 3-year high of 4.2% and the Fed under new Chair Warsh has removed rate cut expectations entirely, pushing them to 2027-2028 with possible hikes ahead \u2014 this means borrowing costs stay elevated longer, which is especially painful for your unprofitable, cash-burning holdings like QBTS, IONQ, and RGTI."
+    "text": "CPI has surged to 4.2% (a 3-year high) and the Fed is now signaling a possible rate hike by late 2026 \u2014 this is a meaningful shift from easing to potential tightening that could pressure growth stocks and valuations across your portfolio."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Rigetti is down 34% with shrinking revenue (-34% growth), the heaviest short interest in your portfolio, deep cash burn, and no path to profitability \u2014 exit this position entirely before it deteriorates further."
+    "text": "Sell RGTI \u2014 it's down 35%, over 60% off its high, revenue is shrinking by 34%, it's unprofitable with nearly 19% short interest, and there's no credible recovery catalyst in sight."
+  },
+  {
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell SGLP.L \u2014 this commodity holding is down 17.5% with rock-bottom relative strength at -99, meaning it's weaker than virtually everything else in the market, and the technical picture offers no reason to hold."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Redwire has negative earnings, cash-burning operations, very high short interest, and nearly every signal pointing against it \u2014 close this position and redeploy the capital."
-  },
-  {
-    "id": "QBTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "This quantum computing stock is down 18% with no profits, heavy cash burn, and nearly the highest short interest in your portfolio \u2014 in a rising-rate environment, reduce your exposure meaningfully."
+    "text": "Sell RDW \u2014 Redwire has negative earnings, negative cash flow, 22% short interest, and the EXIT signal confirms the thesis is broken with no fundamental support to justify staying in."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IonQ shares the same toxic profile as QBTS \u2014 no earnings, heavy cash burn, and very high short interest \u2014 so trim this position to limit your downside in speculative, unprofitable names."
+    "text": "Trim IONQ \u2014 despite flashy 202% revenue growth, it's deeply unprofitable, burning cash, carries 16% short interest, and in a rising-rate environment unprofitable speculative names face the most valuation pressure."
   },
   {
-    "id": "SGLP.L-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "As your largest holding it's down 16% with a relative strength score of -99, meaning it's underperforming nearly everything \u2014 reduce your outsized position to bring your portfolio risk back into balance."
-  },
-  {
-    "id": "NOW-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "ServiceNow is down 26% but has 21% revenue growth and excellent free cash flow \u2014 this quality pullback in a proven business is worth adding to at these levels."
+    "text": "Trim QBTS \u2014 this quantum computing stock is down 19% with negative earnings, negative free cash flow, and nearly 19% short interest, so reduce your exposure before further deterioration."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe appears unusually cheap with a reported PE of just 7 \u2014 double-check that figure, but if accurate this is a compelling opportunity to add to a high-quality software name at a deep discount."
+    "text": "Add to ADBE \u2014 a PE of just 7 with 10.5% revenue growth and strong cash flow makes Adobe look significantly undervalued, and it's the kind of profitable, cash-generating business that holds up well if rates stay higher."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to META \u2014 a PE of 16 paired with 22% revenue growth and solid free cash flow is a genuinely rare combination for a company this size, making it one of the better risk-reward setups in your portfolio."
   }
 ]
