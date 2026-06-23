@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI has surged to 4.2% (a 3-year high) and the Fed is now signaling a possible rate hike by late 2026 \u2014 this is a meaningful shift from easing to potential tightening that could pressure growth stocks and valuations across your portfolio."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell RGTI \u2014 it's down 35%, over 60% off its high, revenue is shrinking by 34%, it's unprofitable with nearly 19% short interest, and there's no credible recovery catalyst in sight."
+    "text": "The Fed under new Chair Warsh has pivoted from cutting to potentially hiking rates, with CPI jumping to 4.2% and 9 officials forecasting at least one hike in 2026 \u2014 this shift from easing to tightening expectations raises the risk of a meaningful market pullback, so consider holding more cash and being very selective with new positions."
   },
   {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell SGLP.L \u2014 this commodity holding is down 17.5% with rock-bottom relative strength at -99, meaning it's weaker than virtually everything else in the market, and the technical picture offers no reason to hold."
+    "text": "SGLP.L is your largest holding but it's down 17% with a rock-bottom relative strength score of -99, meaning almost everything else is outperforming it \u2014 sell this position to free up capital for stronger opportunities and stop the bleeding on your biggest drag."
   },
   {
     "id": "RDW-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RDW \u2014 Redwire has negative earnings, negative cash flow, 22% short interest, and the EXIT signal confirms the thesis is broken with no fundamental support to justify staying in."
+    "text": "RDW is down 29% with negative earnings, negative free cash flow, and nearly 50% off its highs \u2014 every fundamental and technical signal says this thesis is broken, so exit now and preserve what's left."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim IONQ \u2014 despite flashy 202% revenue growth, it's deeply unprofitable, burning cash, carries 16% short interest, and in a rising-rate environment unprofitable speculative names face the most valuation pressure."
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "RGTI is the weakest name in your portfolio at down 33% with shrinking revenue of -34% and no path to profitability \u2014 cut this loss immediately as it has the worst combination of price damage and deteriorating fundamentals."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 this quantum computing stock is down 19% with negative earnings, negative free cash flow, and nearly 19% short interest, so reduce your exposure before further deterioration."
+    "text": "QBTS is a speculative quantum name with negative earnings, negative free cash flow, and 17% short interest \u2014 trim this position to reduce your exposure to unprofitable story stocks, especially in a rising-rate environment."
   },
   {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to ADBE \u2014 a PE of just 7 with 10.5% revenue growth and strong cash flow makes Adobe look significantly undervalued, and it's the kind of profitable, cash-generating business that holds up well if rates stay higher."
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IONQ has impressive 202% revenue growth but deeply negative earnings and free cash flow, and with rates potentially heading higher, speculative names like this face the most valuation pressure \u2014 reduce your position size to manage risk."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to META \u2014 a PE of 16 paired with 22% revenue growth and solid free cash flow is a genuinely rare combination for a company this size, making it one of the better risk-reward setups in your portfolio."
+    "id": "QBTS-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your QBTS stop from $20.39 to $21.45 to lock in more protection on this volatile position in case it turns south quickly."
+  },
+  {
+    "id": "MU-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MU stop from $666.12 to $708.70 to protect a larger chunk of your gains as the stock has moved higher."
   }
 ]
