@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed under new Chair Warsh has pivoted from cutting to potentially hiking rates, with CPI jumping to 4.2% and 9 officials forecasting at least one hike in 2026 \u2014 this shift from easing to tightening expectations raises the risk of a meaningful market pullback, so consider holding more cash and being very selective with new positions."
+    "text": "CPI just jumped to 4.2% with energy costs surging 23.5%, and the Fed is now signaling a possible rate hike rather than further cuts \u2014 this shift from easing to potential tightening could pressure growth stocks and valuations across your portfolio."
   },
   {
     "id": "SGLP.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "SGLP.L is your largest holding but it's down 17% with a rock-bottom relative strength score of -99, meaning almost everything else is outperforming it \u2014 sell this position to free up capital for stronger opportunities and stop the bleeding on your biggest drag."
-  },
-  {
-    "id": "RDW-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RDW is down 29% with negative earnings, negative free cash flow, and nearly 50% off its highs \u2014 every fundamental and technical signal says this thesis is broken, so exit now and preserve what's left."
+    "text": "SGLP.L is your largest holding but it's down 18% with a rock-bottom relative strength score of -99 and trading below its 50-day average \u2014 the trend is decisively broken and holding your biggest position in your weakest name is compounding your risk."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is the weakest name in your portfolio at down 33% with shrinking revenue of -34% and no path to profitability \u2014 cut this loss immediately as it has the worst combination of price damage and deteriorating fundamentals."
+    "text": "RGTI is down 34% with shrinking revenue, cash burn, nearly 19% short interest, and insiders selling \u2014 there's no fundamental support here and this position should be closed."
   },
   {
-    "id": "QBTS-trim",
+    "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is a speculative quantum name with negative earnings, negative free cash flow, and 17% short interest \u2014 trim this position to reduce your exposure to unprofitable story stocks, especially in a rising-rate environment."
+    "text": "GDX.L is down 17% and sitting 32% below its yearly high with bearish momentum across the board \u2014 trim this position to reduce your exposure to a clearly deteriorating trend."
   },
   {
-    "id": "IONQ-trim",
+    "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ has impressive 202% revenue growth but deeply negative earnings and free cash flow, and with rates potentially heading higher, speculative names like this face the most valuation pressure \u2014 reduce your position size to manage risk."
+    "text": "SILG.L is down 10% and 32% off its high with every technical indicator pointing down \u2014 reduce this position alongside GDX.L since both precious metals holdings are in synchronized downtrends."
   },
   {
-    "id": "QBTS-raise_stop",
+    "id": "AMD-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your QBTS stop from $20.39 to $21.45 to lock in more protection on this volatile position in case it turns south quickly."
+    "text": "Raise your AMD stop from 382.11 to 406.13 to lock in more of your gains, especially since the MACD just turned bearish and you want protection if this pullback deepens."
   },
   {
-    "id": "MU-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your MU stop from $666.12 to $708.70 to protect a larger chunk of your gains as the stock has moved higher."
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META at 15.5x earnings with 22% revenue growth and the strongest free cash flow yield in your portfolio is a compelling value \u2014 consider adding on this strength while the price remains reasonable."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL at 23.8x earnings with 15% revenue growth and insider buying offers solid quality at a fair price \u2014 worth adding to as a defensive growth anchor in an uncertain macro environment."
   }
 ]
