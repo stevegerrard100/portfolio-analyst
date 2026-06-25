@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI just jumped to 4.2% with energy costs surging 23.5%, and the Fed is now signaling a possible rate hike rather than further cuts \u2014 this shift from easing to potential tightening could pressure growth stocks and valuations across your portfolio."
-  },
-  {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "SGLP.L is your largest holding but it's down 18% with a rock-bottom relative strength score of -99 and trading below its 50-day average \u2014 the trend is decisively broken and holding your biggest position in your weakest name is compounding your risk."
+    "text": "CPI just hit 4.2% \u2014 a 3-year high \u2014 and the Fed is now signaling a possible rate hike later this year instead of cuts, which means borrowing costs could go up and that's bad news for cash-burning, speculative stocks in your portfolio."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 34% with shrinking revenue, cash burn, nearly 19% short interest, and insiders selling \u2014 there's no fundamental support here and this position should be closed."
+    "text": "RGTI is down 38% with revenue shrinking by 34%, nearly 19% short interest (meaning a lot of pros are betting against it), insiders are selling their own shares, and it's 65% below its high \u2014 this one is broken, get out."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "QBTS is losing money, burning through cash, down 49% from its high with 17% short interest and insiders selling \u2014 there's no fundamental reason to hold this, take the loss and move on."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "IONQ is another cash-burning quantum computing bet with negative earnings, 15%+ short interest, and insiders heading for the exits \u2014 in a rising-rate environment this kind of speculative stock gets hit hardest, so cut it now."
+  },
+  {
+    "id": "SGLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "SGLP.L is your biggest position and it's down 20% with the worst relative strength score possible at -99 \u2014 even if you believe in it long-term, being this overweight a position that's performing this poorly is too much risk in one place."
   },
   {
     "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GDX.L is down 17% and sitting 32% below its yearly high with bearish momentum across the board \u2014 trim this position to reduce your exposure to a clearly deteriorating trend."
+    "text": "GDX.L is down over 20% and 35% below its yearly high with bearish momentum, so reduce your exposure here and free up capital for stronger opportunities."
   },
   {
-    "id": "SILG.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "SILG.L is down 10% and 32% off its high with every technical indicator pointing down \u2014 reduce this position alongside GDX.L since both precious metals holdings are in synchronized downtrends."
-  },
-  {
-    "id": "AMD-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your AMD stop from 382.11 to 406.13 to lock in more of your gains, especially since the MACD just turned bearish and you want protection if this pullback deepens."
-  },
-  {
-    "id": "META-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META at 15.5x earnings with 22% revenue growth and the strongest free cash flow yield in your portfolio is a compelling value \u2014 consider adding on this strength while the price remains reasonable."
+    "text": "Adobe looks compelling at just 7x earnings with 10.5% revenue growth and outstanding cash flow \u2014 this pullback in a profitable, proven business is the kind of opportunity worth adding to gradually."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL at 23.8x earnings with 15% revenue growth and insider buying offers solid quality at a fair price \u2014 worth adding to as a defensive growth anchor in an uncertain macro environment."
+    "text": "Google at 23.7x earnings with 15% revenue growth and insiders actually buying their own shares is a vote of confidence \u2014 consider adding a bit here while it's reasonably priced."
   }
 ]
