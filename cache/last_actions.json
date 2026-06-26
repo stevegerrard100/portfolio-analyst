@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI just hit 4.2% \u2014 a 3-year high \u2014 and the Fed is now signaling a possible rate hike later this year instead of cuts, which means borrowing costs could go up and that's bad news for cash-burning, speculative stocks in your portfolio."
+    "text": "Inflation just hit 4.2% \u2014 a 3-year high \u2014 and the Fed's dot plot is now pointing toward a possible rate hike rather than cuts, which means borrowing costs could rise and pressure stock valuations, especially for unprofitable or speculative companies in your portfolio."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 38% with revenue shrinking by 34%, nearly 19% short interest (meaning a lot of pros are betting against it), insiders are selling their own shares, and it's 65% below its high \u2014 this one is broken, get out."
+    "text": "RGTI is down 44% with a deeply negative PE, revenue shrinking by 34%, nearly 18% short interest, and insiders selling \u2014 this speculative bet has failed and you should exit to stop further losses."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "QBTS is losing money, burning through cash, down 49% from its high with 17% short interest and insiders selling \u2014 there's no fundamental reason to hold this, take the loss and move on."
+    "text": "QBTS is down 28%, the company is losing money, it's more than 50% off its high with 17% short interest and insider selling \u2014 the thesis is broken and it's time to cut this loose."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "IONQ is another cash-burning quantum computing bet with negative earnings, 15%+ short interest, and insiders heading for the exits \u2014 in a rising-rate environment this kind of speculative stock gets hit hardest, so cut it now."
+    "text": "IONQ is down 38% from its high, burning cash with no profits, carrying 13.6% short interest, and sitting in a clear downtrend \u2014 sell this speculative position before it falls further."
   },
   {
-    "id": "SGLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "SGLP.L is your biggest position and it's down 20% with the worst relative strength score possible at -99 \u2014 even if you believe in it long-term, being this overweight a position that's performing this poorly is too much risk in one place."
+    "id": "SGLP.L-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "SGLP.L is your biggest holding and it's down 20% with a relative strength score of -99, meaning it's weaker than virtually everything else in the market \u2014 exit this oversized losing position to free up capital."
   },
   {
     "id": "GDX.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GDX.L is down over 20% and 35% below its yearly high with bearish momentum, so reduce your exposure here and free up capital for stronger opportunities."
+    "text": "GDX.L is down nearly 20% with weak momentum across the board \u2014 trim this position to reduce your exposure to a holding that's clearly in a downtrend."
   },
   {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe looks compelling at just 7x earnings with 10.5% revenue growth and outstanding cash flow \u2014 this pullback in a profitable, proven business is the kind of opportunity worth adding to gradually."
+    "id": "GEV-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your GEV stop from $600.29 to $1,003.77 to lock in a much larger portion of your gains while still giving the position room to run."
   },
   {
-    "id": "GOOGL-add",
+    "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at 23.7x earnings with 15% revenue growth and insiders actually buying their own shares is a vote of confidence \u2014 consider adding a bit here while it's reasonably priced."
+    "text": "Meta is trading at just 15x earnings with 22% revenue growth and the best free cash flow yield in your portfolio at 3.4% \u2014 it's a strong candidate to add to on this valuation."
   }
 ]
