@@ -23,12 +23,6 @@
     "snoozed_price": 324.26
   },
   {
-    "id": "QBTS-sell",
-    "snoozed_until": "2026-05-28",
-    "snoozed_at": "2026-05-21",
-    "snoozed_price": 25.74
-  },
-  {
     "id": "5UR.DE-trim",
     "snoozed_until": "2026-05-28",
     "snoozed_at": "2026-05-21"
@@ -38,5 +32,11 @@
     "snoozed_until": "2026-05-29",
     "snoozed_at": "2026-05-22",
     "snoozed_price": 78.91
+  },
+  {
+    "id": "QBTS-sell",
+    "snoozed_until": "2026-07-29",
+    "snoozed_at": "2026-06-29",
+    "snoozed_price": 22.76
   }
 ]
