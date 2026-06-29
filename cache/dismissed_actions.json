@@ -6,12 +6,6 @@
     "snoozed_price": 17.88
   },
   {
-    "id": "RGTI-sell",
-    "snoozed_until": "2026-05-26",
-    "snoozed_at": "2026-05-19",
-    "snoozed_price": 15.6
-  },
-  {
     "id": "AEP-buy",
     "snoozed_until": "2026-05-27",
     "snoozed_at": "2026-05-20"
@@ -44,5 +38,11 @@
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
     "snoozed_price": 49.31
+  },
+  {
+    "id": "RGTI-sell",
+    "snoozed_until": "2026-07-29",
+    "snoozed_at": "2026-06-29",
+    "snoozed_price": 18.36
   }
 ]
