@@ -11,12 +11,6 @@
     "snoozed_at": "2026-05-20"
   },
   {
-    "id": "SGLP.L-sell",
-    "snoozed_until": "2026-05-28",
-    "snoozed_at": "2026-05-21",
-    "snoozed_price": 324.26
-  },
-  {
     "id": "5UR.DE-trim",
     "snoozed_until": "2026-05-28",
     "snoozed_at": "2026-05-21"
@@ -44,5 +38,11 @@
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
     "snoozed_price": 18.36
+  },
+  {
+    "id": "SGLP.L-sell",
+    "snoozed_until": "2026-07-29",
+    "snoozed_at": "2026-06-29",
+    "snoozed_price": 297.22
   }
 ]
