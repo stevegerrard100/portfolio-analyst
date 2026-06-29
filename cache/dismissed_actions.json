@@ -38,5 +38,11 @@
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
     "snoozed_price": 22.76
+  },
+  {
+    "id": "IONQ-sell",
+    "snoozed_until": "2026-07-29",
+    "snoozed_at": "2026-06-29",
+    "snoozed_price": 49.31
   }
 ]
