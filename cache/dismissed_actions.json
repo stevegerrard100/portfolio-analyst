@@ -44,5 +44,10 @@
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
     "snoozed_price": 297.22
+  },
+  {
+    "id": "MACRO-danger",
+    "snoozed_until": "2026-07-30",
+    "snoozed_at": "2026-06-30"
   }
 ]
