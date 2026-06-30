@@ -3,48 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "CPI just hit 4.2% \u2014 a three-year high \u2014 while the Fed dot plot is now signaling a possible rate hike in 2026; rising inflation with a hawkish Fed shift means borrowing costs could go up, which would pressure stock valuations across the board."
+    "text": "The Fed's dot plot now signals a possible rate hike in 2026 with inflation running hot at 4.2% \u2014 this means borrowing costs could go up instead of down, which is a headwind for stock valuations, so be cautious about adding new risk right now."
   },
   {
-    "id": "RGTI-sell",
+    "id": "GDX.L-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell Rigetti \u2014 it's down 43%, two-thirds off its high, revenue is shrinking by 34%, it's burning cash, and nearly 18% of shares are being bet against by short sellers, so there's no reason to stay in this."
-  },
-  {
-    "id": "SGLP.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell SGLP.L \u2014 it's your largest holding and its relative strength score is essentially the worst possible at -98.9, meaning it's underperforming nearly every other investment out there, and holding your biggest position in your weakest name is a serious portfolio risk."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell QBTS \u2014 this quantum computing stock is down 23%, nearly half off its high, losing money with negative cash flow, and has very high short interest, making it a broken speculative bet."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell IonQ \u2014 it's unprofitable, burning cash, 40% below its high, trading under its 50-day average, and nearly 14% of shares are sold short, which all together signals this position is broken."
+    "text": "Sell GDX.L \u2014 this gold miners ETF is down 20% with weak momentum and sits 34% off its yearly high, which means the trend is firmly against you."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 it's your worst ETF, down nearly 16% and sitting 29% below its high with bearish momentum everywhere, so reducing your exposure here frees up capital for stronger ideas."
+    "text": "Trim NCLP.L \u2014 it's down 16.5% and sitting 30% below its yearly high with bearish momentum, so reduce your exposure to limit further damage while keeping a small position in case it recovers."
   },
   {
-    "id": "MU-raise_stop",
+    "id": "AMD-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your MU stop-loss from 708.70 to 754.55 \u2014 this locks in an extra 6.5% of gains and protects your profit if the stock reverses."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to Adobe \u2014 at a PE of just 7.4 with 10.5% revenue growth and outstanding 12% free cash flow, it looks like a genuine bargain among your quality holdings."
+    "text": "Raise your AMD stop from $406.13 to $427.29 \u2014 this locks in more of your gains and protects you if the stock reverses while still giving it room to run."
   }
 ]
