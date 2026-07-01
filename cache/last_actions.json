@@ -1,26 +1,20 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "The Fed's dot plot now signals a possible rate hike in 2026 with inflation running hot at 4.2% \u2014 this means borrowing costs could go up instead of down, which is a headwind for stock valuations, so be cautious about adding new risk right now."
-  },
-  {
-    "id": "GDX.L-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell GDX.L \u2014 this gold miners ETF is down 20% with weak momentum and sits 34% off its yearly high, which means the trend is firmly against you."
+    "id": "GDX.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "GDX.L is down 21% and sitting 35% below its 52-week high with bearish momentum \u2014 reduce this position to limit further losses while gold miners struggle with weak technicals."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 it's down 16.5% and sitting 30% below its yearly high with bearish momentum, so reduce your exposure to limit further damage while keeping a small position in case it recovers."
+    "text": "This clean energy ETF is down 16% with bearish momentum and weak positioning \u2014 trim it back because rising rate expectations and sticky inflation are particularly tough on capital-intensive clean energy companies."
   },
   {
-    "id": "AMD-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your AMD stop from $406.13 to $427.29 \u2014 this locks in more of your gains and protects you if the stock reverses while still giving it room to run."
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UnitedHealth has the strongest technical setup in your portfolio \u2014 above its 50-day average with bullish momentum \u2014 and as a defensive healthcare giant, it's well-positioned if the economy slows or rates rise."
   }
 ]
