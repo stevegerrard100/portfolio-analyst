@@ -45,15 +45,15 @@
     "snoozed_at": "2026-06-30"
   },
   {
-    "id": "IONQ-trim",
-    "snoozed_until": "2026-08-01",
-    "snoozed_at": "2026-07-02",
-    "snoozed_price": 51.4
-  },
-  {
     "id": "QBTS-trim",
     "snoozed_until": "2026-08-01",
     "snoozed_at": "2026-07-02",
     "snoozed_price": 23.5
+  },
+  {
+    "id": "IONQ-trim",
+    "snoozed_until": "2026-08-01",
+    "snoozed_at": "2026-07-02",
+    "snoozed_price": 51.4
   }
 ]
