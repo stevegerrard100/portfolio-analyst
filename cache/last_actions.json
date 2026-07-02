@@ -1,20 +1,32 @@
 [
   {
-    "id": "GDX.L-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GDX.L is down 21% and sitting 35% below its 52-week high with bearish momentum \u2014 reduce this position to limit further losses while gold miners struggle with weak technicals."
+    "text": "Trim QBTS because you're down 21%, insiders are actively selling, 17% of shares are being bet against by short sellers, and the company still isn't making money \u2014 reduce your risk here before it gets worse."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "This clean energy ETF is down 16% with bearish momentum and weak positioning \u2014 trim it back because rising rate expectations and sticky inflation are particularly tough on capital-intensive clean energy companies."
+    "text": "Trim IONQ as it's 37% off its highs with negative earnings and heavy short interest \u2014 like QBTS, this speculative quantum bet has deteriorated and deserves a smaller position size until the story improves."
   },
   {
-    "id": "UNH-add",
+    "id": "MU-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MU stop-loss from 754.55 to 793.79 to lock in more of your gains while still giving the position room to move."
+  },
+  {
+    "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UnitedHealth has the strongest technical setup in your portfolio \u2014 above its 50-day average with bullish momentum \u2014 and as a defensive healthcare giant, it's well-positioned if the economy slows or rates rise."
+    "text": "Consider adding to ServiceNow \u2014 it's growing revenue at 21% with strong free cash flow and insider buying, making it one of the highest-quality compounders in your portfolio on a reasonable pullback."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe looks worth adding to here \u2014 the reported PE of 7.7 seems unusually low so double-check that figure, but strong free cash flow and the pullback could make this a genuine value opportunity if the data confirms."
   }
 ]

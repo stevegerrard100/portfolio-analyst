@@ -32,8 +32,8 @@
     "prev_level": 20.3858
   },
   "MU": {
-    "level": 754.55,
-    "prev_level": 708.6955
+    "level": 793.7854,
+    "prev_level": 754.55
   },
   "LPTH": {
     "level": 12.4944,
@@ -129,6 +129,10 @@
   },
   "UNH": {
     "level": 376.2159,
+    "prev_level": null
+  },
+  "GLW": {
+    "level": 177.9202,
     "prev_level": null
   }
 }
