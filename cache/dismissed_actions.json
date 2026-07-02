@@ -1,11 +1,5 @@
 [
   {
-    "id": "QBTS-trim",
-    "snoozed_until": "2026-05-26",
-    "snoozed_at": "2026-05-19",
-    "snoozed_price": 17.88
-  },
-  {
     "id": "AEP-buy",
     "snoozed_until": "2026-05-27",
     "snoozed_at": "2026-05-20"
@@ -49,5 +43,11 @@
     "id": "MACRO-danger",
     "snoozed_until": "2026-07-30",
     "snoozed_at": "2026-06-30"
+  },
+  {
+    "id": "QBTS-trim",
+    "snoozed_until": "2026-08-01",
+    "snoozed_at": "2026-07-02",
+    "snoozed_price": 23.5
   }
 ]
