@@ -1,26 +1,26 @@
 [
   {
-    "id": "RTX-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "RTX is only a \u00a3309 position, too small to meaningfully impact your portfolio \u2014 either sell it entirely or add enough to make it worth tracking."
-  },
-  {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe appears undervalued with exceptional 11% free cash flow yield and insider buying, making this pullback a reasonable spot to add to a quality name."
+    "text": "Adobe is 43% off its highs but has a remarkably cheap valuation (PE of 7.9) and generates excellent cash flow \u2014 this looks like a quality company on sale, making it worth adding to gradually at these levels."
+  },
+  {
+    "id": "LLY-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Eli Lilly has 45% revenue growth from its blockbuster weight-loss drugs and is only 2.4% from its highs \u2014 this is genuine strength worth adding to while momentum is still intact."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at 25x earnings with 15% revenue growth and insider buying offers solid value \u2014 consider adding while it trades at a reasonable price."
+    "text": "Google's momentum indicator just turned bullish after a pullback below its 50-day average, which often marks the early stage of a recovery \u2014 consider adding a small amount here to take advantage of the improving trend."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "ServiceNow's 21% revenue growth, strong free cash flow, and insider buying make it one of your highest-quality holdings worth building up on any weakness."
+    "text": "ServiceNow is showing bullish momentum above its 50-day average and still sits 48% below its high, meaning you're getting a proven enterprise software leader at a discount \u2014 worth adding on this technical strength."
   }
 ]
