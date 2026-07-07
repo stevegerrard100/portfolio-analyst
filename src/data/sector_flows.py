@@ -2,10 +2,12 @@
 
 import json
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+import requests
 
 log = logging.getLogger(__name__)
 
@@ -13,15 +15,25 @@ CACHE_DIR = Path("cache")
 SECTOR_LEADERS_CACHE = CACHE_DIR / "sector_leaders.json"
 SECTOR_LEADERS_CACHE_HOURS = 24
 
-# Liquidity/country filters mirror high_growth_screener.py's universe fetch.
-# "Industry: Stocks only (ex-Funds)" excludes ETFs/closed-end funds — without
-# it, leveraged/derivative ETFs (e.g. 2x single-stock funds) still show up
-# tagged with a regular GICS sector.
-FINVIZ_LIQUIDITY_FILTER = {
-    "Average Volume": "Over 300K",
+# Screener filter for sector leaders: Finviz's cumulative "Large" market cap
+# bucket ($10B+, not restricted to S&P 500 constituents), US-listed, common
+# stock only ("Stocks only (ex-Funds)" excludes ETFs/closed-end funds —
+# without it, leveraged/derivative ETFs still show up tagged with a regular
+# GICS sector), and above-average relative volume so the 1-week movers below
+# are volume-confirmed rather than thin/illiquid spikes.
+FINVIZ_SECTOR_LEADER_FILTER = {
+    "Market Cap.": "+Large (over $10bln)",
     "Country": "USA",
     "Industry": "Stocks only (ex-Funds)",
+    "Relative Volume": "Over 1",
 }
+
+# Pacing between per-sector Finviz calls, and backoff/retry on a 429 response.
+# Finviz rate-limits aggressively; back-to-back calls across 11 sectors were
+# seeing most sectors fail with 429 in production.
+_SECTOR_LEADER_SLEEP_SECONDS = 1.5
+_SECTOR_LEADER_429_BACKOFF_SECONDS = 5
+_SECTOR_LEADER_MIN_SUCCESSFUL_SECTORS = 6  # of 11 — below this, don't cache
 
 # The 11 Finviz sector filter values (finvizfinance.constants filter_dict["Sector"]).
 # These are also the exact strings Finviz's group Performance() screener returns
@@ -223,23 +235,46 @@ def _market_cap_bucket(market_cap) -> str:
     return "large"
 
 
+def _screener_view_with_429_retry(screener, **kwargs):
+    """
+    Call screener.screener_view(**kwargs), retrying once after a longer backoff
+    if Finviz responds with 429 Too Many Requests. Any other HTTP error (or a
+    second 429) propagates to the caller.
+    """
+    try:
+        return screener.screener_view(**kwargs)
+    except requests.exceptions.HTTPError as exc:
+        if "429" not in str(exc):
+            raise
+        log.warning(
+            "Finviz 429 rate limit — backing off %ss before one retry",
+            _SECTOR_LEADER_429_BACKOFF_SECONDS,
+        )
+        time.sleep(_SECTOR_LEADER_429_BACKOFF_SECONDS)
+        return screener.screener_view(**kwargs)
+
+
 def _fetch_leaders_for_sector(sector_name: str) -> list[dict]:
     """
-    Top 5 stocks in a single Finviz sector by 1-week performance.
+    Top 5 large-cap, volume-confirmed stocks in a single Finviz sector by
+    1-week performance.
 
     Two lightweight single-page requests: the stock-level Performance screener
     sorted by "Performance (Week)" descending (limit=5, so Finviz's own sort +
-    pagination does the ranking work), then an Overview lookup scoped to just
-    those 5 tickers for company name and market cap.
+    pagination does the ranking work) over the large-cap/above-average-volume
+    pool, then an Overview lookup scoped to just those 5 tickers for company
+    name and market cap.
     """
     from finvizfinance.screener.overview import Overview
     from finvizfinance.screener.performance import Performance as StockPerformance
 
-    filters = {"Sector": sector_name, **FINVIZ_LIQUIDITY_FILTER}
+    filters = {"Sector": sector_name, **FINVIZ_SECTOR_LEADER_FILTER}
 
     perf = StockPerformance()
     perf.set_filter(filters_dict=filters)
-    perf_df = perf.screener_view(order="Performance (Week)", ascend=False, limit=5, verbose=0)
+    perf_df = _screener_view_with_429_retry(
+        perf, order="Performance (Week)", ascend=False, limit=5, verbose=0
+    )
     if perf_df is None or perf_df.empty:
         return []
 
@@ -249,7 +284,7 @@ def _fetch_leaders_for_sector(sector_name: str) -> list[dict]:
 
     overview = Overview()
     overview.set_filter(ticker=",".join(tickers))
-    ov_df = overview.screener_view(verbose=0)
+    ov_df = _screener_view_with_429_retry(overview, verbose=0)
     if ov_df is None or ov_df.empty:
         return []
 
@@ -270,11 +305,15 @@ def _fetch_leaders_for_sector(sector_name: str) -> list[dict]:
 
 def fetch_sector_leaders() -> dict[str, list[dict]]:
     """
-    Top 5 stocks by 1-week performance for each of the 11 Finviz sectors.
+    Top 5 large-cap, volume-confirmed stocks by 1-week performance for each of
+    the 11 Finviz sectors.
 
     Portfolio holdings are NOT excluded — this is a sector shortlist, not a
     screener candidate list. Cached for 24 hours (cache/sector_leaders.json).
     A sector whose fetch fails gets [] rather than aborting the whole call.
+    If fewer than _SECTOR_LEADER_MIN_SUCCESSFUL_SECTORS sectors returned any
+    data (e.g. a burst of 429s), the result is NOT cached — writing a mostly-
+    empty payload would otherwise lock in near-total failure for 24 hours.
     """
     CACHE_DIR.mkdir(exist_ok=True)
 
@@ -298,10 +337,21 @@ def fetch_sector_leaders() -> dict[str, list[dict]]:
         except Exception as exc:
             log.warning("Sector leaders fetch failed for %s: %s", sector_name, exc)
             leaders[sector_name] = []
+        time.sleep(_SECTOR_LEADER_SLEEP_SECONDS)
+
+    successful = sum(1 for v in leaders.values() if v)
+    if successful < _SECTOR_LEADER_MIN_SUCCESSFUL_SECTORS:
+        log.warning(
+            "Sector leaders: only %d/%d sectors returned data — skipping cache "
+            "write so the next run retries fresh instead of being stuck with a "
+            "mostly-empty 24h cache",
+            successful, len(FINVIZ_SECTORS),
+        )
+        return leaders
 
     try:
         SECTOR_LEADERS_CACHE.write_text(json.dumps(leaders), encoding="utf-8")
-        log.info("Sector leaders cached: %d sectors", len(leaders))
+        log.info("Sector leaders cached: %d/%d sectors with data", successful, len(leaders))
     except Exception as exc:
         log.warning("Sector leaders cache write failed: %s", exc)
 
