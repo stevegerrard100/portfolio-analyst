@@ -1,10 +1,42 @@
 """Sector performance and rotation: Finviz + SPDR ETF Mansfield RS."""
 
+import json
 import logging
+from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
 log = logging.getLogger(__name__)
+
+CACHE_DIR = Path("cache")
+SECTOR_LEADERS_CACHE = CACHE_DIR / "sector_leaders.json"
+SECTOR_LEADERS_CACHE_HOURS = 24
+
+# Liquidity/country filters mirror high_growth_screener.py's universe fetch.
+# "Industry: Stocks only (ex-Funds)" excludes ETFs/closed-end funds — without
+# it, leveraged/derivative ETFs (e.g. 2x single-stock funds) still show up
+# tagged with a regular GICS sector.
+FINVIZ_LIQUIDITY_FILTER = {
+    "Average Volume": "Over 300K",
+    "Country": "USA",
+    "Industry": "Stocks only (ex-Funds)",
+}
+
+# The 11 Finviz sector filter values (finvizfinance.constants filter_dict["Sector"]).
+# These are also the exact strings Finviz's group Performance() screener returns
+# in its "sector" column, so they double as the keys used by _sector_heatmap()
+# in renderer.py and the sector_leaders dict below.
+FINVIZ_SECTORS = [
+    "Basic Materials", "Communication Services", "Consumer Cyclical",
+    "Consumer Defensive", "Energy", "Financial", "Healthcare", "Industrials",
+    "Real Estate", "Technology", "Utilities",
+]
+
+# Cap-size buckets mirror the ranges used in high_growth_screener.py's universe
+# fetch (Small $300M-$2B, Mid $2B-$10B); anything above that is "large".
+_SECTOR_LEADER_SMALL_CAP_MAX = 2_000_000_000
+_SECTOR_LEADER_MID_CAP_MAX = 10_000_000_000
 
 SPDR_ETFS = ["XLK", "XLF", "XLE", "XLV", "XLI", "XLY", "XLP", "XLU", "XLRE", "XLB", "XLC"]
 COMMODITY_PROXIES = ["GLD", "GDX", "SLV", "XME", "USO"]
@@ -30,6 +62,23 @@ SECTOR_TO_ETF = {
 # Finviz sector performance
 # ---------------------------------------------------------------------------
 
+def _parse_perf_col(series: pd.Series) -> pd.Series:
+    """
+    Finviz mixes formats: 'Perf Week' → '-3.50%' string (already pct),
+    other perf cols → -0.0363 float (decimal fraction needing * 100).
+    Detect by whether the raw value contains '%'.
+    """
+    def _convert(val):
+        s = str(val).strip()
+        if "%" in s:
+            return round(pd.to_numeric(s.replace("%", "").strip(), errors="coerce"), 2)
+        num = pd.to_numeric(s, errors="coerce")
+        if pd.isna(num):
+            return None
+        return round(num * 100, 2)
+    return series.apply(_convert)
+
+
 def fetch_sector_performance() -> list[dict]:
     """
     Fetch sector performance table from Finviz.
@@ -54,22 +103,6 @@ def fetch_sector_performance() -> list[dict]:
             "Perf Year": "change_1y",
         }
         df = df.rename(columns=col_map)
-
-        def _parse_perf_col(series: pd.Series) -> pd.Series:
-            """
-            Finviz mixes formats: 'Perf Week' → '-3.50%' string (already pct),
-            other perf cols → -0.0363 float (decimal fraction needing * 100).
-            Detect by whether the raw value contains '%'.
-            """
-            def _convert(val):
-                s = str(val).strip()
-                if "%" in s:
-                    return round(pd.to_numeric(s.replace("%", "").strip(), errors="coerce"), 2)
-                num = pd.to_numeric(s, errors="coerce")
-                if pd.isna(num):
-                    return None
-                return round(num * 100, 2)
-            return series.apply(_convert)
 
         perf_cols = ["change_1d", "change_1w", "change_1m", "change_3m", "change_6m", "change_1y"]
         for col in perf_cols:
@@ -176,6 +209,106 @@ def compute_portfolio_alignment(
 
 
 # ---------------------------------------------------------------------------
+# Sector leaders — top 5 stocks per sector by 1-week performance
+# ---------------------------------------------------------------------------
+
+def _market_cap_bucket(market_cap) -> str:
+    """Small / mid / large bucket from a raw Finviz market cap float."""
+    if market_cap is None or pd.isna(market_cap):
+        return "large"
+    if market_cap < _SECTOR_LEADER_SMALL_CAP_MAX:
+        return "small"
+    if market_cap < _SECTOR_LEADER_MID_CAP_MAX:
+        return "mid"
+    return "large"
+
+
+def _fetch_leaders_for_sector(sector_name: str) -> list[dict]:
+    """
+    Top 5 stocks in a single Finviz sector by 1-week performance.
+
+    Two lightweight single-page requests: the stock-level Performance screener
+    sorted by "Performance (Week)" descending (limit=5, so Finviz's own sort +
+    pagination does the ranking work), then an Overview lookup scoped to just
+    those 5 tickers for company name and market cap.
+    """
+    from finvizfinance.screener.overview import Overview
+    from finvizfinance.screener.performance import Performance as StockPerformance
+
+    filters = {"Sector": sector_name, **FINVIZ_LIQUIDITY_FILTER}
+
+    perf = StockPerformance()
+    perf.set_filter(filters_dict=filters)
+    perf_df = perf.screener_view(order="Performance (Week)", ascend=False, limit=5, verbose=0)
+    if perf_df is None or perf_df.empty:
+        return []
+
+    tickers = perf_df["Ticker"].dropna().tolist()
+    if not tickers:
+        return []
+
+    overview = Overview()
+    overview.set_filter(ticker=",".join(tickers))
+    ov_df = overview.screener_view(verbose=0)
+    if ov_df is None or ov_df.empty:
+        return []
+
+    merged = perf_df.merge(ov_df[["Ticker", "Company", "Market Cap"]], on="Ticker", how="inner")
+    merged["perf_1w"] = _parse_perf_col(merged["Perf Week"])
+    merged = merged.dropna(subset=["perf_1w"]).sort_values("perf_1w", ascending=False)
+
+    leaders = []
+    for _, row in merged.head(5).iterrows():
+        leaders.append({
+            "ticker":            row["Ticker"],
+            "company_name":      row.get("Company", ""),
+            "perf_1w":           float(row["perf_1w"]),
+            "market_cap_bucket": _market_cap_bucket(row.get("Market Cap")),
+        })
+    return leaders
+
+
+def fetch_sector_leaders() -> dict[str, list[dict]]:
+    """
+    Top 5 stocks by 1-week performance for each of the 11 Finviz sectors.
+
+    Portfolio holdings are NOT excluded — this is a sector shortlist, not a
+    screener candidate list. Cached for 24 hours (cache/sector_leaders.json).
+    A sector whose fetch fails gets [] rather than aborting the whole call.
+    """
+    CACHE_DIR.mkdir(exist_ok=True)
+
+    if SECTOR_LEADERS_CACHE.exists():
+        try:
+            age_h = (
+                datetime.now() - datetime.fromtimestamp(SECTOR_LEADERS_CACHE.stat().st_mtime)
+            ).total_seconds() / 3600
+            if age_h < SECTOR_LEADERS_CACHE_HOURS:
+                cached = json.loads(SECTOR_LEADERS_CACHE.read_text(encoding="utf-8"))
+                log.info("Sector leaders: using cached result (%.1fh old)", age_h)
+                return cached
+        except Exception:
+            pass
+
+    log.info("Sector leaders: fetching top stocks per sector from Finviz...")
+    leaders: dict[str, list[dict]] = {}
+    for sector_name in FINVIZ_SECTORS:
+        try:
+            leaders[sector_name] = _fetch_leaders_for_sector(sector_name)
+        except Exception as exc:
+            log.warning("Sector leaders fetch failed for %s: %s", sector_name, exc)
+            leaders[sector_name] = []
+
+    try:
+        SECTOR_LEADERS_CACHE.write_text(json.dumps(leaders), encoding="utf-8")
+        log.info("Sector leaders cached: %d sectors", len(leaders))
+    except Exception as exc:
+        log.warning("Sector leaders cache write failed: %s", exc)
+
+    return leaders
+
+
+# ---------------------------------------------------------------------------
 # Main entry point for this module
 # ---------------------------------------------------------------------------
 
@@ -193,6 +326,9 @@ def fetch_sector_data(market_data: dict, holdings: list[dict]) -> dict:
     log.info("Computing portfolio alignment score...")
     alignment = compute_portfolio_alignment(holdings, etf_rs)
 
+    log.info("Fetching sector leaders (top stocks per sector)...")
+    sector_leaders = fetch_sector_leaders()
+
     # Identify early rotation signals across all tracked ETFs
     rotation_signals = []
     for ticker, rs in etf_rs.items():
@@ -208,4 +344,5 @@ def fetch_sector_data(market_data: dict, holdings: list[dict]) -> dict:
         "etf_rs": etf_rs,
         "alignment": alignment,
         "rotation_signals": rotation_signals,
+        "sector_leaders": sector_leaders,
     }

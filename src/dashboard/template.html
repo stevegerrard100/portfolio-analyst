@@ -298,9 +298,25 @@
 
     /* ── Sector heatmap ──────────────────────────────────── */
     .sector-heatmap { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; margin-bottom: 14px; }
-    .hm-cell { padding: 7px 6px; border-radius: 5px; text-align: center; }
+    .hm-cell { padding: 7px 6px; border-radius: 5px; text-align: center; cursor: pointer; }
+    .hm-cell:hover { outline: 1px solid rgba(201,209,217,0.35); }
+    .hm-cell.active { outline: 1px solid var(--blue); }
     .hm-name { font-size: 10px; color: rgba(201,209,217,0.65); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hm-chg  { font-size: 12px; font-weight: 700; }
+
+    /* ── Sector leaders panel ────────────────────────────── */
+    .sector-leaders-panel { display: none; margin: 0 0 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .sector-leaders-panel.open { display: block; }
+    .sl-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .sl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 2px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .sl-row:last-child { border-bottom: none; }
+    .sl-left { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+    .sl-ticker { font-weight: 700; color: var(--text); flex-shrink: 0; }
+    .sl-company { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sl-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sl-chg { font-weight: 700; font-size: 12px; }
+    .sl-cap-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.05em; background: #111c28; border: 1px solid #3d5a78; color: #7ca5c4; text-transform: uppercase; }
+    .sl-empty { font-size: 12px; color: var(--muted); padding: 4px 2px; }
   </style>
 </head>
 <body>
@@ -347,6 +363,7 @@
         <div class="card">
           <div class="card-title">Sector Rotation</div>
           <div class="sector-heatmap" id="sector-heatmap"></div>
+          <div class="sector-leaders-panel" id="sector-leaders-panel"></div>
           <div class="narrative" id="sector-text"></div>
         </div>
       </div>
@@ -1105,8 +1122,35 @@
       ).join('');
     }
 
-    // ── Sector heatmap ───────────────────────────────────────────────────────
-    const hmEl = document.getElementById('sector-heatmap');
+    // ── Sector heatmap ───────────────────────────────────────────────────
+    const hmEl    = document.getElementById('sector-heatmap');
+    const slPanel = document.getElementById('sector-leaders-panel');
+    let openSector = null;
+
+    function renderSectorLeadersPanel(sector) {
+      const leaders = (DATA.sector_leaders && DATA.sector_leaders[sector]) || [];
+      if (!leaders.length) {
+        slPanel.innerHTML = `<div class="sl-title">${esc(sector)} — Top Stocks (1W)</div>
+          <div class="sl-empty">Data unavailable</div>`;
+        return;
+      }
+      const rows = leaders.map(s => {
+        const v = s.perf_1w;
+        const color = v >= 0 ? 'var(--green)' : 'var(--red)';
+        return `<div class="sl-row">
+          <div class="sl-left">
+            <span class="sl-ticker">${esc(s.ticker)}</span>
+            <span class="sl-company">${esc(s.company_name || '')}</span>
+          </div>
+          <div class="sl-right">
+            <span class="sl-chg" style="color:${color}">${v >= 0 ? '+' : ''}${v.toFixed(1)}%</span>
+            <span class="sl-cap-badge">${esc((s.market_cap_bucket || '').toUpperCase())}</span>
+          </div>
+        </div>`;
+      }).join('');
+      slPanel.innerHTML = `<div class="sl-title">${esc(sector)} — Top Stocks (1W)</div>${rows}`;
+    }
+
     if (hmEl && DATA.sector_heatmap && DATA.sector_heatmap.length) {
       const maxAbs = Math.max(...DATA.sector_heatmap.map(s => Math.abs(s.change_1w)), 0.01);
       hmEl.innerHTML = DATA.sector_heatmap.map(s => {
@@ -1115,11 +1159,28 @@
         const bg    = v >= 0 ? `rgba(63,185,80,${alpha})` : `rgba(248,81,73,${alpha})`;
         const color = v >= 0 ? 'var(--green)' : 'var(--red)';
         const short = s.sector.replace('Consumer ', 'C. ').replace(' Services', '').replace(' Estate', '');
-        return `<div class="hm-cell" style="background:${bg}">
+        return `<div class="hm-cell" data-sector="${esc(s.sector)}" style="background:${bg}">
           <div class="hm-name">${esc(short)}</div>
           <div class="hm-chg" style="color:${color}">${v >= 0 ? '+' : ''}${v.toFixed(1)}%</div>
         </div>`;
       }).join('');
+
+      hmEl.querySelectorAll('.hm-cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+          const sector = cell.getAttribute('data-sector');
+          if (openSector === sector) {
+            openSector = null;
+            slPanel.classList.remove('open');
+            slPanel.innerHTML = '';
+            hmEl.querySelectorAll('.hm-cell.active').forEach(c => c.classList.remove('active'));
+            return;
+          }
+          openSector = sector;
+          renderSectorLeadersPanel(sector);
+          slPanel.classList.add('open');
+          hmEl.querySelectorAll('.hm-cell').forEach(c => c.classList.toggle('active', c === cell));
+        });
+      });
     }
 
     // ── Sparkline SVG helper ─────────────────────────────────────────────────

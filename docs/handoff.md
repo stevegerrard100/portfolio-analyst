@@ -91,6 +91,7 @@ cache/                        Written at runtime, gitignored except where noted
   breakout_screener.json      Breakout screener results (8h TTL)
   high_growth_screener.json   High-Growth Watch results (24h TTL)
   high_growth_universe.json   Finviz mid/small-cap ticker universe (24h TTL, separate cache)
+  sector_leaders.json         Top 5 stocks per sector by 1-week performance (24h TTL)
   sec_company_tickers.json    EDGAR CIK map (7-day TTL)
   last_actions.json           Today's final actions list (force-added to git by CI)
   last_breakout_scores.json   Breakout composite scores from last run (force-added
@@ -462,11 +463,14 @@ Fetches 6 FRED series (VIX sourced from yfinance `^VIX` instead — see VIX note
 
 ### 4.10 `src/data/sector_flows.py`
 
-Two inputs → one output dict:
+Three inputs → one output dict:
 1. **Finviz sector performance** — 11 S&P sectors: 1d/1w/1m/3m/6m/1y
 2. **SPDR ETF Mansfield RS** — from pre-fetched `market_data` dict. Rotation signals: `early_rotation`, `momentum_building`, `rotation_peaking`.
+3. **Sector leaders** (`fetch_sector_leaders()`) — top 5 stocks per sector by 1-week performance.
 
 Also computes a **portfolio alignment score**. The `finviz_performance` list drives the Today's Brief sector heatmap.
+
+**`fetch_sector_leaders()`** — for each of the 11 `FINVIZ_SECTORS` (the exact Finviz sector filter values, which double as the keys used by `finviz_performance`/`_sector_heatmap`), fetches the top 5 stocks by 1-week performance. Two lightweight single-page Finviz requests per sector: `finvizfinance.screener.performance.Performance` ordered by `"Performance (Week)"` descending with `limit=5` (Finviz's own sort does the ranking), then `finvizfinance.screener.overview.Overview` scoped to just those 5 tickers (via the `ticker=` param) for company name and market cap. Filters (`FINVIZ_LIQUIDITY_FILTER`): `Average Volume: Over 300K`, `Country: USA`, `Industry: Stocks only (ex-Funds)` — the last one is required to exclude ETFs/closed-end funds, which otherwise still appear tagged with a regular GICS sector (e.g. leveraged single-stock ETFs). Portfolio holdings are **not** excluded. Each sector's fetch is wrapped in try/except — a failed sector gets `[]` and a logged warning rather than aborting the whole call. Result shape: `{sector_name: [{ticker, company_name, perf_1w, market_cap_bucket}, ...]}`. `market_cap_bucket` (`small`/`mid`/`large`) uses the same $2B/$10B boundaries as `high_growth_screener.py`'s universe cap ranges. Cached for 24 hours (`cache/sector_leaders.json`). `_parse_perf_col()` (module-level, shared with `fetch_sector_performance()`) normalises Finviz's mixed percentage formats.
 
 ### 4.11 `src/dashboard/renderer.py`
 
@@ -584,7 +588,7 @@ The template (`src/dashboard/template.html`) has one placeholder: `{{DASHBOARD_D
 - **Action Board** card — appears first, hidden entirely if `today_actions` is empty. See Action Board section below.
 - **Today's Verdict** card — Claude's one-paragraph overall assessment
 - **Macro Environment** card — 7 colour-coded data pills above the macro narrative text
-- **Sector Rotation** card — 11-sector heatmap grid above the sector narrative text
+- **Sector Rotation** card — 11-sector heatmap grid above the sector narrative text. Each sector box is clickable: clicking expands an inline panel below the grid listing that sector's top 5 stocks by 1-week performance (`DATA.sector_leaders[sector]`) — ticker, company name, colour-coded 1w %, and a market-cap-bucket badge (SMALL/MID/LARGE). Only one sector's panel is open at a time; clicking the same box again collapses it, clicking a different box swaps the panel content directly. If a sector's leaders list is empty (that day's fetch failed), the panel shows "Data unavailable" instead.
 - **Top Momentum Picks** — top 3 screener candidates as teaser cards with 30-day SVG sparkline charts and a "See all N opportunities →" link to Tab 3
 
 **Tab 2 — My Portfolio**:

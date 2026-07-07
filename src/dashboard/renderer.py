@@ -532,6 +532,7 @@ def render_dashboard(
         "hg_candidates":        hg_candidates,
         "macro_pills":          _macro_pills(macro),
         "sector_heatmap":       _sector_heatmap(sector_flows),
+        "sector_leaders":       sector_flows.get("sector_leaders", {}),
         "today_actions":        _build_today_actions(analysis.get("actions", []), market_data or {}),
         "dismiss_url":          os.environ.get("NETLIFY_DISMISS_URL", ""),
     }
