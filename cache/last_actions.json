@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "SNDK1-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim SNDK1 \u2014 you're down 14% on a position with no recognizable market data, which means you can't manage risk, set stops, or assess value, so reduce exposure immediately."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to ADBE \u2014 at just 7.9x earnings with 11.4% free cash flow yield (meaning the company generates a lot of cash relative to its price) and 10.5% revenue growth, this is one of your most attractively valued holdings on a pullback."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to META \u2014 trading at just 16x earnings while 24% off its highs gives you a rare chance to buy a dominant cash-generating business at a discounted price."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 insiders are buying alongside 15% revenue growth and a reasonable 25x valuation, which is a strong confidence signal from people who know the business best."
+  }
+]
