@@ -1,26 +1,26 @@
 [
   {
+    "id": "AMD-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your AMD stop from 427.29 to 450.54 to lock in more of your gains and protect against a pullback in this choppy market."
+  },
+  {
+    "id": "META-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your META stop from 516.96 to 591.14 \u2014 that's a meaningful 14.3% bump that protects a much larger chunk of your profit."
+  },
+  {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe is 43% off its highs but has a remarkably cheap valuation (PE of 7.9) and generates excellent cash flow \u2014 this looks like a quality company on sale, making it worth adding to gradually at these levels."
-  },
-  {
-    "id": "LLY-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Eli Lilly has 45% revenue growth from its blockbuster weight-loss drugs and is only 2.4% from its highs \u2014 this is genuine strength worth adding to while momentum is still intact."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google's momentum indicator just turned bullish after a pullback below its 50-day average, which often marks the early stage of a recovery \u2014 consider adding a small amount here to take advantage of the improving trend."
+    "text": "Consider adding to Adobe \u2014 at a PE of just 8 with an 11% free cash flow yield and steady 10.5% revenue growth, it looks genuinely undervalued for a high-quality software business generating real profits."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "ServiceNow is showing bullish momentum above its 50-day average and still sits 48% below its high, meaning you're getting a proven enterprise software leader at a discount \u2014 worth adding on this technical strength."
+    "text": "Consider adding to ServiceNow \u2014 with 21% revenue growth, a strong 4% free cash flow yield, and a reasonable PE of 22 for its growth rate, it's one of your highest-quality holdings pulling back to an attractive level."
   }
 ]
