@@ -1,26 +1,20 @@
 [
   {
-    "id": "AMD-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your AMD stop from 427.29 to 450.54 to lock in more of your gains and protect against a pullback in this choppy market."
-  },
-  {
-    "id": "META-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your META stop from 516.96 to 591.14 \u2014 that's a meaningful 14.3% bump that protects a much larger chunk of your profit."
-  },
-  {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Adobe \u2014 at a PE of just 8 with an 11% free cash flow yield and steady 10.5% revenue growth, it looks genuinely undervalued for a high-quality software business generating real profits."
+    "text": "Adobe looks genuinely cheap at a PE of just 8 with an 11% free cash flow yield and solid 10% revenue growth \u2014 this is a quality business at a discounted price worth adding to."
   },
   {
-    "id": "NOW-add",
+    "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ServiceNow \u2014 with 21% revenue growth, a strong 4% free cash flow yield, and a reasonable PE of 22 for its growth rate, it's one of your highest-quality holdings pulling back to an attractive level."
+    "text": "Google is growing revenue at 15% with strong free cash flow and a reasonable PE of 25, making it a quality compounder worth adding to on any weakness."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UnitedHealth is just 0.6% from its 52-week high with bullish momentum and insiders buying \u2014 this is one of your strongest positions and worth adding to while it's still near breakout levels."
   }
 ]
