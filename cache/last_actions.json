@@ -1,20 +1,32 @@
 [
   {
+    "id": "SILG.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim SILG.L \u2014 it's down nearly 14% and sitting over 34% below its 52-week high in a clear downtrend, so reduce your exposure before it falls further."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 as your worst-performing ETF, down 19% and 32% below its high while trading below its 50-day average, cut this back to limit the drag on your portfolio."
+  },
+  {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks genuinely cheap at a PE of just 8 with an 11% free cash flow yield and solid 10% revenue growth \u2014 this is a quality business at a discounted price worth adding to."
+    "text": "Add to ADBE \u2014 at a PE of just 8.1 with 10.5% revenue growth and outstanding free cash flow, Adobe looks genuinely undervalued and this is a good opportunity to build your position."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is growing revenue at 15% with strong free cash flow and a reasonable PE of 25, making it a quality compounder worth adding to on any weakness."
+    "text": "Add to GOOGL \u2014 with a reasonable PE of 24.6, 15% revenue growth, healthy free cash flow, and insiders buying, Google is attractively priced and worth increasing your stake."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UnitedHealth is just 0.6% from its 52-week high with bullish momentum and insiders buying \u2014 this is one of your strongest positions and worth adding to while it's still near breakout levels."
+    "text": "Add to UNH \u2014 UnitedHealth is at its 52-week high with bullish momentum, insider buying, and solid fundamentals, so adding here rides the strength of a confirmed uptrend."
   }
 ]
