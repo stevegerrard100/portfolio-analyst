@@ -96,8 +96,8 @@
     "prev_level": null
   },
   "GOOGL": {
-    "level": 297.8978,
-    "prev_level": null
+    "level": 313.2259,
+    "prev_level": 297.8978
   },
   "META": {
     "level": 591.1421,
@@ -141,6 +141,10 @@
   },
   "EXFY": {
     "level": 1.2085,
+    "prev_level": null
+  },
+  "BE": {
+    "level": 117.2112,
     "prev_level": null
   }
 }

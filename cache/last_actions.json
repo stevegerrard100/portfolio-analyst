@@ -3,30 +3,24 @@
     "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 it's down nearly 14% and sitting over 34% below its 52-week high in a clear downtrend, so reduce your exposure before it falls further."
+    "text": "Trim SILG.L because it's down 14% with every technical indicator bearish and 35% off its high \u2014 reduce your exposure before further damage in a tightening environment."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
+    "id": "GOOGL-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 as your worst-performing ETF, down 19% and 32% below its high while trading below its 50-day average, cut this back to limit the drag on your portfolio."
+    "text": "Raise your GOOGL stop from $297.90 to $313.23 to lock in more of your gains while still giving the stock room to pull back to its 50-day average."
+  },
+  {
+    "id": "LLY-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to LLY \u2014 it's only 3.8% off its high with 45% revenue growth from its weight-loss drug franchise, making it one of the strongest fundamental stories in your portfolio."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 at a PE of just 8.1 with 10.5% revenue growth and outstanding free cash flow, Adobe looks genuinely undervalued and this is a good opportunity to build your position."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to GOOGL \u2014 with a reasonable PE of 24.6, 15% revenue growth, healthy free cash flow, and insiders buying, Google is attractively priced and worth increasing your stake."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to UNH \u2014 UnitedHealth is at its 52-week high with bullish momentum, insider buying, and solid fundamentals, so adding here rides the strength of a confirmed uptrend."
+    "text": "Consider adding to ADBE on this pullback \u2014 it appears oversold at 40% off its high with a surprisingly low PE of 8.1, though verify that valuation metric before acting since it may reflect adjusted numbers."
   }
 ]
