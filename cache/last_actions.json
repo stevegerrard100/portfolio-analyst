@@ -1,26 +1,44 @@
 [
   {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "RGTI is down 52% and 73% off its high with declining revenue, negative cash flow, and no path to profitability \u2014 this position is broken and should be closed to stop further losses."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 37% and 58% off its high, the company loses money, and there's nothing in the technicals or fundamentals suggesting a turnaround \u2014 exit this position now."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 25% and more than half off its high with no earnings and cash burn \u2014 like the other quantum names, the speculative thesis has failed and this should be sold."
+  },
+  {
+    "id": "EXFY-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "EXFY has missed earnings three times in a row with insiders selling and only 2% revenue growth \u2014 reduce your exposure here before the next disappointment."
+  },
+  {
     "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L because it's down 14% with every technical indicator bearish and 35% off its high \u2014 reduce your exposure before further damage in a tightening environment."
+    "text": "SILG.L is down 36% from its high with bearish momentum below its 50-day average \u2014 trim this position to limit further damage in a commodity ETF that's clearly broken down."
   },
   {
-    "id": "GOOGL-raise_stop",
-    "action_type": "raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your GOOGL stop from $297.90 to $313.23 to lock in more of your gains while still giving the stock room to pull back to its 50-day average."
-  },
-  {
-    "id": "LLY-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to LLY \u2014 it's only 3.8% off its high with 45% revenue growth from its weight-loss drug franchise, making it one of the strongest fundamental stories in your portfolio."
+    "text": "NCLP.L is your worst ETF at 34% off its high with persistent bearish momentum \u2014 reduce your stake to bring this overweight risk back in line."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE on this pullback \u2014 it appears oversold at 40% off its high with a surprisingly low PE of 8.1, though verify that valuation metric before acting since it may reflect adjusted numbers."
+    "text": "Adobe looks genuinely cheap at a PE of just 8.4 with nearly 11% free cash flow yield and steady 10% revenue growth \u2014 this is a high-quality business on sale worth adding to on this pullback."
   }
 ]
