@@ -1,44 +1,44 @@
 [
   {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "RGTI is down 52.5% with revenue shrinking 34%, the company is burning cash, and nearly 18% of shares are being bet against \u2014 there's no reason to stay in this position."
+  },
+  {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS \u2014 the company is losing money, it's down 36%, insiders are dumping shares, and nearly 20% short interest tells you the smart money sees more pain ahead."
+    "text": "QBTS has fallen nearly 39% and sits almost 60% off its high with negative earnings, cash burn, and 20% short interest \u2014 cut your losses and move on."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ \u2014 it's down 23% with negative earnings, negative cash flow, and no clear path to profitability, making this a cash-burning speculative bet that isn't working."
-  },
-  {
-    "id": "EXFY-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim EXFY \u2014 with only 2% revenue growth, insiders selling, and three consecutive earnings misses, the fundamentals are deteriorating and this position should be reduced before it gets worse."
+    "text": "IONQ is down 28%, more than half off its high, losing money with no clear path to profitability, and over 11% short interest \u2014 exit this speculative position before it gets worse."
   },
   {
     "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 this commodities ETF is down over 14% and sitting 35% below its yearly high, which means it's in a clear downtrend and you should reduce your exposure rather than hope for a bounce."
+    "text": "SILG.L is down 37% from its high with bearish momentum across every indicator \u2014 reduce your exposure here to limit further damage in a position that's clearly in a downtrend."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 down 20% and 33% off its high with bearish momentum, this ETF is trending the wrong way and deserves a smaller position until it stabilizes."
+    "text": "NCLP.L is your worst-performing ETF at 35% below its high in a sustained downtrend \u2014 trim this position to free up capital for stronger opportunities."
   },
   {
-    "id": "EXFY-raise_stop",
+    "id": "AMD-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your EXFY stop-loss from $1.21 to $1.27 so you lock in a tighter exit point and limit further downside if the stock keeps sliding."
+    "text": "Raise your AMD stop from 450.54 to 474.55 to lock in more of your gains while still giving the position room to move."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 at just 8x earnings (worth verifying, as that's unusually cheap for Adobe) with strong revenue growth and bullish momentum, this looks like a quality name at a discount if the valuation checks out."
+    "text": "Adobe stands out as a value opportunity with a PE of just 8.2 and 10.5% revenue growth \u2014 consider adding to this position while it's priced well below what its fundamentals suggest it's worth."
   }
 ]
