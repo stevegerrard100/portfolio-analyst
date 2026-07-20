@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell RGTI \u2014 down 56% with shrinking revenue, nearly 18% short interest, and insiders selling, this position is broken and the money is better deployed elsewhere."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell IONQ \u2014 down 33%, 58% off its high, negative earnings, 12% short interest, and insider selling all point to a failed thesis with no catalyst for recovery."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell QBTS \u2014 down 44% and 63% off its high, this speculative quantum computing bet has collapsed and there's no fundamental floor to support holding on."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 your worst ETF at -27% and 38% below its yearly high, a drawdown this deep in a diversified fund suggests something structurally wrong, so reduce your exposure now."
+  },
+  {
+    "id": "SILG.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim SILG.L \u2014 down 20% and nearly 40% off its high in a clear downtrend below its moving average, cut this commodity position back before more damage is done."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 it's barely underwater with 15% revenue growth, reasonable valuation, and insider buying, making this pullback a good spot to build your position in a strong business."
+  }
+]

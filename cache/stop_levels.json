@@ -146,5 +146,13 @@
   "BE": {
     "level": 117.2112,
     "prev_level": null
+  },
+  "NSC": {
+    "level": 311.8439,
+    "prev_level": null
+  },
+  "MAS": {
+    "level": 71.9644,
+    "prev_level": null
   }
 }
