@@ -3,36 +3,36 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell RGTI \u2014 down 56% with shrinking revenue, nearly 18% short interest, and insiders selling, this position is broken and the money is better deployed elsewhere."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell IONQ \u2014 down 33%, 58% off its high, negative earnings, 12% short interest, and insider selling all point to a failed thesis with no catalyst for recovery."
+    "text": "RGTI is down 55% with shrinking revenue, nearly 18% short interest, insider selling, and no path to profitability \u2014 this thesis is broken and the capital is better deployed elsewhere."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS \u2014 down 44% and 63% off its high, this speculative quantum computing bet has collapsed and there's no fundamental floor to support holding on."
+    "text": "QBTS is down 43% with deep losses, 20% short interest, insider selling, and no fundamental support \u2014 cut this loss now rather than hoping speculative quantum computing sentiment rescues it."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 32%, unprofitable, 58% below its yearly high with high short interest \u2014 another money-losing quantum name where the downtrend and fundamentals both argue for exiting."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 your worst ETF at -27% and 38% below its yearly high, a drawdown this deep in a diversified fund suggests something structurally wrong, so reduce your exposure now."
+    "text": "NCLP.L is your worst performer at -26%, sitting 38% below its yearly high with bearish technicals \u2014 consider trimming to reduce exposure before further deterioration."
   },
   {
-    "id": "SILG.L-trim",
+    "id": "GEV-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 down 20% and nearly 40% off its high in a clear downtrend below its moving average, cut this commodity position back before more damage is done."
+    "text": "GEV trades at 44x earnings for a company with moderate growth, making it vulnerable to a pullback in this uncertain macro environment \u2014 trim some gains while relative strength is still intact."
   },
   {
-    "id": "GOOGL-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 it's barely underwater with 15% revenue growth, reasonable valuation, and insider buying, making this pullback a good spot to build your position in a strong business."
+    "text": "Adobe looks genuinely cheap at 8.5x earnings with solid 10.5% revenue growth and strong free cash flow \u2014 this pullback in a high-quality name is a good spot to add shares."
   }
 ]
