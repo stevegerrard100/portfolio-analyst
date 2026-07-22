@@ -3,36 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "RGTI is down 55% with shrinking revenue, nearly 18% short interest, insider selling, and no path to profitability \u2014 this thesis is broken and the capital is better deployed elsewhere."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "QBTS is down 43% with deep losses, 20% short interest, insider selling, and no fundamental support \u2014 cut this loss now rather than hoping speculative quantum computing sentiment rescues it."
+    "text": "Sell RGTI now \u2014 revenue is shrinking by 34%, the stock is down 53%, insiders are selling, and 18% short interest means other investors are actively betting against it, so there's no reason to hold on."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 32%, unprofitable, 58% below its yearly high with high short interest \u2014 another money-losing quantum name where the downtrend and fundamentals both argue for exiting."
+    "text": "Sell IONQ \u2014 it's burning cash with negative earnings, down 57% from its high, insiders are heading for the exits, and nearly 12% of shares are being shorted, which all points to a broken position."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell QBTS \u2014 deeply negative earnings, almost 20% short interest, insiders selling, and two recent earnings misses make this speculative quantum computing stock too risky to keep holding."
+  },
+  {
+    "id": "EXFY-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is your worst performer at -26%, sitting 38% below its yearly high with bearish technicals \u2014 consider trimming to reduce exposure before further deterioration."
+    "text": "Trim EXFY \u2014 three straight earnings misses, insider selling, and a 23% drop from its high is a clear deterioration pattern, so reduce your exposure while you tighten your stop."
   },
   {
-    "id": "GEV-trim",
+    "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GEV trades at 44x earnings for a company with moderate growth, making it vulnerable to a pullback in this uncertain macro environment \u2014 trim some gains while relative strength is still intact."
+    "text": "Trim SILG.L \u2014 it's 35% off its high with every technical signal pointing down, and precious metals ETFs can stay weak for extended periods, so lighten this position to manage risk."
   },
   {
-    "id": "ADBE-add",
+    "id": "EXFY-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your stop on EXFY from 1.27 to 1.35 to lock in a tighter safety net and limit further downside if this deterioration continues."
+  },
+  {
+    "id": "LLY-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks genuinely cheap at 8.5x earnings with solid 10.5% revenue growth and strong free cash flow \u2014 this pullback in a high-quality name is a good spot to add shares."
+    "text": "Consider adding to LLY \u2014 45% revenue growth driven by blockbuster weight-loss and diabetes drugs is exceptional, and this is a rare case where a large-cap stock has genuinely outstanding fundamentals backing the price."
   }
 ]
