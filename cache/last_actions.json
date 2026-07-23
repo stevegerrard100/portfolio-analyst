@@ -3,42 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell RGTI now \u2014 revenue is shrinking by 34%, the stock is down 53%, insiders are selling, and 18% short interest means other investors are actively betting against it, so there's no reason to hold on."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell IONQ \u2014 it's burning cash with negative earnings, down 57% from its high, insiders are heading for the exits, and nearly 12% of shares are being shorted, which all points to a broken position."
+    "text": "RGTI is down 53% with shrinking revenue, no profits, heavy insider selling, and nearly 18% short interest \u2014 the thesis is broken and this capital is better deployed elsewhere."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS \u2014 deeply negative earnings, almost 20% short interest, insiders selling, and two recent earnings misses make this speculative quantum computing stock too risky to keep holding."
+    "text": "QBTS is down 42% and 61% off its high with no profitability, nearly 19% short interest, and insiders selling \u2014 this is another quantum computing bet that isn't working and should be exited."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 33% with a negative PE, almost 12% short interest, insider selling, and sitting 58% below its high \u2014 exit this position before it deteriorates further."
   },
   {
     "id": "EXFY-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim EXFY \u2014 three straight earnings misses, insider selling, and a 23% drop from its high is a clear deterioration pattern, so reduce your exposure while you tighten your stop."
+    "text": "EXFY has missed earnings three times recently with insider selling and weak momentum \u2014 consider trimming to reduce exposure before this deteriorates into a full exit signal."
   },
   {
-    "id": "SILG.L-trim",
+    "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 it's 35% off its high with every technical signal pointing down, and precious metals ETFs can stay weak for extended periods, so lighten this position to manage risk."
+    "text": "NCLP.L is your worst-performing ETF, down over 20% and 33% below its high \u2014 trim this position to right-size the risk given broad weakness across its holdings."
   },
   {
-    "id": "EXFY-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your stop on EXFY from 1.27 to 1.35 to lock in a tighter safety net and limit further downside if this deterioration continues."
-  },
-  {
-    "id": "LLY-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to LLY \u2014 45% revenue growth driven by blockbuster weight-loss and diabetes drugs is exceptional, and this is a rare case where a large-cap stock has genuinely outstanding fundamentals backing the price."
+    "text": "Adobe looks oversold at 41% below its high with a PE of just 7.9 and strong 11% free cash flow growth \u2014 this is a quality business at a discounted price worth adding to in small increments."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL is only down 4.5% with 15% revenue growth, reasonable valuation, and insider buying \u2014 a modest add here makes sense for a high-quality core holding."
   }
 ]
