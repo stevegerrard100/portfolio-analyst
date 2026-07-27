@@ -3,42 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "RGTI is down 54% with a 74% drawdown from its high, revenue is shrinking by 34%, the company is deeply unprofitable, and insiders are selling \u2014 this thesis is broken and the position should be closed to stop further losses."
+    "text": "RGTI is down 55% on your position and 75% from its high with negative earnings, heavy insider selling, and 18% short interest \u2014 the thesis is broken and holding this is just hoping, not investing."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 43% and sitting 62% below its high \u2014 this speculative quantum computing bet has failed and should be sold before more capital is lost."
+    "text": "QBTS is down 44% and 64% off its high with no earnings, insiders dumping shares, and 20% short interest \u2014 this has all the hallmarks of a broken speculative position and should be sold."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 34% and 59% off its high with deep losses and no path to profitability in sight \u2014 sell this position and redeploy the capital into stronger holdings."
+    "text": "IONQ is down 35% on your position and 60% from its high with cash burn, insider selling, and 13% short interest \u2014 in a stagflationary macro environment, unprofitable companies with this much damage get worse, not better."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "NCLP.L is your worst-performing holding by percentage at minus 22% and 34% off its high \u2014 consider trimming to reduce concentrated loss risk, especially with weakening consumer spending in the macro outlook."
   },
   {
     "id": "ARCI.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ARCI.L is a large holding down 31% from its high, and given the weak macro backdrop with slowing jobs growth and hawkish Fed, consider trimming this oversized position to reduce concentration risk."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe looks attractively priced at a PE around 8 with solid 10.5% revenue growth and strong free cash flow \u2014 this pullback in a proven cash-generating business is worth adding to on weakness."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google is down about 9% and 21% off its high, and for a company still growing revenue meaningfully, this dip looks like a reasonable opportunity to add at a better price."
+    "text": "ARCI.L is a large holding down 31.6% from its 52-week high, which is an unusually deep drawdown for an ETF \u2014 trim the oversized position to manage risk while the macro picture remains uncertain."
   },
   {
     "id": "NOW-add",
     "action_type": "add",
     "priority": "low",
-    "text": "ServiceNow is down nearly 14% despite 21% revenue growth and strong free cash flow \u2014 this quality compounder at a significant discount from its high is worth adding to gradually."
+    "text": "ServiceNow is down 50% from its high but growing revenue at 21% with strong free cash flow \u2014 that's a rare pullback in a proven business, and a small add here at this level makes sense if you can stomach near-term volatility."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Google is down 20% from its high at a PE of 21.6 with 15% revenue growth and insider buying \u2014 that's a quality large-cap on sale, worth adding to gradually at these levels."
   }
 ]
