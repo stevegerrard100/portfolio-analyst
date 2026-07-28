@@ -1,44 +1,32 @@
 [
   {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "RGTI is down 55% on your position and 75% from its high with negative earnings, heavy insider selling, and 18% short interest \u2014 the thesis is broken and holding this is just hoping, not investing."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "QBTS is down 44% and 64% off its high with no earnings, insiders dumping shares, and 20% short interest \u2014 this has all the hallmarks of a broken speculative position and should be sold."
-  },
-  {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 35% on your position and 60% from its high with cash burn, insider selling, and 13% short interest \u2014 in a stagflationary macro environment, unprofitable companies with this much damage get worse, not better."
+    "text": "IONQ is down 33% and 56% off its high with negative earnings, insiders selling, and heavy short interest at 12.7% \u2014 this quantum computing speculation has failed and it's time to cut the loss."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "GEV-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is your worst-performing holding by percentage at minus 22% and 34% off its high \u2014 consider trimming to reduce concentrated loss risk, especially with weakening consumer spending in the macro outlook."
+    "text": "GEV trades at a stretched 40x earnings with only 9% revenue growth and is already down 10% \u2014 in a market where the Fed might hike, that premium valuation is hard to justify, so consider reducing your position size."
   },
   {
-    "id": "ARCI.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "ARCI.L is a large holding down 31.6% from its 52-week high, which is an unusually deep drawdown for an ETF \u2014 trim the oversized position to manage risk while the macro picture remains uncertain."
-  },
-  {
-    "id": "NOW-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "ServiceNow is down 50% from its high but growing revenue at 21% with strong free cash flow \u2014 that's a rare pullback in a proven business, and a small add here at this level makes sense if you can stomach near-term volatility."
+    "text": "Adobe looks genuinely cheap at a PE of just 8.6 with solid 10.5% revenue growth and a rich 10.4% free cash flow yield \u2014 this is a proven cash machine trading at a bargain price worth adding to gradually."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is down 20% from its high at a PE of 21.6 with 15% revenue growth and insider buying \u2014 that's a quality large-cap on sale, worth adding to gradually at these levels."
+    "text": "Google is down nearly 19% from its high but still growing revenue at 15% with a reasonable 22 PE and insiders buying \u2014 that's a quality franchise at a discount worth adding to on this pullback."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UnitedHealth is above its 50-day average, near its high, with insiders buying and 11.8% revenue growth \u2014 it checks almost every box for a confident add in a defensive, cash-generating name."
   }
 ]
