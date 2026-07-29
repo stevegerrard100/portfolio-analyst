@@ -1,32 +1,44 @@
 [
   {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Rigetti is down 56% with revenue actually shrinking 34%, burning cash, and sitting 74% off its high \u2014 this is a broken position with no fundamental support, so sell what's left and redeploy the capital."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 42% and 61% off its high with negative cash flow and no path to profitability visible yet \u2014 the quantum computing thesis hasn't played out, so exit this position to stop the bleeding."
+  },
+  {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 33% and 56% off its high with negative earnings, insiders selling, and heavy short interest at 12.7% \u2014 this quantum computing speculation has failed and it's time to cut the loss."
+    "text": "IonQ is down 35% with massive 18% short interest and no profits, meaning sophisticated traders are actively betting against it \u2014 sell this position before it deteriorates further."
   },
   {
-    "id": "GEV-trim",
+    "id": "ARCI.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "GEV trades at a stretched 40x earnings with only 9% revenue growth and is already down 10% \u2014 in a market where the Fed might hike, that premium valuation is hard to justify, so consider reducing your position size."
+    "text": "At nearly \u00a3297k this is a large holding that's 32% off its high, and in a slowing economy with weak payrolls, consider trimming this position by 20-30% to reduce concentration risk."
   },
   {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe looks genuinely cheap at a PE of just 8.6 with solid 10.5% revenue growth and a rich 10.4% free cash flow yield \u2014 this is a proven cash machine trading at a bargain price worth adding to gradually."
+    "id": "EXFY-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your EXFY stop from $1.35 to $1.43 to lock in a tighter floor on this weak name that has sluggish growth and insider selling."
+  },
+  {
+    "id": "NOW-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your NOW stop from $95.04 to $101.66 to protect more of your gains on this strong compounder while still giving it room to run."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is down nearly 19% from its high but still growing revenue at 15% with a reasonable 22 PE and insiders buying \u2014 that's a quality franchise at a discount worth adding to on this pullback."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "UnitedHealth is above its 50-day average, near its high, with insiders buying and 11.8% revenue growth \u2014 it checks almost every box for a confident add in a defensive, cash-generating name."
+    "text": "Google is down 17% from its high but growing revenue at 15% with a reasonable valuation \u2014 this pullback in a slowing economy is a decent opportunity to add gradually to a high-quality name you already own."
   }
 ]
