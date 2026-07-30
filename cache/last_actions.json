@@ -2,43 +2,43 @@
   {
     "id": "RGTI-sell",
     "action_type": "sell",
-    "priority": "critical",
-    "text": "Rigetti is down 56% with revenue actually shrinking 34%, burning cash, and sitting 74% off its high \u2014 this is a broken position with no fundamental support, so sell what's left and redeploy the capital."
+    "priority": "high",
+    "text": "RGTI is down 59% on your position and 77% off its high with shrinking revenue, cash burn, and insider selling \u2014 this thesis is broken and holding further is just hoping, not investing."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
-    "priority": "critical",
-    "text": "QBTS is down 42% and 61% off its high with negative cash flow and no path to profitability visible yet \u2014 the quantum computing thesis hasn't played out, so exit this position to stop the bleeding."
+    "priority": "high",
+    "text": "QBTS is down 45% with a 64% drop from highs, burning cash, insiders dumping shares, and 20% short interest \u2014 meaning one in five tradeable shares is bet against it \u2014 cut this loss now."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
-    "priority": "critical",
-    "text": "IonQ is down 35% with massive 18% short interest and no profits, meaning sophisticated traders are actively betting against it \u2014 sell this position before it deteriorates further."
+    "priority": "high",
+    "text": "IONQ is down 38% on your position and 61% from its high with no profits, cash burn, and insider selling \u2014 quantum computing may have a future but this stock doesn't deserve more of your money today."
+  },
+  {
+    "id": "SILG.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "SILG.L is down 19% and 38% off its high in a clear downtrend below key moving averages \u2014 reduce this commodities position to limit further damage while the trend is against you."
   },
   {
     "id": "ARCI.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "At nearly \u00a3297k this is a large holding that's 32% off its high, and in a slowing economy with weak payrolls, consider trimming this position by 20-30% to reduce concentration risk."
+    "text": "ARCI.L is a very large holding that's 33% off its high with bearish momentum \u2014 trim it to right-size the position so one stock can't hurt your whole portfolio this much."
   },
   {
-    "id": "EXFY-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your EXFY stop from $1.35 to $1.43 to lock in a tighter floor on this weak name that has sluggish growth and insider selling."
-  },
-  {
-    "id": "NOW-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your NOW stop from $95.04 to $101.66 to protect more of your gains on this strong compounder while still giving it room to run."
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META at 25% off its high with a PE of just 16 and 22% revenue growth is genuinely cheap for a cash-generating giant \u2014 worth adding in small amounts, though the macro backdrop suggests patience with sizing."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is down 17% from its high but growing revenue at 15% with a reasonable valuation \u2014 this pullback in a slowing economy is a decent opportunity to add gradually to a high-quality name you already own."
+    "text": "GOOGL is 16% off its high with 15% revenue growth and you're only down 1.5%, making this a reasonable spot to add a little to a quality name at a discount."
   }
 ]

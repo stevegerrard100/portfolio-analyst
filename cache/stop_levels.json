@@ -154,5 +154,9 @@
   "MAS": {
     "level": 71.9644,
     "prev_level": null
+  },
+  "UBER": {
+    "level": 64.6727,
+    "prev_level": null
   }
 }
