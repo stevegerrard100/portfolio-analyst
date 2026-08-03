@@ -1,50 +1,50 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "Jobs growth came in at barely half of forecasts (57K vs 115K expected) while the Fed is now considering rate hikes instead of cuts due to sticky inflation at 3.5% \u2014 this combination of slowing hiring and tightening bias raises the risk of a policy mistake that hurts stocks, so consider holding extra cash."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is your worst position at -53% with revenue shrinking, heavy cash burn, and extreme short interest \u2014 the thesis is broken and holding further risks more damage to your portfolio."
+    "text": "Sell RGTI now \u2014 it's down 53% with revenue shrinking 34%, heavy short interest, and insider selling, meaning the people closest to this company are heading for the exits and so should you."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "QBTS is down 39% with no profits, negative free cash flow, and 20% short interest meaning professional traders are betting against it \u2014 exit now before losses deepen."
+    "text": "Sell QBTS \u2014 it's losing money (negative PE), down 38%, one in five shares are being bet against it, and insiders are selling, which is a broken speculative bet with no reason to hold."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "IONQ is down 56% from its highs, unprofitable, burning cash with high short interest and insiders selling \u2014 there's no fundamental reason to keep holding this position."
+    "text": "Sell IONQ \u2014 down 28% and more than 55% off its high with no profits, heavy short interest, and insider selling, this speculative position has no catalyst to recover anytime soon."
   },
   {
     "id": "SILG.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "SILG.L has bearish technicals across the board and sits 37% below its high \u2014 reduce your silver exposure since commodity positions with this kind of technical damage tend to take a long time to recover."
+    "text": "Trim SILG.L \u2014 down 37% from its high in a volatile precious metals space, reducing your exposure here frees up capital for stronger positions and limits further damage."
   },
   {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "META is down 30% from its high but has 22% revenue growth and a PE under 15 which is genuinely cheap for a company this profitable \u2014 this pullback looks like an opportunity to add shares at a discount."
+    "id": "ARCI.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim ARCI.L \u2014 this is a very large holding that's 32% off its high with all technical indicators pointing down, so reducing the position size protects you if the slide continues."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 as a very large position down 25% with the worst technical signals in your portfolio, the outsized sizing amplifies your risk and warrants cutting back."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe has a PE of just 9 with solid 10% revenue and free cash flow growth plus insider buying \u2014 that valuation is unusually cheap for a high-quality software company and worth adding to."
+    "text": "Add to ADBE \u2014 a PE of just 9.1 with 10.5% revenue growth and nearly 10% free cash flow yield (cash the business actually generates) makes this genuinely cheap for a dominant software company."
   },
   {
-    "id": "LLY-add",
+    "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Eli Lilly's 45% revenue growth is best-in-class, insiders are buying with their own money, and the earnings beat streak shows the business is consistently outperforming expectations \u2014 worth adding on any dip."
+    "text": "Add to META \u2014 trading at a PE of 15.8 while growing revenue at 22% represents a real disconnect between price and business quality that patient investors can take advantage of."
   }
 ]
