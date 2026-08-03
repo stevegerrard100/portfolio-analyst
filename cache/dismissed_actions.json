@@ -28,12 +28,6 @@
     "snoozed_price": 49.31
   },
   {
-    "id": "RGTI-sell",
-    "snoozed_until": "2026-07-29",
-    "snoozed_at": "2026-06-29",
-    "snoozed_price": 18.36
-  },
-  {
     "id": "SGLP.L-sell",
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
@@ -55,5 +49,11 @@
     "snoozed_until": "2026-08-01",
     "snoozed_at": "2026-07-02",
     "snoozed_price": 51.4
+  },
+  {
+    "id": "RGTI-sell",
+    "snoozed_until": "2026-09-02",
+    "snoozed_at": "2026-08-03",
+    "snoozed_price": 14.95
   }
 ]
