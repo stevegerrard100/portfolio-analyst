@@ -16,12 +16,6 @@
     "snoozed_price": 78.91
   },
   {
-    "id": "IONQ-sell",
-    "snoozed_until": "2026-07-29",
-    "snoozed_at": "2026-06-29",
-    "snoozed_price": 49.31
-  },
-  {
     "id": "SGLP.L-sell",
     "snoozed_until": "2026-07-29",
     "snoozed_at": "2026-06-29",
@@ -55,5 +49,11 @@
     "snoozed_until": "2026-09-02",
     "snoozed_at": "2026-08-03",
     "snoozed_price": 18.08
+  },
+  {
+    "id": "IONQ-sell",
+    "snoozed_until": "2026-09-02",
+    "snoozed_at": "2026-08-03",
+    "snoozed_price": 36.44
   }
 ]
