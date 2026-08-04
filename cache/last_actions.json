@@ -1,50 +1,26 @@
 [
   {
-    "id": "RGTI-sell",
-    "action_type": "sell",
+    "id": "MACRO-danger",
+    "action_type": "danger",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 53% with revenue shrinking 34%, heavy short interest, and insider selling, meaning the people closest to this company are heading for the exits and so should you."
+    "text": "The Fed turned hawkish with 9 of 18 officials projecting a rate hike while jobs badly missed expectations at just 57,000 \u2014 this stagflationary mix of weakening growth and sticky inflation (CPI still at 3.5%) means you should be cautious about adding new risk right now."
   },
   {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell QBTS \u2014 it's losing money (negative PE), down 38%, one in five shares are being bet against it, and insiders are selling, which is a broken speculative bet with no reason to hold."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell IONQ \u2014 down 28% and more than 55% off its high with no profits, heavy short interest, and insider selling, this speculative position has no catalyst to recover anytime soon."
-  },
-  {
-    "id": "SILG.L-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SILG.L \u2014 down 37% from its high in a volatile precious metals space, reducing your exposure here frees up capital for stronger positions and limits further damage."
+    "text": "Trim QBTS \u2014 this quantum computing stock is down 32%, losing money, and 20% of shares are being bet against by short sellers, so reduce your exposure to limit further damage."
   },
   {
-    "id": "ARCI.L-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim ARCI.L \u2014 this is a very large holding that's 32% off its high with all technical indicators pointing down, so reducing the position size protects you if the slide continues."
+    "text": "Trim IONQ \u2014 down 23% with no earnings, nearly 13% short interest, and insiders are selling their own shares, which tells you the people closest to the company aren't confident either."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim NCLP.L \u2014 as a very large position down 25% with the worst technical signals in your portfolio, the outsized sizing amplifies your risk and warrants cutting back."
-  },
-  {
-    "id": "ADBE-add",
+    "id": "LLY-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 a PE of just 9.1 with 10.5% revenue growth and nearly 10% free cash flow yield (cash the business actually generates) makes this genuinely cheap for a dominant software company."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to META \u2014 trading at a PE of 15.8 while growing revenue at 22% represents a real disconnect between price and business quality that patient investors can take advantage of."
+    "text": "Add to Eli Lilly \u2014 45% revenue growth from its blockbuster weight-loss and diabetes drugs combined with insider buying makes this one of the strongest fundamental stories in your portfolio."
   }
 ]
