@@ -88,8 +88,8 @@
     "prev_level": 600.2891
   },
   "MSFT": {
-    "level": 400.3864,
-    "prev_level": null
+    "level": 423.5344,
+    "prev_level": 400.3864
   },
   "AMZN": {
     "level": 228.5562,
@@ -140,8 +140,8 @@
     "prev_level": null
   },
   "EXFY": {
-    "level": 1.4264,
-    "prev_level": 1.3494
+    "level": 1.4995,
+    "prev_level": 1.4264
   },
   "BE": {
     "level": 117.2112,
@@ -157,6 +157,10 @@
   },
   "UBER": {
     "level": 64.6727,
+    "prev_level": null
+  },
+  "ZIM": {
+    "level": 24.5914,
     "prev_level": null
   }
 }

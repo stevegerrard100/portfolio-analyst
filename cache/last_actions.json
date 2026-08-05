@@ -3,24 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed turned hawkish with 9 of 18 officials projecting a rate hike while jobs badly missed expectations at just 57,000 \u2014 this stagflationary mix of weakening growth and sticky inflation (CPI still at 3.5%) means you should be cautious about adding new risk right now."
+    "text": "The June jobs report badly missed forecasts at just 57,000 payrolls added while inflation remains elevated at 3.5%, creating a stagflationary setup where the economy is slowing but the Fed may still need to hike \u2014 this combination raises the risk of a broader market pullback."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 this quantum computing stock is down 32%, losing money, and 20% of shares are being bet against by short sellers, so reduce your exposure to limit further damage."
+    "text": "Trim QBTS \u2014 this quantum computing stock is down 26% with no earnings to back it up and more than 50% off its high, so reducing your exposure here protects you from further damage in a speculative name with no profit cushion."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 down 23% with no earnings, nearly 13% short interest, and insiders are selling their own shares, which tells you the people closest to the company aren't confident either."
+    "text": "Trim IonQ \u2014 it's down 18%, nearly 50% off its high, has negative earnings, almost 13% short interest, and insider selling, which all point to reducing your risk in this position before it gets worse."
   },
   {
-    "id": "LLY-add",
+    "id": "EXFY-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your EXFY stop from $1.43 to $1.50 to lock in a bit more protection on a stock with mixed technicals and thin profitability."
+  },
+  {
+    "id": "MSFT-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MSFT stop from $400.39 to $423.53 to protect more of your gains as the stock has moved higher."
+  },
+  {
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to Eli Lilly \u2014 45% revenue growth from its blockbuster weight-loss and diabetes drugs combined with insider buying makes this one of the strongest fundamental stories in your portfolio."
+    "text": "Adobe looks like a strong add opportunity \u2014 under 10x earnings with double-digit revenue growth and nearly 10% free cash flow yield (cash profits relative to price) makes it one of the cheapest quality tech names you own."
+  },
+  {
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to Meta \u2014 22% revenue growth at under 17x earnings is genuinely cheap for a business this profitable, and the valuation gives you a margin of safety even if markets pull back."
   }
 ]
