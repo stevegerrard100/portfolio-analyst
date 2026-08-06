@@ -3,42 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The June jobs report badly missed forecasts at just 57,000 payrolls added while inflation remains elevated at 3.5%, creating a stagflationary setup where the economy is slowing but the Fed may still need to hike \u2014 this combination raises the risk of a broader market pullback."
+    "text": "The Fed is now signaling possible rate hikes in 2026 while job growth collapsed to just 57K in June \u2014 this stagflationary mix (rising rates + weakening employment) raises the risk that economically sensitive and speculative holdings get hit hardest, so tighten risk across the board."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS \u2014 this quantum computing stock is down 26% with no earnings to back it up and more than 50% off its high, so reducing your exposure here protects you from further damage in a speculative name with no profit cushion."
+    "text": "QBTS is down 28% with no earnings, 20% short interest, and insiders selling \u2014 cut this position significantly because the risk of further decline far outweighs any near-term upside."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IonQ \u2014 it's down 18%, nearly 50% off its high, has negative earnings, almost 13% short interest, and insider selling, which all point to reducing your risk in this position before it gets worse."
+    "text": "IONQ is down 21% with no profits, 13% short interest, insiders selling, and ongoing cash burn \u2014 reduce your exposure now since speculative names like this are especially vulnerable if rates move higher."
   },
   {
-    "id": "EXFY-raise_stop",
-    "action_type": "raise_stop",
+    "id": "ZIM-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your EXFY stop from $1.43 to $1.50 to lock in a bit more protection on a stock with mixed technicals and thin profitability."
+    "text": "ZIM has a negative PE, revenue shrinking 18%, and insiders selling \u2014 in a slowing economy with weak job growth, this cyclical shipping stock deserves a smaller position size."
   },
   {
-    "id": "MSFT-raise_stop",
-    "action_type": "raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your MSFT stop from $400.39 to $423.53 to protect more of your gains as the stock has moved higher."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe looks like a strong add opportunity \u2014 under 10x earnings with double-digit revenue growth and nearly 10% free cash flow yield (cash profits relative to price) makes it one of the cheapest quality tech names you own."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to Meta \u2014 22% revenue growth at under 17x earnings is genuinely cheap for a business this profitable, and the valuation gives you a margin of safety even if markets pull back."
+    "text": "NCLP.L is down nearly 18% with uniformly bearish technicals \u2014 trim this ETF position to limit losses while the trend remains clearly against you."
   }
 ]
