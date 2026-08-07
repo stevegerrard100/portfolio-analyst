@@ -3,30 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes in 2026 while job growth collapsed to just 57K in June \u2014 this stagflationary mix (rising rates + weakening employment) raises the risk that economically sensitive and speculative holdings get hit hardest, so tighten risk across the board."
-  },
-  {
-    "id": "QBTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "QBTS is down 28% with no earnings, 20% short interest, and insiders selling \u2014 cut this position significantly because the risk of further decline far outweighs any near-term upside."
-  },
-  {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "IONQ is down 21% with no profits, 13% short interest, insiders selling, and ongoing cash burn \u2014 reduce your exposure now since speculative names like this are especially vulnerable if rates move higher."
+    "text": "The jobs report badly missed expectations at just 57,000 payrolls added while the Fed has hikes on the table due to sticky inflation \u2014 this stagflationary mix (weak growth plus above-target inflation at 3.5%) means the economy is losing momentum with no rate relief likely until 2027, so tighten stops and avoid adding risk."
   },
   {
     "id": "ZIM-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ZIM has a negative PE, revenue shrinking 18%, and insiders selling \u2014 in a slowing economy with weak job growth, this cyclical shipping stock deserves a smaller position size."
+    "text": "Trim ZIM significantly \u2014 revenue is shrinking 18%, insiders are selling, it has a negative PE and two consecutive earnings misses, all signaling the shipping cycle has turned against you."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is down nearly 18% with uniformly bearish technicals \u2014 trim this ETF position to limit losses while the trend remains clearly against you."
+    "text": "Trim NCLP.L \u2014 your worst ETF at -17.8%, sitting 31% below its high with bearish momentum, and a weak jobs market doesn't help the consumer spending this fund depends on."
+  },
+  {
+    "id": "RTX-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your RTX stop from $179.23 to $191.27 to lock in more of your gains while still giving the position room to breathe."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe looks genuinely cheap at a PE of just 9.5 with nearly 10% free cash flow yield and double-digit revenue growth \u2014 consider adding on this pullback since the valuation gives you a meaningful margin of safety."
   }
 ]
