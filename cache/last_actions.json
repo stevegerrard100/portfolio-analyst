@@ -3,30 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The jobs report badly missed expectations at just 57,000 payrolls added while the Fed has hikes on the table due to sticky inflation \u2014 this stagflationary mix (weak growth plus above-target inflation at 3.5%) means the economy is losing momentum with no rate relief likely until 2027, so tighten stops and avoid adding risk."
-  },
-  {
-    "id": "ZIM-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim ZIM significantly \u2014 revenue is shrinking 18%, insiders are selling, it has a negative PE and two consecutive earnings misses, all signaling the shipping cycle has turned against you."
+    "text": "The Fed has put rate hikes back on the table for late 2026 while payrolls just went negative at -23,000 jobs \u2014 this stagflation-lite combination (rising inflation risk plus weakening employment) means you should be cautious about adding new risk right now."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 your worst ETF at -17.8%, sitting 31% below its high with bearish momentum, and a weak jobs market doesn't help the consumer spending this fund depends on."
+    "text": "NCLP.L is your most concerning large holding \u2014 down 16% overall and 29% off its high with bearish momentum signals, so consider trimming to reduce your exposure before further weakness."
   },
   {
-    "id": "RTX-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your RTX stop from $179.23 to $191.27 to lock in more of your gains while still giving the position room to breathe."
+    "id": "META-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "META is the best value in big tech with a PE of just 16.9 and 22% revenue growth \u2014 if you have cash from selling broken positions, this is where to put some of it."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks genuinely cheap at a PE of just 9.5 with nearly 10% free cash flow yield and double-digit revenue growth \u2014 consider adding on this pullback since the valuation gives you a meaningful margin of safety."
+    "text": "Adobe looks genuinely cheap at a PE of 9.6 with a 9.3% free cash flow yield and solid revenue growth \u2014 this is a quality business at a bargain price worth adding to on this pullback."
   }
 ]
