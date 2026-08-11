@@ -3,24 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has put rate hikes back on the table for late 2026 while payrolls just went negative at -23,000 jobs \u2014 this stagflation-lite combination (rising inflation risk plus weakening employment) means you should be cautious about adding new risk right now."
+    "text": "The economy just lost 23,000 jobs unexpectedly while the Fed is hinting at rate hikes instead of cuts \u2014 this combination of weakening employment and tightening policy raises the risk of a slowdown hitting corporate earnings later this year."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
+    "id": "NOW-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "NCLP.L is your most concerning large holding \u2014 down 16% overall and 29% off its high with bearish momentum signals, so consider trimming to reduce your exposure before further weakness."
+    "text": "Raise your stop on NOW from $101.66 to $119.74 to lock in more of your gains while still giving the position room to run."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META is the best value in big tech with a PE of just 16.9 and 22% revenue growth \u2014 if you have cash from selling broken positions, this is where to put some of it."
+    "text": "Consider adding to META \u2014 at a PE of just 16.9 with 22% revenue growth, it's a rare combination of fast growth at a reasonable price and arguably your best opportunity right now."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks genuinely cheap at a PE of 9.6 with a 9.3% free cash flow yield and solid revenue growth \u2014 this is a quality business at a bargain price worth adding to on this pullback."
+    "text": "Consider adding to ADBE \u2014 a PE of 9.9 with 10.5% revenue growth and a 9.1% free cash flow yield (meaning the company generates a lot of cash relative to its price) makes it look genuinely undervalued."
   }
 ]
