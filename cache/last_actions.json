@@ -3,24 +3,18 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The economy just lost 23,000 jobs unexpectedly while the Fed is hinting at rate hikes instead of cuts \u2014 this combination of weakening employment and tightening policy raises the risk of a slowdown hitting corporate earnings later this year."
-  },
-  {
-    "id": "NOW-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your stop on NOW from $101.66 to $119.74 to lock in more of your gains while still giving the position room to run."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to META \u2014 at a PE of just 16.9 with 22% revenue growth, it's a rare combination of fast growth at a reasonable price and arguably your best opportunity right now."
+    "text": "The Fed has put rate hikes back on the table for 2026 while payrolls unexpectedly turned negative at -23,000 jobs \u2014 this stagflation-lite mix of rising inflation (3.5% CPI) and weakening employment means the safety net under stocks is thinner than it looks."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of 9.9 with 10.5% revenue growth and a 9.1% free cash flow yield (meaning the company generates a lot of cash relative to its price) makes it look genuinely undervalued."
+    "text": "Adobe looks genuinely undervalued at a PE of 9.6 with solid 10.5% revenue growth and a 9.4% free cash flow yield \u2014 this is a quality business at a bargain price worth adding to."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL is trading 14.6% below its 52-week high with a reasonable PE of 23 and 15% revenue growth \u2014 this pullback in a dominant business looks like a good entry point to add shares."
   }
 ]
