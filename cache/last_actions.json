@@ -1,14 +1,32 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "The Fed is now signaling potential rate hikes in 2026 instead of cuts, July payrolls unexpectedly fell 23,000, and GDP growth is slowing to 1.5% \u2014 this combination of sticky inflation with weakening jobs means the economy is flirting with stagflation, so tighten stops and hold more cash."
+  },
+  {
+    "id": "BE-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Bloom Energy's 37% revenue growth is impressive but at 48x earnings and 31% off its high in a slowing economy with possible rate hikes ahead, trim some exposure to lock in gains and reduce risk."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe at just 9.8x earnings with 10.5% revenue growth and best-in-class free cash flow is genuinely cheap for a software leader \u2014 add on this pullback while the value gap is wide."
+  },
+  {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to META \u2014 a PE of 16.6 with 22% revenue growth and over 3% free cash flow yield makes this one of the cheapest quality growth names you own, and it's worth building up on this pullback."
+    "text": "Meta at 17x earnings with 22% revenue growth and the strongest free cash flow yield among your tech holdings is a quality compounder at a discount \u2014 add to this position."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 at a PE of 23 with 15% revenue growth and insiders buying their own stock, Google looks attractively priced 15% off its highs and insider confidence is a meaningful positive signal."
+    "text": "Google at 23.5x earnings with 15% revenue growth and strong cash generation is a reasonable price for a dominant business \u2014 add gradually on any further weakness."
   }
 ]
