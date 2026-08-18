@@ -3,30 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now openly considering rate hikes with inflation stuck at 3.4%, and the economy unexpectedly lost 23,000 jobs in July \u2014 this stagflation-lite combo (rising prices + weakening jobs) means you should be cautious about adding new risk until the direction becomes clearer."
+    "text": "The Fed is now signaling possible rate hikes in 2026 while payrolls just turned negative at -23,000 jobs \u2014 this stagflation-lite mix of sticky 3.4% inflation and weakening employment means the safety net of rate cuts is off the table, so tighten risk and avoid adding to speculative names."
   },
   {
-    "id": "KO-raise_stop",
-    "action_type": "raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your KO stop-loss from $71.89 to $75.51 to lock in more of your gains while still giving the stock room to breathe through normal pullbacks."
+    "text": "NCLP.L is a large position sitting at a 15% loss with bearish technicals across the board \u2014 reduce this to a normal-sized position to free up capital and limit further damage if the downtrend continues."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Google at 23x earnings with 15% revenue growth and strong free cash flow is a quality compounder at a reasonable price \u2014 worth adding on any pullback as a core holding that can weather a tougher macro environment."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Meta \u2014 at a PE under 17 with 22% revenue growth and the best free cash flow yield among your big tech names, it's genuinely cheap for a company growing this fast."
+    "text": "Meta at just 16x earnings with 22% revenue growth is arguably the cheapest quality name in big tech right now \u2014 this kind of value-plus-growth combination deserves a larger allocation."
   },
   {
-    "id": "ADBE-add",
+    "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Adobe \u2014 a PE of 9.6 with 10.5% revenue growth and a 9.4% free cash flow yield (meaning the company generates a lot of actual cash relative to its price) makes this look like a real bargain."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to UnitedHealth \u2014 it's a dominant healthcare company trading at just 17.9x earnings with nearly 12% revenue growth, offering steady compounding at a reasonable price."
+    "text": "Microsoft at 20x earnings with 18% revenue growth and a consistent beat streak is the definition of a high-quality compounder \u2014 add gradually as a reliable anchor for the portfolio."
   }
 ]
