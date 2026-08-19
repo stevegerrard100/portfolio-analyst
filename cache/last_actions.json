@@ -3,30 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes in 2026 while payrolls just turned negative at -23,000 jobs \u2014 this stagflation-lite mix of sticky 3.4% inflation and weakening employment means the safety net of rate cuts is off the table, so tighten risk and avoid adding to speculative names."
+    "text": "The Fed is now signaling possible rate hikes in 2026 while jobs unexpectedly contracted by 23,000 \u2014 this stagflationary mix of sticky 3.4% inflation plus weakening employment means the economy could slow further without the Fed being able to cut rates to help."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "BE-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is a large position sitting at a 15% loss with bearish technicals across the board \u2014 reduce this to a normal-sized position to free up capital and limit further damage if the downtrend continues."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google at 23x earnings with 15% revenue growth and strong free cash flow is a quality compounder at a reasonable price \u2014 worth adding on any pullback as a core holding that can weather a tougher macro environment."
+    "text": "Trim BE while you reassess \u2014 down 14% with bearish technicals, insider selling, and 8% short interest means this stock is under real pressure and could fall further before stabilizing."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Meta at just 16x earnings with 22% revenue growth is arguably the cheapest quality name in big tech right now \u2014 this kind of value-plus-growth combination deserves a larger allocation."
+    "text": "Add to META on this pullback \u2014 at a PE of just 15.6 with 22% revenue growth and strong free cash flow, it's genuinely cheap for a business of this quality and should hold up well even in a slowing economy."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 trading at a reasonable PE of 23 with 15% revenue growth, healthy free cash flow, and insider buying, this is exactly the kind of quality compounder you want to own heading into uncertainty."
   },
   {
     "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Microsoft at 20x earnings with 18% revenue growth and a consistent beat streak is the definition of a high-quality compounder \u2014 add gradually as a reliable anchor for the portfolio."
+    "text": "Add to MSFT \u2014 at a PE of 20 with 18% revenue growth, consistent earnings beats, and rock-solid cash flow, Microsoft is one of the safest ways to stay invested in tech right now."
   }
 ]
