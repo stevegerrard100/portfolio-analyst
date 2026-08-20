@@ -3,30 +3,12 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes in 2026 while jobs unexpectedly contracted by 23,000 \u2014 this stagflationary mix of sticky 3.4% inflation plus weakening employment means the economy could slow further without the Fed being able to cut rates to help."
-  },
-  {
-    "id": "BE-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim BE while you reassess \u2014 down 14% with bearish technicals, insider selling, and 8% short interest means this stock is under real pressure and could fall further before stabilizing."
+    "text": "The Fed is now considering rate hikes with core PCE at 3.4%, while July payrolls unexpectedly turned negative at -23,000 jobs \u2014 this stagflationary mix of rising inflation and shrinking employment means the economy could weaken further while borrowing costs stay high or rise."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to META on this pullback \u2014 at a PE of just 15.6 with 22% revenue growth and strong free cash flow, it's genuinely cheap for a business of this quality and should hold up well even in a slowing economy."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to GOOGL \u2014 trading at a reasonable PE of 23 with 15% revenue growth, healthy free cash flow, and insider buying, this is exactly the kind of quality compounder you want to own heading into uncertainty."
-  },
-  {
-    "id": "MSFT-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to MSFT \u2014 at a PE of 20 with 18% revenue growth, consistent earnings beats, and rock-solid cash flow, Microsoft is one of the safest ways to stay invested in tech right now."
+    "text": "META trading under 16x earnings with 22% revenue growth and strong free cash flow is genuinely cheap for a business of this quality \u2014 consider adding to your position on this pullback."
   }
 ]
