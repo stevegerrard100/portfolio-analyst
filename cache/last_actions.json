@@ -3,12 +3,12 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now considering rate hikes with core PCE at 3.4%, while July payrolls unexpectedly turned negative at -23,000 jobs \u2014 this stagflationary mix of rising inflation and shrinking employment means the economy could weaken further while borrowing costs stay high or rise."
+    "text": "The combination of unexpected job losses (-23,000 nonfarm payrolls), GDP slowing to 1.5%, and inflation stuck at 3.4% with potential rate hikes ahead points to a stagflationary setup \u2014 be cautious adding new risk until the jobs picture stabilizes."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META trading under 16x earnings with 22% revenue growth and strong free cash flow is genuinely cheap for a business of this quality \u2014 consider adding to your position on this pullback."
+    "text": "META is genuinely cheap at a PE of 15.7 with 22% revenue growth and strong free cash flow \u2014 this is a rare quality-at-a-discount opportunity worth adding to on this pullback."
   }
 ]
