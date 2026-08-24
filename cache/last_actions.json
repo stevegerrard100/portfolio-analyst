@@ -3,12 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The combination of unexpected job losses (-23,000 nonfarm payrolls), GDP slowing to 1.5%, and inflation stuck at 3.4% with potential rate hikes ahead points to a stagflationary setup \u2014 be cautious adding new risk until the jobs picture stabilizes."
+    "text": "Markets are now pricing in rate hikes by year-end despite slowing GDP growth of 1.5% and surprise job losses of 23,000 in July \u2014 this stagflationary mix (sticky 3.4% inflation plus weakening employment) means the Fed is boxed in and risk assets could face pressure if conditions worsen."
+  },
+  {
+    "id": "BE-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "BE is down 17.4% and 41.8% off its high, and despite 37% revenue growth the stock is clearly not being rewarded \u2014 trim to a smaller position size you're comfortable holding through more volatility."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META is genuinely cheap at a PE of 15.7 with 22% revenue growth and strong free cash flow \u2014 this is a rare quality-at-a-discount opportunity worth adding to on this pullback."
+    "text": "META at just 15.8x earnings with 22% revenue growth and excellent cash flow is one of the cheapest large-cap growth stocks you own \u2014 consider adding on this valuation."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UNH at 17.4x earnings with 12% revenue growth and the best free cash flow in your portfolio is a defensive quality name worth adding to in a slowing economy."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL at 23x earnings with 15% revenue growth and insider buying signals confidence from people who know the company best \u2014 worth adding at this reasonable price."
   }
 ]
