@@ -3,30 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "Markets are now pricing in rate hikes by year-end despite slowing GDP growth of 1.5% and surprise job losses of 23,000 in July \u2014 this stagflationary mix (sticky 3.4% inflation plus weakening employment) means the Fed is boxed in and risk assets could face pressure if conditions worsen."
+    "text": "July payrolls unexpectedly fell 23,000 while inflation remains sticky at 3.4% with potential rate hikes ahead \u2014 this stagflationary mix (slowing growth plus above-target inflation) means the economy is losing momentum while the Fed can't step in to help, so be cautious about adding new risk right now."
   },
   {
-    "id": "BE-trim",
-    "action_type": "trim",
+    "id": "RTX-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "BE is down 17.4% and 41.8% off its high, and despite 37% revenue growth the stock is clearly not being rewarded \u2014 trim to a smaller position size you're comfortable holding through more volatility."
+    "text": "Raise your RTX stop from $191.27 to $200.89 to lock in more of your gains while still giving the stock room to breathe through normal pullbacks."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META at just 15.8x earnings with 22% revenue growth and excellent cash flow is one of the cheapest large-cap growth stocks you own \u2014 consider adding on this valuation."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "UNH at 17.4x earnings with 12% revenue growth and the best free cash flow in your portfolio is a defensive quality name worth adding to in a slowing economy."
+    "text": "Consider adding to META \u2014 at just 16 times earnings with 22% revenue growth and the strongest free cash flow in your portfolio, it's a rare combination of value and growth in a mega-cap name."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL at 23x earnings with 15% revenue growth and insider buying signals confidence from people who know the company best \u2014 worth adding at this reasonable price."
+    "text": "Consider adding to GOOGL \u2014 at 23.5 times earnings with 15% revenue growth and insiders buying, it's reasonably priced for a dominant business and insider purchases suggest confidence from people who know the company best."
   }
 ]

@@ -16,8 +16,8 @@
     "prev_level": null
   },
   "RTX": {
-    "level": 191.2701,
-    "prev_level": 179.2287
+    "level": 200.8922,
+    "prev_level": 191.2701
   },
   "LMT": {
     "level": 462.904,
@@ -161,6 +161,10 @@
   },
   "ZIM": {
     "level": 24.5914,
+    "prev_level": null
+  },
+  "BMNR": {
+    "level": 16.1644,
     "prev_level": null
   }
 }
