@@ -3,18 +3,18 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has shifted hawkish under new Chair Warsh, removing rate-cut language and pushing cuts out to 2027-2028, while July payrolls surprised with a 23,000 job loss \u2014 this combination of sticky inflation, tighter-for-longer policy, and a weakening labor market raises the risk of a stagflationary slowdown that could pressure stocks broadly."
+    "text": "The Fed is now signaling a possible rate hike rather than cuts, job growth just turned negative at -23,000, and GDP growth is slowing to 1.5% \u2014 this combination of tightening policy into a weakening economy raises the risk of a sharper downturn, so consider holding more cash and being very selective with new positions."
   },
   {
-    "id": "GOOGL-raise_stop",
+    "id": "ADBE-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your GOOGL stop from $313.23 to $328.95 to lock in more of your gains while still giving the position room to breathe."
+    "text": "Raise your ADBE stop from $220.19 to $231.46 to lock in more of your gains while still giving the stock room to breathe through normal pullbacks."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META trading at a PE of just 16 with 22% revenue growth and strong free cash flow is a genuinely rare deal for a company this dominant \u2014 consider adding to your position on this weakness."
+    "text": "Meta trading at just 16.5 times earnings with 22% revenue growth and strong cash flow is genuinely cheap for a company this profitable \u2014 consider adding to your position on this pullback."
   }
 ]
