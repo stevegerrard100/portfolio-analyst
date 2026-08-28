@@ -3,18 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling a possible rate hike rather than cuts, job growth just turned negative at -23,000, and GDP growth is slowing to 1.5% \u2014 this combination of tightening policy into a weakening economy raises the risk of a sharper downturn, so consider holding more cash and being very selective with new positions."
+    "text": "The Fed has removed its rate-cut bias and is now signaling a possible hike, while July payrolls unexpectedly fell 23,000 \u2014 this combination of sticky inflation and weakening jobs growth raises the risk of a stagflationary environment that could pressure both stocks and bonds."
   },
   {
-    "id": "ADBE-raise_stop",
-    "action_type": "raise_stop",
+    "id": "SILG.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your ADBE stop from $220.19 to $231.46 to lock in more of your gains while still giving the stock room to breathe through normal pullbacks."
+    "text": "SILG.L has a solid 15.3% gain but is now below its 50-day average with bearish momentum \u2014 consider trimming some profits here before the pullback erases more of your gains."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Meta trading at just 16.5 times earnings with 22% revenue growth and strong cash flow is genuinely cheap for a company this profitable \u2014 consider adding to your position on this pullback."
+    "text": "META at 16x earnings with 22% revenue growth and strong free cash flow is genuinely cheap for a company of this quality \u2014 adding on this pullback makes sense if you can handle short-term volatility in a slowing economy."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UNH at 17.6x earnings with nearly 12% revenue growth and a 4.5% free cash flow yield is a defensive grower that should hold up well if the economy continues to slow."
   }
 ]
