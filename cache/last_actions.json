@@ -3,24 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has removed its rate-cut bias and is now signaling a possible hike, while July payrolls unexpectedly fell 23,000 \u2014 this combination of sticky inflation and weakening jobs growth raises the risk of a stagflationary environment that could pressure both stocks and bonds."
+    "text": "The Fed is now signaling possible rate hikes in 2026 while GDP growth slowed to just 1.5% last quarter and payrolls turned negative \u2014 this stagflationary mix (slowing growth plus sticky 3.3% inflation) means the economy is losing momentum while borrowing costs won't be coming down anytime soon, so favor quality holdings and keep cash ready."
   },
   {
-    "id": "SILG.L-trim",
-    "action_type": "trim",
+    "id": "NSC-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "SILG.L has a solid 15.3% gain but is now below its 50-day average with bearish momentum \u2014 consider trimming some profits here before the pullback erases more of your gains."
+    "text": "Raise your stop on NSC from $311.84 to $328.42 \u2014 this locks in more of your gains and protects you if the slowing economy starts weighing on railroad shipping volumes."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "META at 16x earnings with 22% revenue growth and strong free cash flow is genuinely cheap for a company of this quality \u2014 adding on this pullback makes sense if you can handle short-term volatility in a slowing economy."
+    "text": "Consider adding to META \u2014 at just 16.5x earnings with 22% revenue growth and strong free cash flow, it's a rare case of a big tech name that's both growing fast and priced reasonably, which gives you a cushion even if the economy softens."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UNH at 17.6x earnings with nearly 12% revenue growth and a 4.5% free cash flow yield is a defensive grower that should hold up well if the economy continues to slow."
+    "text": "Consider adding to UNH \u2014 as a healthcare giant trading at 17.5x earnings with nearly 12% revenue growth and best-in-class free cash flow, it's a defensive grower that should hold up well in a slowing economy with sticky inflation."
   }
 ]
