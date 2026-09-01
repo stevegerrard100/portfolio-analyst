@@ -3,24 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes in 2026 while GDP growth slowed to just 1.5% last quarter and payrolls turned negative \u2014 this stagflationary mix (slowing growth plus sticky 3.3% inflation) means the economy is losing momentum while borrowing costs won't be coming down anytime soon, so favor quality holdings and keep cash ready."
+    "text": "July payrolls unexpectedly fell 23,000 while markets are now pricing in rate hikes instead of cuts \u2014 this stagflation-lite mix of slowing growth (GDP down to 1.5%) with sticky 3.4% inflation means the economy is losing momentum and the Fed has less room to help, so tighten your stops and hold off on adding risk."
   },
   {
-    "id": "NSC-raise_stop",
+    "id": "BE-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your stop on NSC from $311.84 to $328.42 \u2014 this locks in more of your gains and protects you if the slowing economy starts weighing on railroad shipping volumes."
+    "text": "Raise your stop on BE from $117.21 to $123.47 to lock in more protection while you watch whether that 37% revenue growth can offset the insider selling and 40% drawdown from highs."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to META \u2014 at just 16.5x earnings with 22% revenue growth and strong free cash flow, it's a rare case of a big tech name that's both growing fast and priced reasonably, which gives you a cushion even if the economy softens."
+    "text": "Consider adding to META \u2014 at just 16 times earnings with 22% revenue growth, a 26% pullback from highs gives you a genuinely discounted entry into one of the most profitable companies in the world."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to UNH \u2014 as a healthcare giant trading at 17.5x earnings with nearly 12% revenue growth and best-in-class free cash flow, it's a defensive grower that should hold up well in a slowing economy with sticky inflation."
+    "text": "Consider adding to UNH \u2014 a high-quality healthcare compounder at 17 times earnings with nearly 12% revenue growth is the kind of defensive grower that holds up well when the economy is slowing."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to GOOGL \u2014 at 23 times earnings with 15% revenue growth and your position essentially flat, this is a reasonably priced big-tech name with room to run."
   }
 ]

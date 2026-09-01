@@ -144,8 +144,8 @@
     "prev_level": 1.4264
   },
   "BE": {
-    "level": 117.2112,
-    "prev_level": null
+    "level": 123.4665,
+    "prev_level": 117.2112
   },
   "NSC": {
     "level": 328.4225,
@@ -165,6 +165,10 @@
   },
   "BMNR": {
     "level": 16.1644,
+    "prev_level": null
+  },
+  "MSTR": {
+    "level": 96.6651,
     "prev_level": null
   }
 }
