@@ -164,11 +164,15 @@
     "prev_level": null
   },
   "BMNR": {
-    "level": 16.1644,
-    "prev_level": null
+    "level": 17.068,
+    "prev_level": 16.1644
   },
   "MSTR": {
     "level": 96.6651,
+    "prev_level": null
+  },
+  "V": {
+    "level": 328.6122,
     "prev_level": null
   }
 }

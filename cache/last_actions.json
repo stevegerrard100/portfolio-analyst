@@ -3,30 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "July payrolls unexpectedly fell 23,000 while markets are now pricing in rate hikes instead of cuts \u2014 this stagflation-lite mix of slowing growth (GDP down to 1.5%) with sticky 3.4% inflation means the economy is losing momentum and the Fed has less room to help, so tighten your stops and hold off on adding risk."
+    "text": "The Fed has removed 2026 rate cut expectations and markets are now pricing in two hikes, while payrolls just turned negative at -23,000 jobs \u2014 this combination of tightening policy and weakening employment is a stagflation warning that could pressure your growth and speculative holdings hardest."
   },
   {
-    "id": "BE-raise_stop",
+    "id": "BMNR-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your stop on BE from $117.21 to $123.47 to lock in more protection while you watch whether that 37% revenue growth can offset the insider selling and 40% drawdown from highs."
+    "text": "Raise your BMNR stop from $16.16 to $17.07 to lock in more protection, since three consecutive earnings misses and a 63% drop from its high mean you want a tighter safety net on this one."
   },
   {
-    "id": "META-add",
+    "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to META \u2014 at just 16 times earnings with 22% revenue growth, a 26% pullback from highs gives you a genuinely discounted entry into one of the most profitable companies in the world."
+    "text": "Consider adding to MU \u2014 a PE of just 6 with 49% revenue growth makes Micron one of the cheapest high-growth names available, and semiconductor demand tied to AI investment remains a strong tailwind."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to UNH \u2014 a high-quality healthcare compounder at 17 times earnings with nearly 12% revenue growth is the kind of defensive grower that holds up well when the economy is slowing."
+    "text": "Consider adding to UNH \u2014 at a 17.7 PE with nearly 12% revenue growth and the best cash flow yield in your portfolio at 4.5%, this defensive healthcare name is exactly what you want in a slowing economy."
   },
   {
-    "id": "GOOGL-add",
+    "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 at 23 times earnings with 15% revenue growth and your position essentially flat, this is a reasonably priced big-tech name with room to run."
+    "text": "Consider adding to META \u2014 a 16.5 PE with 22% revenue growth makes it one of the cheapest big tech names, and its strong cash flow provides a cushion if the economy weakens further."
   }
 ]
