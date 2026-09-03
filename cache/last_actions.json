@@ -3,30 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has removed 2026 rate cut expectations and markets are now pricing in two hikes, while payrolls just turned negative at -23,000 jobs \u2014 this combination of tightening policy and weakening employment is a stagflation warning that could pressure your growth and speculative holdings hardest."
+    "text": "The Fed is now signaling possible rate hikes instead of cuts, payrolls just went negative at -23,000 jobs, and GDP growth has slowed to 1.5% \u2014 this combination of stalling growth with stubborn inflation creates a stagflationary risk that could pressure your entire portfolio."
   },
   {
-    "id": "BMNR-raise_stop",
-    "action_type": "raise_stop",
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "RGTI is down 47% with revenue shrinking 34%, heavy insider selling, 17.7% short interest, and no path to profitability \u2014 this thesis is broken and the position should be closed."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "QBTS is down 41% with no earnings, 20% short interest, insider selling, and extreme volatility at 63% \u2014 exit this speculative position before further damage."
+  },
+  {
+    "id": "MSTR-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your BMNR stop from $16.16 to $17.07 to lock in more protection, since three consecutive earnings misses and a 63% drop from its high mean you want a tighter safety net on this one."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to MU \u2014 a PE of just 6 with 49% revenue growth makes Micron one of the cheapest high-growth names available, and semiconductor demand tied to AI investment remains a strong tailwind."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to UNH \u2014 at a 17.7 PE with nearly 12% revenue growth and the best cash flow yield in your portfolio at 4.5%, this defensive healthcare name is exactly what you want in a slowing economy."
+    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow of -46%, and in a potential rate-hike environment, speculative assets like this face extra headwinds \u2014 trim to a size you can sleep with."
   },
   {
     "id": "META-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to META \u2014 a 16.5 PE with 22% revenue growth makes it one of the cheapest big tech names, and its strong cash flow provides a cushion if the economy weakens further."
+    "text": "META at a PE of 17 with 22% revenue growth is a standout value-for-growth combination, and in a slowing economy, companies generating strong cash flow deserve a bigger seat at the table."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL at a PE of 22.7 with 15% revenue growth and insider buying gives you quality at a reasonable price \u2014 worth adding on this pullback."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "UNH shows bullish momentum with a PE of 17.8, nearly 12% revenue growth, and strong institutional buying \u2014 a defensive grower that fits well in a slowing economy."
   }
 ]
