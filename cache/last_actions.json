@@ -3,42 +3,6 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes instead of cuts, payrolls just went negative at -23,000 jobs, and GDP growth has slowed to 1.5% \u2014 this combination of stalling growth with stubborn inflation creates a stagflationary risk that could pressure your entire portfolio."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RGTI is down 47% with revenue shrinking 34%, heavy insider selling, 17.7% short interest, and no path to profitability \u2014 this thesis is broken and the position should be closed."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "QBTS is down 41% with no earnings, 20% short interest, insider selling, and extreme volatility at 63% \u2014 exit this speculative position before further damage."
-  },
-  {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow of -46%, and in a potential rate-hike environment, speculative assets like this face extra headwinds \u2014 trim to a size you can sleep with."
-  },
-  {
-    "id": "META-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "META at a PE of 17 with 22% revenue growth is a standout value-for-growth combination, and in a slowing economy, companies generating strong cash flow deserve a bigger seat at the table."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "GOOGL at a PE of 22.7 with 15% revenue growth and insider buying gives you quality at a reasonable price \u2014 worth adding on this pullback."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "UNH shows bullish momentum with a PE of 17.8, nearly 12% revenue growth, and strong institutional buying \u2014 a defensive grower that fits well in a slowing economy."
+    "text": "The Fed under Chair Warsh is now signaling possible rate hikes with inflation stuck at 3.3%, GDP slowing to 1.5%, and job growth collapsing to near zero \u2014 this stagflationary mix (rising prices + stalling growth) means your riskiest holdings face a much harsher environment ahead."
   }
 ]
