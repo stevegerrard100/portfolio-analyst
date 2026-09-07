@@ -1,8 +1,50 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
+    "id": "RGTI-sell",
+    "action_type": "sell",
     "priority": "high",
-    "text": "The Fed under Chair Warsh is now signaling possible rate hikes with inflation stuck at 3.3%, GDP slowing to 1.5%, and job growth collapsing to near zero \u2014 this stagflationary mix (rising prices + stalling growth) means your riskiest holdings face a much harsher environment ahead."
+    "text": "Sell RGTI \u2014 it's your worst holding at -46%, down 73% from its high, with shrinking revenue, heavy cash burn, and 18% short interest, meaning there's no fundamental reason to stay in this one."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell QBTS \u2014 down 41% with a 63% drawdown from its peak, this company is burning cash, has no earnings, and 20% of its shares are being bet against by short sellers, so cut your losses here."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim IONQ \u2014 despite exciting revenue growth, you're down 20% on a deeply unprofitable stock that's 52% off its high, so reduce your exposure to limit further damage while keeping a small position if you still believe in quantum computing long-term."
+  },
+  {
+    "id": "BE-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your BE stop from $123.47 to $216.84 to lock in more of your gains while giving this high-growth but volatile stock room to run."
+  },
+  {
+    "id": "MU-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MU stop from $793.79 to $910.84 to protect your profits as the stock moves higher."
+  },
+  {
+    "id": "ADBE-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your ADBE stop from $231.46 to $243.24 to tighten your safety net as the stock grinds upward."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to UNH \u2014 at a PE of just 17.7 with nearly 12% revenue growth and the best free cash flow yield in your portfolio, this is a high-quality defensive compounder at a fair price in an uncertain market."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 a slight dip in a quality compounder trading at a reasonable PE of 23 with 15% revenue growth gives you a chance to lower your cost basis on one of the strongest businesses in the world."
   }
 ]
