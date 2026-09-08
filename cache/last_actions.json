@@ -1,50 +1,44 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "The Fed under Chair Warsh has held rates at 3.5%-3.75% for five straight meetings with nearly half of policymakers open to a hike \u2014 combined with CPI still running at 3.3% and GDP slowing to 1.5%, this means borrowing costs are staying high longer than expected, which hurts growth stocks and speculative holdings the most."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 it's your worst holding at -46%, down 73% from its high, with shrinking revenue, heavy cash burn, and 18% short interest, meaning there's no fundamental reason to stay in this one."
+    "text": "Sell RGTI \u2014 you're down 45%, revenue is shrinking by 34%, insiders are selling, 18% of traders are betting against it, and the stock is 73% off its highs, meaning the thesis here is broken and staying in is just hoping for a miracle."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell QBTS \u2014 down 41% with a 63% drawdown from its peak, this company is burning cash, has no earnings, and 20% of its shares are being bet against by short sellers, so cut your losses here."
+    "text": "Sell QBTS \u2014 you're down 41% with no path to profitability, over 20% short interest (one of the highest levels you can see), insiders are dumping shares, and speculative tech with no earnings gets punished hardest when rates stay this high."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 despite exciting revenue growth, you're down 20% on a deeply unprofitable stock that's 52% off its high, so reduce your exposure to limit further damage while keeping a small position if you still believe in quantum computing long-term."
+    "text": "Trim IONQ \u2014 you're down 18% and the stock is 52% off its highs with no earnings, 10.5% short interest, and quantum computing is still years from generating real revenue, so reduce your exposure and protect what's left."
   },
   {
-    "id": "BE-raise_stop",
-    "action_type": "raise_stop",
+    "id": "MSTR-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your BE stop from $123.47 to $216.84 to lock in more of your gains while giving this high-growth but volatile stock room to run."
-  },
-  {
-    "id": "MU-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your MU stop from $793.79 to $910.84 to protect your profits as the stock moves higher."
-  },
-  {
-    "id": "ADBE-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your ADBE stop from $231.46 to $243.24 to tighten your safety net as the stock grinds upward."
+    "text": "Trim MSTR \u2014 while you're slightly up at 7.6%, this is a leveraged Bitcoin bet that's 60% off its highs with terrible fundamentals, and in a high-rate environment where speculation gets punished, reducing your position size here is smart risk management."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to UNH \u2014 at a PE of just 17.7 with nearly 12% revenue growth and the best free cash flow yield in your portfolio, this is a high-quality defensive compounder at a fair price in an uncertain market."
+    "text": "Add to UNH \u2014 at 17.7x earnings with nearly 12% revenue growth and strong cash flow, UnitedHealth is a genuine value opportunity in a slowing economy where defensive healthcare names with real profits tend to outperform."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 a slight dip in a quality compounder trading at a reasonable PE of 23 with 15% revenue growth gives you a chance to lower your cost basis on one of the strongest businesses in the world."
+    "text": "Add to GOOGL \u2014 at 22.8x earnings with 15% revenue growth and positive free cash flow, Google is reasonably priced for a mega-cap tech leader and the kind of quality name that holds up well when the economy slows."
   }
 ]
