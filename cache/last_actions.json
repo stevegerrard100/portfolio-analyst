@@ -1,44 +1,38 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "The Fed under Chair Warsh has held rates at 3.5%-3.75% for five straight meetings with nearly half of policymakers open to a hike \u2014 combined with CPI still running at 3.3% and GDP slowing to 1.5%, this means borrowing costs are staying high longer than expected, which hurts growth stocks and speculative holdings the most."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 you're down 45%, revenue is shrinking by 34%, insiders are selling, 18% of traders are betting against it, and the stock is 73% off its highs, meaning the thesis here is broken and staying in is just hoping for a miracle."
+    "text": "Sell RGTI now \u2014 you're down 43%, it's 72% off its high, revenue is declining, insiders are selling, and short interest is elevated at 18%, meaning the thesis here is broken with no near-term catalyst to reverse it."
   },
   {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell QBTS \u2014 you're down 41% with no path to profitability, over 20% short interest (one of the highest levels you can see), insiders are dumping shares, and speculative tech with no earnings gets punished hardest when rates stay this high."
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim QBTS significantly \u2014 you're down 37% with no earnings, bearish technical signals across the board, insider selling, and the stock sitting 60% below its high, so cut your loss exposure before it gets worse."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 you're down 18% and the stock is 52% off its highs with no earnings, 10.5% short interest, and quantum computing is still years from generating real revenue, so reduce your exposure and protect what's left."
+    "text": "Trim IONQ \u2014 despite exciting revenue growth, you're down 18%, the stock is 51% off its high with deeply negative earnings and bearish technicals, making the risk/reward unfavorable at this size."
   },
   {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim MSTR \u2014 while you're slightly up at 7.6%, this is a leveraged Bitcoin bet that's 60% off its highs with terrible fundamentals, and in a high-rate environment where speculation gets punished, reducing your position size here is smart risk management."
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to MU \u2014 a PE of just 6.5 with 49% revenue growth and consistent earnings beats is a rare combination, and trading above its 50-day average gives you a technical tailwind to lean into."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to UNH \u2014 at 17.7x earnings with nearly 12% revenue growth and strong cash flow, UnitedHealth is a genuine value opportunity in a slowing economy where defensive healthcare names with real profits tend to outperform."
+    "text": "Consider adding to UNH \u2014 this healthcare blue chip at a PE of 18 with nearly 12% revenue growth and strong free cash flow is the kind of quality holding worth building during uncertain macro conditions."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 at 22.8x earnings with 15% revenue growth and positive free cash flow, Google is reasonably priced for a mega-cap tech leader and the kind of quality name that holds up well when the economy slows."
+    "text": "Consider adding to GOOGL \u2014 trading 16% below its 52-week high with a PE of 23 and solid 15% revenue growth means you're getting a world-class business at a reasonable price while it's pulling back."
   }
 ]
