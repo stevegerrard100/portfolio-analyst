@@ -1,38 +1,50 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "The Fed under Chair Warsh has signaled possible rate hikes in 2026 \u2014 not cuts \u2014 with markets pricing in two 25bp increases by year-end, which means borrowing costs could rise further and hit unprofitable, cash-burning stocks in your portfolio especially hard."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 you're down 43%, it's 72% off its high, revenue is declining, insiders are selling, and short interest is elevated at 18%, meaning the thesis here is broken with no near-term catalyst to reverse it."
+    "text": "Sell RGTI now \u2014 you're down 45%, revenue is shrinking by 34%, the stock is 73% off its highs, and this unprofitable company faces an even tougher environment if rates rise further."
   },
   {
-    "id": "QBTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim QBTS significantly \u2014 you're down 37% with no earnings, bearish technical signals across the board, insider selling, and the stock sitting 60% below its high, so cut your loss exposure before it gets worse."
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell QBTS \u2014 you're down 39% on a cash-burning, unprofitable company that's 62% off its highs, and with rates potentially heading higher, speculative names like this face the most pressure."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 despite exciting revenue growth, you're down 18%, the stock is 51% off its high with deeply negative earnings and bearish technicals, making the risk/reward unfavorable at this size."
+    "text": "Trim IONQ to reduce your exposure \u2014 you're down 22%, the company is unprofitable with heavy cash burn and over 10% short interest, and quantum computing stocks need cheap capital to survive, which isn't coming anytime soon."
+  },
+  {
+    "id": "BMNR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your BMNR stop from $17.07 to $18.11 to lock in more protection on a stock that's already down 62% from its highs and has missed earnings three times recently."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to MU \u2014 a PE of just 6.5 with 49% revenue growth and consistent earnings beats is a rare combination, and trading above its 50-day average gives you a technical tailwind to lean into."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to UNH \u2014 this healthcare blue chip at a PE of 18 with nearly 12% revenue growth and strong free cash flow is the kind of quality holding worth building during uncertain macro conditions."
+    "text": "Consider adding to MU \u2014 a PE of just 6.6 with nearly 49% revenue growth and consistent earnings beats makes this one of the best value-plus-growth combinations in your portfolio right now."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 trading 16% below its 52-week high with a PE of 23 and solid 15% revenue growth means you're getting a world-class business at a reasonable price while it's pulling back."
+    "text": "Consider adding to GOOGL \u2014 trading at a reasonable PE of 22 with 15% revenue growth and insider buying, this is a high-quality name at a fair price even in a higher-rate environment."
+  },
+  {
+    "id": "UNH-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to UNH \u2014 steady 12% revenue growth, a 4.6% free cash flow yield, and insider buying make this a defensive compounder that holds up well when economic growth is slowing."
   }
 ]
