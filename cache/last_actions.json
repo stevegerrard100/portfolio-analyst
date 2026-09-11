@@ -1,50 +1,50 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "The Fed under Chair Warsh has signaled possible rate hikes in 2026 \u2014 not cuts \u2014 with markets pricing in two 25bp increases by year-end, which means borrowing costs could rise further and hit unprofitable, cash-burning stocks in your portfolio especially hard."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 you're down 45%, revenue is shrinking by 34%, the stock is 73% off its highs, and this unprofitable company faces an even tougher environment if rates rise further."
+    "text": "Sell RGTI \u2014 revenue is shrinking by 34%, the stock is down 45% with insiders selling and nearly 18% short interest, meaning other investors are actively betting against it, so cut your losses here."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell QBTS \u2014 you're down 39% on a cash-burning, unprofitable company that's 62% off its highs, and with rates potentially heading higher, speculative names like this face the most pressure."
+    "text": "Sell QBTS \u2014 it's down 41% with no profits, heavy insider selling, and over 21% short interest (meaning one in five available shares is being bet against), so this position is broken and should be closed."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ to reduce your exposure \u2014 you're down 22%, the company is unprofitable with heavy cash burn and over 10% short interest, and quantum computing stocks need cheap capital to survive, which isn't coming anytime soon."
+    "text": "Trim IONQ \u2014 it's down 25% and 55% off its high with no earnings to support the price, so reduce your exposure to limit further losses while quantum computing remains all promise and no profit."
   },
   {
-    "id": "BMNR-raise_stop",
+    "id": "MSTR-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your BMNR stop from $17.07 to $18.11 to lock in more protection on a stock that's already down 62% from its highs and has missed earnings three times recently."
+    "text": "Raise your MSTR stop-loss from $96.67 to $102.01 \u2014 this locks in more downside protection on a volatile leveraged Bitcoin play that could turn against you quickly."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to MU \u2014 a PE of just 6.6 with nearly 49% revenue growth and consistent earnings beats makes this one of the best value-plus-growth combinations in your portfolio right now."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 trading at a reasonable PE of 22 with 15% revenue growth and insider buying, this is a high-quality name at a fair price even in a higher-rate environment."
+    "text": "Add to MU \u2014 Micron's 49% revenue growth and PE of just 6.3 (meaning you're paying very little relative to earnings) with a streak of beating expectations makes it one of the strongest fundamental stories in your portfolio."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to UNH \u2014 steady 12% revenue growth, a 4.6% free cash flow yield, and insider buying make this a defensive compounder that holds up well when economic growth is slowing."
+    "text": "Add to UNH \u2014 UnitedHealth is a proven healthcare giant trading at a fair PE of 17 with nearly 12% revenue growth and strong cash generation, making it a quality defensive anchor."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to ADBE \u2014 Adobe's PE of just 9 with 10% revenue growth and outstanding free cash flow yield (cash it generates relative to its price) suggests the market is undervaluing this profitable software leader."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 Google's 15% revenue growth at a PE of 22 with strong free cash flow makes it a quality compounder trading at a reasonable price in an uncertain market."
   }
 ]
