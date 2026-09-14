@@ -1,50 +1,50 @@
 [
   {
+    "id": "MACRO-danger",
+    "action_type": "danger",
+    "priority": "high",
+    "text": "The Fed is now signaling possible rate hikes with inflation stuck at 3.4% and payrolls running hot at 162,000 \u2014 this means borrowing costs could rise further, which is especially bad news for unprofitable growth stocks and leveraged positions in your portfolio."
+  },
+  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI \u2014 revenue is shrinking by 34%, the stock is down 45% with insiders selling and nearly 18% short interest, meaning other investors are actively betting against it, so cut your losses here."
+    "text": "Sell RGTI \u2014 it's down 47% and 73% off its high with shrinking revenue, cash-burning operations, insider selling, and 18% short interest, meaning there's no fundamental reason to hold this."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell QBTS \u2014 it's down 41% with no profits, heavy insider selling, and over 21% short interest (meaning one in five available shares is being bet against), so this position is broken and should be closed."
+    "text": "Sell QBTS \u2014 down 42% and 63% off its high with no earnings, insiders dumping shares, 22% short interest, and every technical indicator flashing red, this position is broken."
   },
   {
-    "id": "IONQ-trim",
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell IONQ \u2014 down 28% and 55% off its high with no profits in sight, this pre-revenue quantum computing bet carries the same risks as QBTS and should be exited before further damage."
+  },
+  {
+    "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ \u2014 it's down 25% and 55% off its high with no earnings to support the price, so reduce your exposure to limit further losses while quantum computing remains all promise and no profit."
+    "text": "Trim MSTR \u2014 it's essentially a leveraged Bitcoin bet sitting 64% off its high with negative earnings, and in a rising-rate environment this kind of speculative leverage works against you."
   },
   {
-    "id": "MSTR-raise_stop",
+    "id": "SILG.L-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your MSTR stop-loss from $96.67 to $102.01 \u2014 this locks in more downside protection on a volatile leveraged Bitcoin play that could turn against you quickly."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to MU \u2014 Micron's 49% revenue growth and PE of just 6.3 (meaning you're paying very little relative to earnings) with a streak of beating expectations makes it one of the strongest fundamental stories in your portfolio."
+    "text": "Raise your stop on SILG.L from 28.16 to 29.71 to lock in more of your gains while still giving the position room to run."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to UNH \u2014 UnitedHealth is a proven healthcare giant trading at a fair PE of 17 with nearly 12% revenue growth and strong cash generation, making it a quality defensive anchor."
+    "text": "Consider adding to UNH \u2014 a dominant healthcare company with 12% revenue growth, strong cash flow, and a PE of just 17 is a defensive bargain in a market where rate hikes and slowing GDP favor quality over speculation."
   },
   {
-    "id": "ADBE-add",
+    "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 Adobe's PE of just 9 with 10% revenue growth and outstanding free cash flow yield (cash it generates relative to its price) suggests the market is undervaluing this profitable software leader."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to GOOGL \u2014 Google's 15% revenue growth at a PE of 22 with strong free cash flow makes it a quality compounder trading at a reasonable price in an uncertain market."
+    "text": "Consider adding to MU \u2014 with 49% revenue growth, a consistent beat streak, and a PE of just 6.2, Micron looks deeply undervalued for a tech company with this kind of growth, though watch for macro headwinds from potential rate hikes."
   }
 ]
