@@ -3,48 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling possible rate hikes with inflation stuck at 3.4% and payrolls running hot at 162,000 \u2014 this means borrowing costs could rise further, which is especially bad news for unprofitable growth stocks and leveraged positions in your portfolio."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell RGTI \u2014 it's down 47% and 73% off its high with shrinking revenue, cash-burning operations, insider selling, and 18% short interest, meaning there's no fundamental reason to hold this."
+    "text": "The Fed has shifted from easing to signaling possible rate hikes by year-end 2026, with inflation stuck at 3.4% and a surprisingly strong jobs report \u2014 this means borrowing costs could rise further, which is especially bad for your unprofitable, speculative holdings like QBTS, IONQ, and RGTI."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell QBTS \u2014 down 42% and 63% off its high with no earnings, insiders dumping shares, 22% short interest, and every technical indicator flashing red, this position is broken."
+    "text": "QBTS is down 41% with no earnings, 22% short interest, and insiders heading for the exits \u2014 in a rising-rate environment where unprofitable companies get punished hardest, this position is broken and should be closed."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell IONQ \u2014 down 28% and 55% off its high with no profits in sight, this pre-revenue quantum computing bet carries the same risks as QBTS and should be exited before further damage."
+    "text": "IONQ is down 54% from highs with negative earnings and quantum computing still years from generating real revenue \u2014 with rates potentially heading higher, the market will keep punishing cash-burning companies like this one."
+  },
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "RGTI's revenue is actually shrinking by 34% while the stock is down 46% with high short interest and insider selling \u2014 a money-losing company with declining sales has no margin of safety left."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "NCLP.L is your largest holding and your worst performer at -23%, and even though momentum may be turning, the oversized position means it's dragging your whole portfolio down \u2014 reduce it to limit the damage if the recovery stalls."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR \u2014 it's essentially a leveraged Bitcoin bet sitting 64% off its high with negative earnings, and in a rising-rate environment this kind of speculative leverage works against you."
-  },
-  {
-    "id": "SILG.L-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your stop on SILG.L from 28.16 to 29.71 to lock in more of your gains while still giving the position room to run."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to UNH \u2014 a dominant healthcare company with 12% revenue growth, strong cash flow, and a PE of just 17 is a defensive bargain in a market where rate hikes and slowing GDP favor quality over speculation."
+    "text": "MSTR is down 62% from its highs and behaves like a leveraged Bitcoin bet, not a stock \u2014 with rising rate expectations making speculative assets less attractive, consider cutting this to a size where the volatility won't keep you up at night."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to MU \u2014 with 49% revenue growth, a consistent beat streak, and a PE of just 6.2, Micron looks deeply undervalued for a tech company with this kind of growth, though watch for macro headwinds from potential rate hikes."
+    "text": "Micron trades at just 5.9 times earnings with 49% revenue growth and consistent earnings beats \u2014 this is a profitable, growing company that looks genuinely cheap, making it one of the few holdings worth adding to on this pullback."
   }
 ]
