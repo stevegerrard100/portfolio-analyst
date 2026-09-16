@@ -3,42 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has shifted from easing to signaling possible rate hikes by year-end 2026, with inflation stuck at 3.4% and a surprisingly strong jobs report \u2014 this means borrowing costs could rise further, which is especially bad for your unprofitable, speculative holdings like QBTS, IONQ, and RGTI."
+    "text": "The Fed has removed rate cut expectations and is now considering hikes to ~4.2% by year-end while GDP growth has slowed to 1.5% \u2014 this stagflation-lite mix of sticky 3.4% inflation, rising rate risk, and slowing growth is a headwind for speculative and growth holdings in your portfolio."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "QBTS is down 41% with no earnings, 22% short interest, and insiders heading for the exits \u2014 in a rising-rate environment where unprofitable companies get punished hardest, this position is broken and should be closed."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "IONQ is down 54% from highs with negative earnings and quantum computing still years from generating real revenue \u2014 with rates potentially heading higher, the market will keep punishing cash-burning companies like this one."
+    "text": "QBTS is down 41%, losing money with a negative PE, has 22% short interest betting against it, and sits 63% below its high \u2014 the thesis is broken and this capital is better deployed elsewhere."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI's revenue is actually shrinking by 34% while the stock is down 46% with high short interest and insider selling \u2014 a money-losing company with declining sales has no margin of safety left."
+    "text": "RGTI is your worst performer at -46% with revenue shrinking 34% and massive losses \u2014 there is no fundamental support here and you should exit to stop the bleeding."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "IONQ is down 24% with negative earnings, bearish technicals across the board, and 10% short interest \u2014 another unprofitable quantum computing name that should be sold before further damage."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is your largest holding and your worst performer at -23%, and even though momentum may be turning, the oversized position means it's dragging your whole portfolio down \u2014 reduce it to limit the damage if the recovery stalls."
-  },
-  {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "MSTR is down 62% from its highs and behaves like a leveraged Bitcoin bet, not a stock \u2014 with rising rate expectations making speculative assets less attractive, consider cutting this to a size where the volatility won't keep you up at night."
+    "text": "NCLP.L is down 23% with deeply bearish technicals below its 50-day average and carries a REDUCE signal \u2014 cut this position back meaningfully to limit further downside."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron trades at just 5.9 times earnings with 49% revenue growth and consistent earnings beats \u2014 this is a profitable, growing company that looks genuinely cheap, making it one of the few holdings worth adding to on this pullback."
+    "text": "MU combines a remarkably cheap PE of 5.9 with 49% revenue growth riding the AI memory boom \u2014 this is the strongest risk/reward setup in your portfolio for adding on any pullback."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL at a PE of 23 with 15% revenue growth, strong free cash flow, and insider buying is a quality large-cap worth adding to as a defensive growth anchor in this uncertain macro environment."
   }
 ]
