@@ -3,42 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has removed rate cut expectations and is now considering hikes to ~4.2% by year-end while GDP growth has slowed to 1.5% \u2014 this stagflation-lite mix of sticky 3.4% inflation, rising rate risk, and slowing growth is a headwind for speculative and growth holdings in your portfolio."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "QBTS is down 41%, losing money with a negative PE, has 22% short interest betting against it, and sits 63% below its high \u2014 the thesis is broken and this capital is better deployed elsewhere."
+    "text": "Markets are now pricing in rate hikes to ~4.1% by year-end with CPI stuck at 3.4% and surprisingly strong payrolls \u2014 this rising-rate environment puts extra pressure on unprofitable and high-multiple holdings in your portfolio, so tighten stops and favor cash-flow-positive names."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is your worst performer at -46% with revenue shrinking 34% and massive losses \u2014 there is no fundamental support here and you should exit to stop the bleeding."
+    "text": "Sell RGTI now \u2014 you're down nearly 47%, revenue is shrinking at -34%, the company isn't profitable, and every technical and fundamental signal is flashing red, meaning the thesis is broken."
   },
   {
-    "id": "IONQ-sell",
+    "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "IONQ is down 24% with negative earnings, bearish technicals across the board, and 10% short interest \u2014 another unprofitable quantum computing name that should be sold before further damage."
+    "text": "Sell QBTS \u2014 a 42% loss combined with negative free cash flow, insiders selling, and over 21% short interest (meaning one in five available shares are being bet against) tells you smart money doesn't believe in this recovery."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is down 23% with deeply bearish technicals below its 50-day average and carries a REDUCE signal \u2014 cut this position back meaningfully to limit further downside."
+    "text": "Trim IONQ to reduce your exposure \u2014 down 25% with no profits, 55% off its highs, and high short interest at 10%, this speculative quantum computing name carries too much risk in a rising-rate environment."
+  },
+  {
+    "id": "BMNR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your BMNR stop from $18.11 to $19.03 to lock in more protection, since three consecutive earnings misses and a 64% drawdown from highs mean you want a tighter safety net on this volatile name."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "MU combines a remarkably cheap PE of 5.9 with 49% revenue growth riding the AI memory boom \u2014 this is the strongest risk/reward setup in your portfolio for adding on any pullback."
+    "text": "Consider adding to MU \u2014 a PE of just 5.9 with nearly 49% revenue growth and a beat streak means this cyclical semiconductor stock looks genuinely undervalued, especially if you can handle short-term volatility."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to ADBE \u2014 at a PE of just 9.1 with a strong 10% free cash flow yield and insider buying, this profitable software giant looks meaningfully cheap compared to its quality."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL at a PE of 23 with 15% revenue growth, strong free cash flow, and insider buying is a quality large-cap worth adding to as a defensive growth anchor in this uncertain macro environment."
+    "text": "Consider adding to GOOGL \u2014 a 23 PE with 15% revenue growth, strong free cash flow, and insider confidence makes this one of the safest quality growth names you can own right now."
   }
 ]
