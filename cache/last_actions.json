@@ -3,48 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "Markets are now pricing in rate hikes to ~4.1% by year-end with CPI stuck at 3.4% and surprisingly strong payrolls \u2014 this rising-rate environment puts extra pressure on unprofitable and high-multiple holdings in your portfolio, so tighten stops and favor cash-flow-positive names."
+    "text": "The Fed under Chair Warsh is now signaling possible rate hikes in 2026 with inflation stuck at 3.4% and a blowout jobs report \u2014 this means borrowing costs could rise further, which is especially painful for your speculative, cash-burning holdings like QBTS, IONQ, and RGTI."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 you're down nearly 47%, revenue is shrinking at -34%, the company isn't profitable, and every technical and fundamental signal is flashing red, meaning the thesis is broken."
+    "text": "RGTI is down 42.6% with shrinking revenue, cash burn, insider selling, and 18% short interest \u2014 the thesis is broken, and in a rising-rate environment speculative names like this get punished hardest, so exit now to stop the bleeding."
   },
   {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell QBTS \u2014 a 42% loss combined with negative free cash flow, insiders selling, and over 21% short interest (meaning one in five available shares are being bet against) tells you smart money doesn't believe in this recovery."
+    "id": "QBTS-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "QBTS is down 36.6% with no earnings, 22% short interest, and insiders selling \u2014 reduce your exposure because this speculative quantum bet has too much working against it, especially with rates potentially heading higher."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim IONQ to reduce your exposure \u2014 down 25% with no profits, 55% off its highs, and high short interest at 10%, this speculative quantum computing name carries too much risk in a rising-rate environment."
-  },
-  {
-    "id": "BMNR-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your BMNR stop from $18.11 to $19.03 to lock in more protection, since three consecutive earnings misses and a 64% drawdown from highs mean you want a tighter safety net on this volatile name."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to MU \u2014 a PE of just 5.9 with nearly 49% revenue growth and a beat streak means this cyclical semiconductor stock looks genuinely undervalued, especially if you can handle short-term volatility."
+    "text": "IONQ is down 18% and 51% off its high with a negative PE and speculative quantum computing thesis \u2014 trim to a size you can stomach losing entirely, because 202% revenue growth means nothing if the company keeps burning cash in a tightening environment."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 at a PE of just 9.1 with a strong 10% free cash flow yield and insider buying, this profitable software giant looks meaningfully cheap compared to its quality."
+    "text": "Adobe at a PE of 9.1 with nearly 10% free cash flow yield is genuinely cheap for a profitable software giant \u2014 this looks like the market is mispricing a quality company, making it worth adding to on this weakness."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 a 23 PE with 15% revenue growth, strong free cash flow, and insider confidence makes this one of the safest quality growth names you can own right now."
+    "text": "Google at a PE of 23 with 15% revenue growth and strong free cash flow is one of the most reasonably priced big tech names you own \u2014 worth adding a bit here since profitable companies with real earnings hold up better if rates rise."
   }
 ]
