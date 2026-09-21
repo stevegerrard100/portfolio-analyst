@@ -3,36 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed under Chair Warsh is now signaling possible rate hikes in 2026 with inflation stuck at 3.4% and a blowout jobs report \u2014 this means borrowing costs could rise further, which is especially painful for your speculative, cash-burning holdings like QBTS, IONQ, and RGTI."
+    "text": "The Fed is now signaling a possible rate hike to ~4.2% amid sticky 3.4% CPI and war-driven inflation, with rate cuts pushed to 2027-2028 \u2014 this is a meaningful shift that raises the cost of holding speculative, cash-burning positions and could pressure growth stock valuations."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 42.6% with shrinking revenue, cash burn, insider selling, and 18% short interest \u2014 the thesis is broken, and in a rising-rate environment speculative names like this get punished hardest, so exit now to stop the bleeding."
+    "text": "RGTI is down 43% and 72% off its high with declining revenue, cash burn, insider selling, and 18% short interest \u2014 the thesis is broken and this should be sold to stop further losses."
   },
   {
-    "id": "QBTS-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "QBTS is down 36.6% with no earnings, 22% short interest, and insiders selling \u2014 reduce your exposure because this speculative quantum bet has too much working against it, especially with rates potentially heading higher."
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "QBTS is down 38.5% and 62% off its high with no earnings, significant cash burn, and 22% short interest \u2014 in a rising-rate environment this speculative position has no margin of safety and should be exited."
   },
   {
-    "id": "IONQ-trim",
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "IONQ is down nearly 20% and over 52% off its high with cash burn and 10% short interest \u2014 a third cash-burning quantum computing stock with no clear path to profitability should be sold."
+  },
+  {
+    "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is down 18% and 51% off its high with a negative PE and speculative quantum computing thesis \u2014 trim to a size you can stomach losing entirely, because 202% revenue growth means nothing if the company keeps burning cash in a tightening environment."
+    "text": "NCLP.L is your worst-performing holding at down 22.7%, sitting 35% below its high with weakening momentum \u2014 trim this position to reduce risk since the REDUCE signal suggests the trend is deteriorating."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron at a PE of 6.5 with 49% revenue growth and strong technical momentum is the most compelling risk-reward in your portfolio \u2014 consider adding on any pullback toward support."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe at a PE of 9.1 with nearly 10% free cash flow yield is genuinely cheap for a profitable software giant \u2014 this looks like the market is mispricing a quality company, making it worth adding to on this weakness."
+    "text": "Adobe looks oversold at a PE of just 9 with solid 10.5% revenue growth and outstanding free cash flow yield \u2014 this is a quality name at a discount worth adding to."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at a PE of 23 with 15% revenue growth and strong free cash flow is one of the most reasonably priced big tech names you own \u2014 worth adding a bit here since profitable companies with real earnings hold up better if rates rise."
+    "text": "Google at a PE of 23.5 with 15% revenue growth, strong free cash flow, and insider buying offers solid value in an uncertain macro environment \u2014 consider adding gradually."
   }
 ]
