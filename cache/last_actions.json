@@ -3,48 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is now signaling a possible rate hike to ~4.2% amid sticky 3.4% CPI and war-driven inflation, with rate cuts pushed to 2027-2028 \u2014 this is a meaningful shift that raises the cost of holding speculative, cash-burning positions and could pressure growth stock valuations."
+    "text": "The Fed has removed rate cut guidance and markets are now pricing rates rising to 4.2% by year-end, while CPI remains sticky at 3.4% and GDP growth is slowing to 1.5% \u2014 this combination of hotter inflation, potential rate hikes, and cooling growth creates a challenging backdrop for risk assets, so consider holding extra cash and being selective with new positions."
   },
   {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RGTI is down 43% and 72% off its high with declining revenue, cash burn, insider selling, and 18% short interest \u2014 the thesis is broken and this should be sold to stop further losses."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "QBTS is down 38.5% and 62% off its high with no earnings, significant cash burn, and 22% short interest \u2014 in a rising-rate environment this speculative position has no margin of safety and should be exited."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "IONQ is down nearly 20% and over 52% off its high with cash burn and 10% short interest \u2014 a third cash-burning quantum computing stock with no clear path to profitability should be sold."
-  },
-  {
-    "id": "NCLP.L-trim",
+    "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is your worst-performing holding at down 22.7%, sitting 35% below its high with weakening momentum \u2014 trim this position to reduce risk since the REDUCE signal suggests the trend is deteriorating."
+    "text": "Trim QBTS to reduce your exposure \u2014 it's down 37%, has no earnings to support the valuation, and 22% short interest signals that a large number of professional traders are betting against it, so cut your risk and keep only a small speculative position if you still believe in the quantum computing story."
+  },
+  {
+    "id": "MSTR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MSTR stop from $102.01 to $107.39 to lock in more downside protection on this volatile leveraged Bitcoin play, especially given the macro uncertainty around rising rates."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron at a PE of 6.5 with 49% revenue growth and strong technical momentum is the most compelling risk-reward in your portfolio \u2014 consider adding on any pullback toward support."
+    "text": "Micron looks compelling for adding shares \u2014 a price-to-earnings ratio of just 6.6 with nearly 49% revenue growth, a streak of beating expectations, and technical momentum turning positive make this one of the strongest value-plus-growth combinations in the portfolio right now."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks oversold at a PE of just 9 with solid 10.5% revenue growth and outstanding free cash flow yield \u2014 this is a quality name at a discount worth adding to."
+    "text": "Consider adding to Adobe \u2014 at a PE of just 9 with a nearly 10% free cash flow yield (meaning the company generates substantial cash relative to its stock price), this is unusually cheap for a dominant software franchise, even in a rising rate environment."
   },
   {
-    "id": "GOOGL-add",
+    "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at a PE of 23.5 with 15% revenue growth, strong free cash flow, and insider buying offers solid value in an uncertain macro environment \u2014 consider adding gradually."
+    "text": "UnitedHealth's pullback of nearly 10% with all technical signals bearish creates an opportunity to add to a fundamentally strong healthcare giant at a better price, though size the addition modestly given the uncertain macro backdrop."
   }
 ]
