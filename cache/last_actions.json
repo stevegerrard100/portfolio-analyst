@@ -3,36 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has removed rate cut guidance and markets are now pricing rates rising to 4.2% by year-end, while CPI remains sticky at 3.4% and GDP growth is slowing to 1.5% \u2014 this combination of hotter inflation, potential rate hikes, and cooling growth creates a challenging backdrop for risk assets, so consider holding extra cash and being selective with new positions."
+    "text": "The Fed is now signaling a potential rate hike with inflation stuck at 3.4% and cuts pushed to 2027 \u2014 this means borrowing costs stay high longer, which is especially painful for cash-burning, unprofitable companies in your portfolio like QBTS, IONQ, and RGTI."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS to reduce your exposure \u2014 it's down 37%, has no earnings to support the valuation, and 22% short interest signals that a large number of professional traders are betting against it, so cut your risk and keep only a small speculative position if you still believe in the quantum computing story."
-  },
-  {
-    "id": "MSTR-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your MSTR stop from $102.01 to $107.39 to lock in more downside protection on this volatile leveraged Bitcoin play, especially given the macro uncertainty around rising rates."
+    "text": "QBTS is down 35% with no earnings, 22% short interest, and a cash-burning model \u2014 in a rising-rate environment where unprofitable companies get punished hardest, reduce this position to limit further damage."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron looks compelling for adding shares \u2014 a price-to-earnings ratio of just 6.6 with nearly 49% revenue growth, a streak of beating expectations, and technical momentum turning positive make this one of the strongest value-plus-growth combinations in the portfolio right now."
+    "text": "Micron has extraordinary relative strength, nearly 49% revenue growth, and a PE of just 6.9 \u2014 this is your strongest fundamental holding and worth adding to on any pullback."
   },
   {
-    "id": "ADBE-add",
+    "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to Adobe \u2014 at a PE of just 9 with a nearly 10% free cash flow yield (meaning the company generates substantial cash relative to its stock price), this is unusually cheap for a dominant software franchise, even in a rising rate environment."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "UnitedHealth's pullback of nearly 10% with all technical signals bearish creates an opportunity to add to a fundamentally strong healthcare giant at a better price, though size the addition modestly given the uncertain macro backdrop."
+    "text": "Google at a PE of 23.6 with 15% revenue growth and insider buying is one of the most reasonably priced quality names in your portfolio \u2014 worth adding as a defensive growth anchor."
   }
 ]
