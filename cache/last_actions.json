@@ -3,42 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just raised rates to 3.75%-4% with more hikes possible, GDP growth is slowing to 1.5%, and inflation is stuck at 3.4% \u2014 this stagflationary mix means you should be cautious about adding new risk and tighten stops on your weaker holdings."
+    "text": "The Fed just hiked rates to 3.75\u20134.00% with markets pricing further increases to 4.3% by December \u2014 combined with CPI stuck at 3.4% and GDP slowing to 1.5%, this creates a stagflationary setup that could pressure stock valuations, especially for unprofitable or speculative holdings."
   },
   {
     "id": "QBTS-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim QBTS because a 41% loss combined with no earnings, 22% short interest, and insider selling is a toxic combination \u2014 reduce your exposure and redeploy that capital into stronger positions."
+    "text": "QBTS is down 38% and 61% from its high as a speculative quantum computing play with no earnings support \u2014 reduce your exposure before further losses pile up, especially with rates rising and making unprofitable companies harder to justify."
   },
   {
-    "id": "NCLP.L-trim",
+    "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L since it's your worst-performing ETF at a 20.7% loss and a large position \u2014 in a rising-rate environment with slowing growth, reducing this outsized drag protects the rest of your portfolio."
+    "text": "MicroStrategy is a leveraged Bitcoin bet sitting 55% off its high with enormous volatility \u2014 in a rising rate environment, this kind of speculative concentration adds outsized risk to your portfolio and should be trimmed."
   },
   {
-    "id": "BMNR-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your BMNR stop from $19.03 to $20.19 to lock in more of your gains while still giving this high-growth name room to run."
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe looks undervalued at a PE of just 8.6 with 10.5% revenue growth and outstanding free cash flow \u2014 this is a profitable, cash-generating business on sale, and adding here at a discount makes sense for long-term holders."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to Micron \u2014 it has the strongest momentum in your portfolio with a bullish MACD and price above its 50-day average, and memory chips remain in a structural upcycle driven by AI demand."
+    "text": "Micron has exceptional relative strength, bullish momentum above its 50-day average, and strong fundamentals behind the AI memory demand story \u2014 worth adding on this strength."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Google at a PE of 23 with 15% revenue growth, strong free cash flow, and insider buying represents solid value in a market where quality matters more than ever with rates heading higher."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to UnitedHealth on this 11% pullback because it's one of the most defensible businesses in healthcare, which is exactly the kind of quality you want to own when the economy is slowing."
-  },
-  {
-    "id": "V-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to Visa while it's only 5% below your cost \u2014 its toll-booth business model on global payments generates consistent growth regardless of rate cycles, making it a strong hold through uncertainty."
+    "text": "UnitedHealth is down 10% with nearly 12% revenue growth and a strong 4.8% free cash flow yield \u2014 this defensive healthcare leader is pulling back to a level worth adding to for its resilience in a slowing economy."
   }
 ]
