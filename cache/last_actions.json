@@ -3,42 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75\u20134.00% with markets pricing further increases to 4.3% by December \u2014 combined with CPI stuck at 3.4% and GDP slowing to 1.5%, this creates a stagflationary setup that could pressure stock valuations, especially for unprofitable or speculative holdings."
+    "text": "The Fed just hiked rates to 3.75%-4% with more increases expected \u2014 this is a genuine shift back to tightening that makes richly valued and unprofitable holdings especially vulnerable, so tighten stops and avoid adding to speculative names."
   },
   {
-    "id": "QBTS-trim",
+    "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "QBTS is down 38% and 61% from its high as a speculative quantum computing play with no earnings support \u2014 reduce your exposure before further losses pile up, especially with rates rising and making unprofitable companies harder to justify."
+    "text": "NCLP.L is your worst performer at down 24% and 36% off its high with persistent bearish momentum \u2014 reduce your exposure to limit further damage while the downtrend continues."
   },
   {
-    "id": "MSTR-trim",
+    "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MicroStrategy is a leveraged Bitcoin bet sitting 55% off its high with enormous volatility \u2014 in a rising rate environment, this kind of speculative concentration adds outsized risk to your portfolio and should be trimmed."
+    "text": "IONQ is 45% off its high and despite exciting 202% revenue growth, the company still loses money, making it highly vulnerable in a rising-rate environment \u2014 trim to a smaller speculative position."
   },
   {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe looks undervalued at a PE of just 8.6 with 10.5% revenue growth and outstanding free cash flow \u2014 this is a profitable, cash-generating business on sale, and adding here at a discount makes sense for long-term holders."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Micron has exceptional relative strength, bullish momentum above its 50-day average, and strong fundamentals behind the AI memory demand story \u2014 worth adding on this strength."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google at a PE of 23 with 15% revenue growth, strong free cash flow, and insider buying represents solid value in a market where quality matters more than ever with rates heading higher."
+    "id": "MSTR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your MSTR stop from $107.39 to $113.23 to lock in more downside protection on what is essentially a leveraged Bitcoin bet in an increasingly uncertain macro environment."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UnitedHealth is down 10% with nearly 12% revenue growth and a strong 4.8% free cash flow yield \u2014 this defensive healthcare leader is pulling back to a level worth adding to for its resilience in a slowing economy."
+    "text": "UNH is down nearly 10% and trading below its 50-day average, but with a PE of 17 and nearly 12% revenue growth, this is a fundamentally strong company on sale \u2014 a good spot to add gradually."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "GOOGL's pullback below its 50-day average with insider buying and a reasonable PE of 23 on 15% revenue growth makes this a quality name worth adding to on weakness."
   }
 ]
