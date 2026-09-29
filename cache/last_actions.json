@@ -3,36 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% with more increases expected \u2014 this is a genuine shift back to tightening that makes richly valued and unprofitable holdings especially vulnerable, so tighten stops and avoid adding to speculative names."
-  },
-  {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "NCLP.L is your worst performer at down 24% and 36% off its high with persistent bearish momentum \u2014 reduce your exposure to limit further damage while the downtrend continues."
+    "text": "The Fed just hiked rates to 3.75%-4% with another increase signaled \u2014 this is a meaningful shift back to tightening that raises borrowing costs and puts pressure on high-valuation and unprofitable growth stocks in your portfolio, so tighten risk across the board."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is 45% off its high and despite exciting 202% revenue growth, the company still loses money, making it highly vulnerable in a rising-rate environment \u2014 trim to a smaller speculative position."
+    "text": "IONQ is 46% off its high with no profits, negative free cash flow, 10% short interest, and bearish technicals \u2014 reduce your exposure in a rising-rate environment that punishes unprofitable companies hardest."
   },
   {
-    "id": "MSTR-raise_stop",
-    "action_type": "raise_stop",
+    "id": "MSTR-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your MSTR stop from $107.39 to $113.23 to lock in more downside protection on what is essentially a leveraged Bitcoin bet in an increasingly uncertain macro environment."
+    "text": "MSTR acts as a leveraged Bitcoin bet with negative 36% free cash flow and 8% short interest \u2014 in a rate-hiking cycle, trim this speculative position to a size you can stomach losing."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UNH is down nearly 10% and trading below its 50-day average, but with a PE of 17 and nearly 12% revenue growth, this is a fundamentally strong company on sale \u2014 a good spot to add gradually."
+    "text": "UNH at a PE of 16.7 with nearly 12% revenue growth and a 4.7% free cash flow yield is exactly the kind of profitable, defensive name that holds up well when rates are rising \u2014 add on this weakness."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL's pullback below its 50-day average with insider buying and a reasonable PE of 23 on 15% revenue growth makes this a quality name worth adding to on weakness."
+    "text": "GOOGL trading at a PE of 23 with 15% revenue growth and insider buying offers solid value below its moving averages \u2014 a reasonable spot to add to a fundamentally strong position."
   }
 ]
