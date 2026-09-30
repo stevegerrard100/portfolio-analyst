@@ -3,30 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% with another increase signaled \u2014 this is a meaningful shift back to tightening that raises borrowing costs and puts pressure on high-valuation and unprofitable growth stocks in your portfolio, so tighten risk across the board."
+    "text": "The Fed just hiked rates to 3.75%-4% with more increases signaled, GDP growth slowed to 1.5%, and inflation is stuck at 3.4% \u2014 this is a stagflationary setup where growth is weakening while borrowing costs keep rising, so tighten stops across the board and hold off on new risk."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is 46% off its high with no profits, negative free cash flow, 10% short interest, and bearish technicals \u2014 reduce your exposure in a rising-rate environment that punishes unprofitable companies hardest."
+    "text": "IONQ is down 11% with negative earnings, 47% off its high, 10% short interest, and insiders selling \u2014 in a rising-rate environment, unprofitable speculative names get hit hardest, so reduce your exposure now."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR acts as a leveraged Bitcoin bet with negative 36% free cash flow and 8% short interest \u2014 in a rate-hiking cycle, trim this speculative position to a size you can stomach losing."
+    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow and three earnings misses \u2014 with rates rising and liquidity tightening, trim this to a size where the volatility won't keep you up at night."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UNH at a PE of 16.7 with nearly 12% revenue growth and a 4.7% free cash flow yield is exactly the kind of profitable, defensive name that holds up well when rates are rising \u2014 add on this weakness."
+    "text": "UNH trades at just 16.6x earnings with 12% revenue growth and strong free cash flow \u2014 this is a quality defensive compounder on sale at 10% off, and exactly the kind of name you want to own more of when the economy slows."
+  },
+  {
+    "id": "V-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Visa is only 5% off its 52-week high with a reasonable PE of 24, 11% revenue growth, and proven resilience \u2014 adding here gives you a high-quality cash-flow machine that holds up well in uncertain markets."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL trading at a PE of 23 with 15% revenue growth and insider buying offers solid value below its moving averages \u2014 a reasonable spot to add to a fundamentally strong position."
+    "text": "Google at 22.6x earnings with 15% revenue growth is attractively valued for a megacap with that growth rate \u2014 use any flat or dip days to build this position while the price is reasonable."
   }
 ]
