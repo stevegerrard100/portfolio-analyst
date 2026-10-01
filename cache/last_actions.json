@@ -3,36 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% with more increases signaled, GDP growth slowed to 1.5%, and inflation is stuck at 3.4% \u2014 this is a stagflationary setup where growth is weakening while borrowing costs keep rising, so tighten stops across the board and hold off on new risk."
-  },
-  {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "IONQ is down 11% with negative earnings, 47% off its high, 10% short interest, and insiders selling \u2014 in a rising-rate environment, unprofitable speculative names get hit hardest, so reduce your exposure now."
+    "text": "The Fed just hiked rates to 4.00\u20134.25% with another possible in December, while inflation is stuck at 3.4% and jobs came in hot at 162K \u2014 this means borrowing costs are rising again, which is bad news for unprofitable and speculative growth stocks in your portfolio."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow and three earnings misses \u2014 with rates rising and liquidity tightening, trim this to a size where the volatility won't keep you up at night."
+    "text": "Trim MSTR while you still have a small 5% gain \u2014 it's essentially a leveraged Bitcoin bet that's 57% off its high with terrible relative strength, and rising rates work against this kind of speculative position."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L because it's your largest ETF holding, down 25% and your worst-performing ETF by far, sitting well below its 50-day average with weak technicals that suggest more downside risk."
+  },
+  {
+    "id": "BMNR-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your BMNR stop from $20.19 to $21.33 \u2014 this locks in a tighter safety net on a stock that's 58% off its high, so if it keeps falling you'll get out with less damage."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UNH trades at just 16.6x earnings with 12% revenue growth and strong free cash flow \u2014 this is a quality defensive compounder on sale at 10% off, and exactly the kind of name you want to own more of when the economy slows."
-  },
-  {
-    "id": "V-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Visa is only 5% off its 52-week high with a reasonable PE of 24, 11% revenue growth, and proven resilience \u2014 adding here gives you a high-quality cash-flow machine that holds up well in uncertain markets."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google at 22.6x earnings with 15% revenue growth is attractively valued for a megacap with that growth rate \u2014 use any flat or dip days to build this position while the price is reasonable."
+    "text": "Consider adding to UNH \u2014 it's a best-in-class healthcare company trading at a cheap 16x earnings with nearly 12% revenue growth, and defensive healthcare tends to hold up well when rates are rising and the economy is uncertain."
   }
 ]
