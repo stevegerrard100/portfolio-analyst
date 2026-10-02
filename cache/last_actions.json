@@ -3,30 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 4.00\u20134.25% with another possible in December, while inflation is stuck at 3.4% and jobs came in hot at 162K \u2014 this means borrowing costs are rising again, which is bad news for unprofitable and speculative growth stocks in your portfolio."
+    "text": "The Fed just hiked rates to 4.00\u20134.25% with another possible hike in December, while CPI is stuck at 3.4% and payrolls came in red-hot at 162,000 \u2014 this means borrowing costs are rising again, which is especially painful for unprofitable growth stocks in your portfolio."
+  },
+  {
+    "id": "IONQ-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "IONQ is down 10.6%, unprofitable, 46% off its high with 10% short interest \u2014 trim your position to reduce exposure to another speculative, cash-burning quantum name while rates are heading higher."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR while you still have a small 5% gain \u2014 it's essentially a leveraged Bitcoin bet that's 57% off its high with terrible relative strength, and rising rates work against this kind of speculative position."
+    "text": "MSTR is 55% off its high with deeply negative cash flow and is essentially a leveraged Bitcoin bet \u2014 trim to a size you'd be comfortable losing entirely, because this is speculation, not investing."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim NCLP.L because it's your largest ETF holding, down 25% and your worst-performing ETF by far, sitting well below its 50-day average with weak technicals that suggest more downside risk."
-  },
-  {
-    "id": "BMNR-raise_stop",
-    "action_type": "raise_stop",
-    "priority": "medium",
-    "text": "Raise your BMNR stop from $20.19 to $21.33 \u2014 this locks in a tighter safety net on a stock that's 58% off its high, so if it keeps falling you'll get out with less damage."
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Google trades at a reasonable PE of 22 with 15% revenue growth and strong free cash flow \u2014 it's the kind of profitable, cash-rich company that holds up well when rates rise, so adding here makes sense."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to UNH \u2014 it's a best-in-class healthcare company trading at a cheap 16x earnings with nearly 12% revenue growth, and defensive healthcare tends to hold up well when rates are rising and the economy is uncertain."
+    "text": "UnitedHealth is down 12.3% but its MACD is turning bullish and the fundamentals remain strong \u2014 this pullback in a defensive healthcare giant is a reasonable spot to add shares."
   }
 ]
