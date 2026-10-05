@@ -3,30 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 4.00\u20134.25% with another possible hike in December, while CPI is stuck at 3.4% and payrolls came in red-hot at 162,000 \u2014 this means borrowing costs are rising again, which is especially painful for unprofitable growth stocks in your portfolio."
+    "text": "The Fed just hiked rates to 3.75\u20134% while September payrolls came in at only 29,000 jobs \u2014 that's a central bank tightening into a sharply slowing labor market, which raises the risk of a policy mistake that tips the economy into recession."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "NCLP.L is your third-largest holding but it's down 26% and 38% below its high with bearish momentum \u2014 trim this position to reduce its outsized drag on your portfolio, especially with the jobs market weakening."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is down 10.6%, unprofitable, 46% off its high with 10% short interest \u2014 trim your position to reduce exposure to another speculative, cash-burning quantum name while rates are heading higher."
+    "text": "IonQ is down 11% with a relative strength of negative 47, insider selling, and no profitability \u2014 reduce your exposure here before this money-losing position deteriorates further in a rising-rate environment."
   },
   {
-    "id": "MSTR-trim",
-    "action_type": "trim",
+    "id": "MSTR-raise_stop",
+    "action_type": "raise_stop",
     "priority": "medium",
-    "text": "MSTR is 55% off its high with deeply negative cash flow and is essentially a leveraged Bitcoin bet \u2014 trim to a size you'd be comfortable losing entirely, because this is speculation, not investing."
+    "text": "Raise your MSTR stop from $113.23 to $118.94 to lock in more of your 10% gain, since this leveraged Bitcoin bet is still 56% below its high and you want to protect profits if it rolls over."
   },
   {
-    "id": "GOOGL-add",
+    "id": "MSFT-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google trades at a reasonable PE of 22 with 15% revenue growth and strong free cash flow \u2014 it's the kind of profitable, cash-rich company that holds up well when rates rise, so adding here makes sense."
+    "text": "Microsoft is showing a bullish MACD with price above its 50-day average \u2014 it's the strongest big tech name in your portfolio and worth adding to on this setup."
   },
   {
-    "id": "UNH-add",
+    "id": "V-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UnitedHealth is down 12.3% but its MACD is turning bullish and the fundamentals remain strong \u2014 this pullback in a defensive healthcare giant is a reasonable spot to add shares."
+    "text": "Visa is one of the most durable businesses you own, and a 5% pullback to its 50-day average in a company with consistent cash flow is a chance to add shares at a fair price."
   }
 ]
