@@ -3,36 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75\u20134% while September payrolls came in at only 29,000 jobs \u2014 that's a central bank tightening into a sharply slowing labor market, which raises the risk of a policy mistake that tips the economy into recession."
-  },
-  {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "NCLP.L is your third-largest holding but it's down 26% and 38% below its high with bearish momentum \u2014 trim this position to reduce its outsized drag on your portfolio, especially with the jobs market weakening."
+    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls came in at only 29,000 jobs \u2014 this combination of tightening into a weakening labor market raises the risk of a policy mistake that could drag stocks lower, so be cautious adding new risk right now."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IonQ is down 11% with a relative strength of negative 47, insider selling, and no profitability \u2014 reduce your exposure here before this money-losing position deteriorates further in a rising-rate environment."
+    "text": "Trim IONQ \u2014 it's down 13%, nearly 48% off its high, burning cash with 10% short interest, and speculative quantum computing names are especially vulnerable in a rising-rate environment."
   },
   {
-    "id": "MSTR-raise_stop",
+    "id": "BE-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your MSTR stop from $113.23 to $118.94 to lock in more of your 10% gain, since this leveraged Bitcoin bet is still 56% below its high and you want to protect profits if it rolls over."
+    "text": "Raise your stop on Bloom Energy from $216.84 to $228.13 to lock in more of your gains while the stock still rides bullish momentum above its 50-day average."
   },
   {
-    "id": "MSFT-add",
+    "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Microsoft is showing a bullish MACD with price above its 50-day average \u2014 it's the strongest big tech name in your portfolio and worth adding to on this setup."
+    "text": "Google looks like a solid add here \u2014 a PE of 23 is reasonable for 15% revenue growth, free cash flow is strong, and insider buying signals confidence from people who know the business best."
   },
   {
-    "id": "V-add",
+    "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Visa is one of the most durable businesses you own, and a 5% pullback to its 50-day average in a company with consistent cash flow is a chance to add shares at a fair price."
+    "text": "Consider adding to UnitedHealth while it's down about 9% \u2014 the MACD (a momentum indicator) is turning positive, suggesting the pullback may be finding a floor at an attractive price for a blue-chip healthcare name."
   }
 ]
