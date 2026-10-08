@@ -3,30 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% with another hike signaled while payrolls badly missed at just 29,000 jobs \u2014 this combination of tightening into a weakening labor market raises recession risk, so consider holding extra cash and being very selective with new positions."
+    "text": "The Fed just hiked rates to 3.75%-4% with another increase signaled, while September payrolls badly missed at just 29,000 jobs \u2014 this stagflationary combination of rising rates, sticky 3.4% inflation, and collapsing job growth significantly raises recession risk and warrants defensive positioning."
   },
   {
     "id": "IONQ-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "IONQ is down nearly 13% and 47% off its high with negative earnings and 10% short interest \u2014 reduce this speculative quantum computing position before it deteriorates further like RGTI and QBTS."
+    "text": "Trim IONQ to reduce your quantum computing exposure \u2014 it's down 15%, nearly 50% off its high with negative earnings, and speculative unprofitable names face the most pain when rates are rising."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is 54% off its high with deeply negative free cash flow and acts as a leveraged Bitcoin bet \u2014 trim while you still have an 8.5% gain rather than risk giving it all back in a tightening cycle."
+    "text": "Trim MSTR because a leveraged Bitcoin bet that's 54% off its high with 3 consecutive earnings misses is too much risk to carry full-sized when the Fed is actively tightening policy."
   },
   {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "GOOGL trades at a reasonable PE of 23 with 15% revenue growth, strong free cash flow, and insider buying \u2014 this is one of your strongest fundamental holdings and worth adding to on any pullback."
+    "id": "META-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your META stop from $591.14 to $621.27 to lock in more of your gains while still giving the position room to breathe."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UNH at a PE of 16.6 with nearly 12% revenue growth and a 4.8% free cash flow yield is a defensive, high-quality name that makes sense to build into given the weakening economic backdrop."
+    "text": "Add to UNH on this pullback \u2014 at just 16.6 times earnings with nearly 12% revenue growth, strong free cash flow, and insider buying, it's exactly the kind of defensive quality name you want in a slowing economy."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to GOOGL \u2014 a reasonable 23 PE, 15% revenue growth, healthy free cash flow, and insider buying make this one of your strongest fundamental holdings heading into an uncertain macro stretch."
   }
 ]
