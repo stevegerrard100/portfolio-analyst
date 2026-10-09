@@ -3,36 +3,24 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% with another increase signaled, while September payrolls badly missed at just 29,000 jobs \u2014 this stagflationary combination of rising rates, sticky 3.4% inflation, and collapsing job growth significantly raises recession risk and warrants defensive positioning."
+    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls badly missed at just 29,000 jobs versus 84,000 expected \u2014 this is a dangerous combo of tightening into a weakening labor market, which raises recession risk and means you should be cautious about adding new positions right now."
   },
   {
-    "id": "IONQ-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim IONQ to reduce your quantum computing exposure \u2014 it's down 15%, nearly 50% off its high with negative earnings, and speculative unprofitable names face the most pain when rates are rising."
-  },
-  {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim MSTR because a leveraged Bitcoin bet that's 54% off its high with 3 consecutive earnings misses is too much risk to carry full-sized when the Fed is actively tightening policy."
-  },
-  {
-    "id": "META-raise_stop",
+    "id": "BMNR-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your META stop from $591.14 to $621.27 to lock in more of your gains while still giving the position room to breathe."
+    "text": "Raise your BMNR stop from $21.33 to $22.40 to lock in more protection, since three consecutive earnings misses and weak relative strength mean you want a tighter safety net on this one."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe looks compelling at a PE of just 8.7 with over 10% revenue growth and strong free cash flow \u2014 consider adding to this position on any pullback toward support, though be measured given the uncertain macro backdrop."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to UNH on this pullback \u2014 at just 16.6 times earnings with nearly 12% revenue growth, strong free cash flow, and insider buying, it's exactly the kind of defensive quality name you want in a slowing economy."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to GOOGL \u2014 a reasonable 23 PE, 15% revenue growth, healthy free cash flow, and insider buying make this one of your strongest fundamental holdings heading into an uncertain macro stretch."
+    "text": "UnitedHealth trades at a reasonable PE of 16.4 with nearly 12% revenue growth and insiders are buying with their own money, which is a confidence signal \u2014 consider adding a small amount here."
   }
 ]
