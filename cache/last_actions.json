@@ -3,24 +3,30 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls badly missed at just 29,000 jobs versus 84,000 expected \u2014 this is a dangerous combo of tightening into a weakening labor market, which raises recession risk and means you should be cautious about adding new positions right now."
+    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls came in at only 29,000 jobs versus 84,000 expected \u2014 this combination of tightening into a weakening labor market raises the risk of a policy mistake that could hurt stocks, so consider holding extra cash and being selective with new positions."
   },
   {
-    "id": "BMNR-raise_stop",
+    "id": "MSTR-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your BMNR stop from $21.33 to $22.40 to lock in more protection, since three consecutive earnings misses and weak relative strength mean you want a tighter safety net on this one."
+    "text": "Raise your MSTR stop from $118.94 to $125.43 to lock in a bit more protection on this volatile leveraged Bitcoin bet that's still 52% off its high."
   },
   {
-    "id": "ADBE-add",
+    "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe looks compelling at a PE of just 8.7 with over 10% revenue growth and strong free cash flow \u2014 consider adding to this position on any pullback toward support, though be measured given the uncertain macro backdrop."
+    "text": "Consider adding to GOOGL \u2014 at a PE of 23 with 15% revenue growth, insider buying, and bullish technical momentum, it's one of the best value plays in big tech right now."
   },
   {
     "id": "UNH-add",
     "action_type": "add",
     "priority": "low",
-    "text": "UnitedHealth trades at a reasonable PE of 16.4 with nearly 12% revenue growth and insiders are buying with their own money, which is a confidence signal \u2014 consider adding a small amount here."
+    "text": "Consider adding to UNH on this pullback \u2014 a PE of 17 with nearly 12% revenue growth is excellent for a healthcare giant, and the dip looks like a buying opportunity rather than a breakdown."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to ADBE \u2014 a PE of just 8.8 with strong 10% free cash flow yield is genuinely cheap for a dominant software company, making this an attractive entry point."
   }
 ]
