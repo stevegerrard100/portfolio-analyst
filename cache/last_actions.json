@@ -3,30 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls came in at only 29,000 jobs versus 84,000 expected \u2014 this combination of tightening into a weakening labor market raises the risk of a policy mistake that could hurt stocks, so consider holding extra cash and being selective with new positions."
+    "text": "The Fed just hiked rates to 3.75%-4% while September jobs came in at a dismal 29,000 \u2014 this is a dangerous combo of tightening into a weakening economy, and with CPI expected to rise further to 3.6-3.7%, stagflation risk is real and could pressure your growth and speculative holdings hard."
   },
   {
-    "id": "MSTR-raise_stop",
-    "action_type": "raise_stop",
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "RGTI is your worst performer at -53%, has deeply negative earnings, revenue declining 34%, and high short interest \u2014 the thesis is broken and this needs to go now before it gets worse."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 51% with negative earnings, bearish technicals across the board, and high short interest \u2014 there's nothing to hold onto here, sell and redeploy the capital."
+  },
+  {
+    "id": "MSTR-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your MSTR stop from $118.94 to $125.43 to lock in a bit more protection on this volatile leveraged Bitcoin bet that's still 52% off its high."
+    "text": "MSTR is down 52% and acts as a leveraged Bitcoin bet with negative free cash flow \u2014 in a rising-rate environment where speculative assets get hit hardest, reduce your exposure meaningfully."
   },
   {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 at a PE of 23 with 15% revenue growth, insider buying, and bullish technical momentum, it's one of the best value plays in big tech right now."
-  },
-  {
-    "id": "UNH-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to UNH on this pullback \u2014 a PE of 17 with nearly 12% revenue growth is excellent for a healthcare giant, and the dip looks like a buying opportunity rather than a breakdown."
+    "id": "BMNR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "BMNR is down 58% from its high with three consecutive earnings misses and deteriorating fundamentals \u2014 trim what's left to limit further damage."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of just 8.8 with strong 10% free cash flow yield is genuinely cheap for a dominant software company, making this an attractive entry point."
+    "text": "Adobe at just 8.6x earnings with 10% revenue growth and nearly 11% free cash flow yield is genuinely cheap for a business this strong \u2014 add on this pullback while quality names are on sale."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron has the best relative strength in your portfolio with 49% revenue growth and a PE of just 4.8 \u2014 this is a rare value-plus-momentum combination worth adding to on strength."
   }
 ]
