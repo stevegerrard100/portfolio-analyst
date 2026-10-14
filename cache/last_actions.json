@@ -3,42 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% while September jobs came in at a dismal 29,000 \u2014 this is a dangerous combo of tightening into a weakening economy, and with CPI expected to rise further to 3.6-3.7%, stagflation risk is real and could pressure your growth and speculative holdings hard."
+    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls came in at only 29,000 jobs \u2014 this combination of tightening into a weakening labor market raises the risk of a policy mistake that tips the economy into recession, so be cautious about adding new risk right now."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "RGTI is your worst performer at -53%, has deeply negative earnings, revenue declining 34%, and high short interest \u2014 the thesis is broken and this needs to go now before it gets worse."
+    "text": "RGTI is down 54% with the worst relative strength in your portfolio at -77, revenue is shrinking 34%, insiders are selling, and short interest is 20% \u2014 the thesis is broken, sell and move on."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 51% with negative earnings, bearish technicals across the board, and high short interest \u2014 there's nothing to hold onto here, sell and redeploy the capital."
-  },
-  {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "MSTR is down 52% and acts as a leveraged Bitcoin bet with negative free cash flow \u2014 in a rising-rate environment where speculative assets get hit hardest, reduce your exposure meaningfully."
+    "text": "QBTS is down 52% with negative earnings, 21% short interest, and insiders selling \u2014 there's no fundamental support here, exit this position to stop the bleeding."
   },
   {
     "id": "BMNR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "BMNR is down 58% from its high with three consecutive earnings misses and deteriorating fundamentals \u2014 trim what's left to limit further damage."
+    "text": "BMNR is down nearly 59% from its high with three consecutive earnings misses and a relative strength of -60 \u2014 trim what's left to limit further damage unless you have a very specific reason to hold."
+  },
+  {
+    "id": "MSTR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "MSTR is a leveraged Bitcoin bet that's dropped 52% from its highs with -56 relative strength \u2014 into a rising rate environment this kind of speculative leverage works against you, so reduce your exposure."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe at just 8.6x earnings with 10% revenue growth and nearly 11% free cash flow yield is genuinely cheap for a business this strong \u2014 add on this pullback while quality names are on sale."
+    "text": "Adobe at 8.5x earnings with a 10.7% free cash flow yield and a bullish MACD turn is genuinely cheap for a dominant software company \u2014 this is a good spot to add a small amount on strength."
   },
   {
-    "id": "MU-add",
+    "id": "V-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron has the best relative strength in your portfolio with 49% revenue growth and a PE of just 4.8 \u2014 this is a rare value-plus-momentum combination worth adding to on strength."
+    "text": "Visa is at its 52-week high with bullish momentum turning on \u2014 this wide-moat payments giant tends to hold up well even in uncertain macro environments, making it a reasonable add."
   }
 ]
