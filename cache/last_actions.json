@@ -3,42 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% while September payrolls came in at only 29,000 jobs \u2014 this combination of tightening into a weakening labor market raises the risk of a policy mistake that tips the economy into recession, so be cautious about adding new risk right now."
+    "text": "The Fed just hiked rates to 3.75%-4% while payrolls collapsed to just 29,000 jobs and inflation jumped to 3.7% \u2014 this stagflationary combination of rising rates, weakening employment, and sticky inflation creates a hostile environment for risk assets, especially speculative and unprofitable names in your portfolio."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "RGTI is down 54% with the worst relative strength in your portfolio at -77, revenue is shrinking 34%, insiders are selling, and short interest is 20% \u2014 the thesis is broken, sell and move on."
+    "text": "RGTI is down 59%, revenue is shrinking by 34%, earnings are deeply negative, and it's nearly destroyed from its highs \u2014 there's no fundamental or technical reason to stay in this name, sell and preserve what's left."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 52% with negative earnings, 21% short interest, and insiders selling \u2014 there's no fundamental support here, exit this position to stop the bleeding."
+    "text": "QBTS is down 58% with no earnings, 73% off its high, 21% short interest, and catastrophic technicals \u2014 this is a broken position in a rising-rate environment that punishes unprofitable companies, so exit now."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 37%, 60% off its high, has negative earnings and high short interest \u2014 another speculative quantum computing name with no path to profitability in a tightening cycle, sell to stop the bleeding."
   },
   {
     "id": "BMNR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "BMNR is down nearly 59% from its high with three consecutive earnings misses and a relative strength of -60 \u2014 trim what's left to limit further damage unless you have a very specific reason to hold."
+    "text": "BMNR is down 13% and nearly 59% off its high with bearish technicals across every indicator \u2014 reduce your position size to limit further damage since the REDUCE signal confirms deterioration."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet that's dropped 52% from its highs with -56 relative strength \u2014 into a rising rate environment this kind of speculative leverage works against you, so reduce your exposure."
+    "text": "MSTR is 53% off its high with negative free cash flow and extreme volatility as a leveraged Bitcoin bet \u2014 in a rate-hiking environment this carries outsized risk, so trim to a position size you can stomach losing."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe at 8.5x earnings with a 10.7% free cash flow yield and a bullish MACD turn is genuinely cheap for a dominant software company \u2014 this is a good spot to add a small amount on strength."
-  },
-  {
-    "id": "V-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Visa is at its 52-week high with bullish momentum turning on \u2014 this wide-moat payments giant tends to hold up well even in uncertain macro environments, making it a reasonable add."
+    "text": "Adobe trades at a PE of just 8.7 with 10.5% revenue growth, outstanding free cash flow, and is 33% off its high \u2014 this is a profitable, cash-rich business on sale, and the ADD signal supports building your position on this pullback."
   }
 ]
