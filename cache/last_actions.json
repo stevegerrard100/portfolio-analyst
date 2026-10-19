@@ -3,42 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The economy is flashing a stagflation warning \u2014 inflation just jumped to 3.7% while job growth collapsed to just 29,000, and the Fed may still hike rates further, which means both stocks and bonds could face headwinds from here."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell QBTS now \u2014 you're down 54%, short interest is a massive 21%, insiders are selling, and the company isn't earning money, so there's no fundamental floor to catch this falling knife."
+    "text": "Jobs came in at just 29,000 versus 84,000 expected while inflation jumped to 3.7% \u2014 this stagflationary mix (weak growth plus rising prices) with the Fed unable to cut rates means the backdrop for risk assets is deteriorating and you should be raising cash."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell RGTI immediately \u2014 it has the worst momentum in your portfolio at -77 relative strength, revenue is actually shrinking, nearly 20% of shares are sold short, and you're down 55%."
+    "text": "RGTI is down 56% with shrinking revenue, nearly 20% short interest, and insiders selling \u2014 this thesis is broken and you should exit to stop the bleeding."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 57% with no earnings, 21% short interest, and insiders bailing \u2014 this is a cash-burning speculative name with no reason to hold further."
+  },
+  {
+    "id": "BMNR-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "BMNR has missed earnings three straight quarters and is down 60% from its high \u2014 every signal says get out now before losses deepen."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 57% from highs, burning cash with high short interest and insider selling \u2014 exit this position as the fundamental and technical picture are both broken."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR because it's a leveraged Bitcoin bet with negative cash flow, 7% short interest, and in a stagflationary environment where the Fed might hike again, speculative crypto proxies carry outsized risk."
+    "text": "MSTR is a leveraged Bitcoin bet that's 55% off its highs with negative earnings and terrible momentum \u2014 reduce your exposure meaningfully since this adds outsized volatility in an already uncertain environment."
   },
   {
-    "id": "KO-raise_stop",
-    "action_type": "raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your KO stop from $75.51 to $79.32 \u2014 this locks in more of your gains on a defensive stock that's likely being rewarded in this uncertain environment."
+    "text": "NCLP.L is sitting 44.5% below its 52-week high with the worst relative strength among your ETFs \u2014 trim this position to limit further damage from what's clearly a broken trend."
   },
   {
-    "id": "ADBE-add",
+    "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 a PE of just 9 with 10% revenue growth and exceptional cash flow margins suggests the market is significantly underpricing this quality software business during the broader pullback."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to MU \u2014 at a PE of 4.6 with 49% revenue growth and a strong earnings beat streak, Micron looks meaningfully undervalued even if the economy slows, given AI-driven memory demand."
+    "text": "Google at 22x earnings with 15% revenue growth and insider buying is one of the few quality names flashing a positive signal \u2014 consider adding on this pullback while the valuation is reasonable."
   }
 ]
