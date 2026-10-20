@@ -1,50 +1,44 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "Jobs came in at just 29,000 versus 84,000 expected while inflation jumped to 3.7% \u2014 this stagflationary mix (weak growth plus rising prices) with the Fed unable to cut rates means the backdrop for risk assets is deteriorating and you should be raising cash."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "RGTI is down 56% with shrinking revenue, nearly 20% short interest, and insiders selling \u2014 this thesis is broken and you should exit to stop the bleeding."
-  },
-  {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 57% with no earnings, 21% short interest, and insiders bailing \u2014 this is a cash-burning speculative name with no reason to hold further."
-  },
-  {
-    "id": "BMNR-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "BMNR has missed earnings three straight quarters and is down 60% from its high \u2014 every signal says get out now before losses deepen."
+    "text": "Sell QBTS now \u2014 it's down 58% with no earnings, 21% short interest, and insiders are selling, which means the people who know this company best don't believe in it either."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 57% from highs, burning cash with high short interest and insider selling \u2014 exit this position as the fundamental and technical picture are both broken."
+    "text": "Sell IONQ \u2014 down 38% with negative earnings, cash-burning operations, and insider selling all point to a broken thesis in a speculative quantum computing space that isn't generating real revenue yet."
+  },
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell RGTI immediately \u2014 revenue is shrinking by 34%, short interest is nearly 20%, insiders are selling, and a 59% drawdown signals this position has no near-term recovery catalyst."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet that's 55% off its highs with negative earnings and terrible momentum \u2014 reduce your exposure meaningfully since this adds outsized volatility in an already uncertain environment."
+    "text": "Trim MSTR because it's a leveraged Bitcoin bet with negative free cash flow and three straight earnings misses \u2014 reduce your exposure so one crypto swing doesn't wreck your portfolio."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is sitting 44.5% below its 52-week high with the worst relative strength among your ETFs \u2014 trim this position to limit further damage from what's clearly a broken trend."
+    "text": "Trim NCLP.L \u2014 at -34% with fully bearish technicals and weak relative strength, this ETF is dead weight dragging down your overall returns."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at 22x earnings with 15% revenue growth and insider buying is one of the few quality names flashing a positive signal \u2014 consider adding on this pullback while the valuation is reasonable."
+    "text": "Add to GOOGL \u2014 at a PE of 22.5 with 15% revenue growth and insider buying, this is a high-quality business at a reasonable price where the smart money is putting cash to work."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to MU \u2014 a PE of just 4.4 with 49% revenue growth and consistent earnings beats means the AI memory chip demand story is real and the stock looks genuinely underpriced."
   }
 ]
