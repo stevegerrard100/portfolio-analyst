@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "Stagflation risk is building \u2014 September payrolls came in at just 29,000 jobs while CPI jumped to 3.7%, meaning the economy is slowing sharply while inflation is accelerating, and the Fed has signaled it may hike rather than cut, which is a tough environment for risk assets."
+    "text": "September payrolls came in at just 29K (well below the 84K forecast) while inflation is accelerating to 3.7% \u2014 this rising-inflation-plus-weakening-jobs combination is a stagflation warning that could pressure both stocks and bonds if the Fed hikes again in October."
+  },
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell RGTI immediately \u2014 it's your worst performer, down 58% with revenue actually shrinking 34%, a relative strength score of -73, and no fundamental reason to expect a recovery."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS \u2014 it's down 58% with no earnings, 21% short interest, and insiders are selling, which means the smart money is betting against this stock and you should get out before it falls further."
+    "text": "Sell QBTS \u2014 down 58% with deeply negative momentum, no earnings, cash burn, and high short interest, meaning other investors are actively betting against it too."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ \u2014 down 35% with negative earnings, negative cash flow, and 10% short interest, quantum computing is still years from generating real revenue and this stock is burning cash while it waits."
+    "text": "Sell IONQ \u2014 it's down 37% and 55% off its high with no earnings, burning cash, insider selling, and a relative strength score that says it's losing to almost everything else in the market."
   },
   {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell RGTI \u2014 down 58% with shrinking revenue of -34%, 20% short interest, insiders selling, and 74% below its high, this is a broken stock with a deteriorating business underneath it."
-  },
-  {
-    "id": "NCLP.L-trim",
+    "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim NCLP.L \u2014 you're down 34% with the weakest momentum of all your ETFs and every technical signal pointing lower, so reduce your exposure now rather than hoping for a turnaround in a weakening economy."
+    "text": "Trim MSTR because it's not a real tech company but a leveraged Bitcoin bet with negative free cash flow and three earnings misses, and in a potential stagflation environment that kind of speculative exposure adds unnecessary risk."
   },
   {
-    "id": "MSTR-raise_stop",
+    "id": "AMZN-raise_stop",
     "action_type": "raise_stop",
     "priority": "medium",
-    "text": "Raise your MSTR stop from $125.43 to $131.71 to lock in more protection on this volatile Bitcoin-linked position that's still 53% off its high with insiders selling."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to GOOGL \u2014 at a PE of 22 with 15% revenue growth and insiders buying, Google is genuinely cheap for its quality and is one of the few large-cap names with both value and growth working in its favor."
+    "text": "Raise your AMZN stop from $228.56 to $240.06, which locks in more of your gains while still giving the stock room to breathe through normal daily swings."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to MU \u2014 a PE of just 4.3 with 49% revenue growth and consistent earnings beats makes Micron look like a deep value opportunity, though size the position carefully given the stagflationary macro backdrop."
+    "text": "Consider adding to MU \u2014 at just 4.4x earnings with 49% revenue growth and a streak of beating estimates, it looks like one of the cheapest growth stories in your portfolio."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to GOOGL \u2014 a reasonable 22x valuation, 15% revenue growth, strong free cash flow, and insider buying make it one of your most defensible holdings heading into an uncertain macro stretch."
   }
 ]
