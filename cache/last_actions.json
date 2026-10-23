@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "September payrolls came in at just 29K (well below the 84K forecast) while inflation is accelerating to 3.7% \u2014 this rising-inflation-plus-weakening-jobs combination is a stagflation warning that could pressure both stocks and bonds if the Fed hikes again in October."
+    "text": "September payrolls badly missed at just 29,000 jobs while CPI jumped to 3.7% \u2014 this stagflationary mix of weakening jobs and rising inflation with a possible October rate hike means the environment is getting hostile for risk assets, so tighten your exposure."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI immediately \u2014 it's your worst performer, down 58% with revenue actually shrinking 34%, a relative strength score of -73, and no fundamental reason to expect a recovery."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell QBTS \u2014 down 58% with deeply negative momentum, no earnings, cash burn, and high short interest, meaning other investors are actively betting against it too."
+    "text": "RGTI is your worst position at -59%, with revenue collapsing 34%, deeply negative earnings, and nearly 20% short interest \u2014 this thesis is broken and the capital is better deployed elsewhere."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ \u2014 it's down 37% and 55% off its high with no earnings, burning cash, insider selling, and a relative strength score that says it's losing to almost everything else in the market."
+    "text": "IONQ is down 57% with negative earnings, heavy insider selling, 10% short interest, and burning cash \u2014 there's no fundamental reason to hold this and exiting now preserves what's left."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 59% with a negative PE, over 21% short interest, insider selling, and consecutive earnings misses \u2014 this is a clear exit before further damage."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR because it's not a real tech company but a leveraged Bitcoin bet with negative free cash flow and three earnings misses, and in a potential stagflation environment that kind of speculative exposure adds unnecessary risk."
+    "text": "MSTR is down over 50% with massive insider selling, and as a leveraged Bitcoin bet it carries outsized risk in a stagflationary environment where the Fed may hike again \u2014 reduce this position to limit damage."
   },
   {
-    "id": "AMZN-raise_stop",
-    "action_type": "raise_stop",
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
     "priority": "medium",
-    "text": "Raise your AMZN stop from $228.56 to $240.06, which locks in more of your gains while still giving the stock room to breathe through normal daily swings."
+    "text": "NCLP.L is down 37% with very weak relative strength and bearish technicals across the board \u2014 trim this to a smaller size you're comfortable losing rather than hoping for a recovery in a tough macro backdrop."
   },
   {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Consider adding to MU \u2014 at just 4.4x earnings with 49% revenue growth and a streak of beating estimates, it looks like one of the cheapest growth stories in your portfolio."
+    "id": "BMNR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "BMNR is down 58% with very weak relative strength and three consecutive earnings misses \u2014 reduce exposure now since the fundamentals keep deteriorating."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 a reasonable 22x valuation, 15% revenue growth, strong free cash flow, and insider buying make it one of your most defensible holdings heading into an uncertain macro stretch."
+    "text": "Google at 21x earnings with 15% revenue growth and insider buying is the strongest name in your portfolio \u2014 a modest add on this pullback makes sense as your highest-quality holding."
   }
 ]
