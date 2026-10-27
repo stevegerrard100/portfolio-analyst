@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed is hiking rates into a jobs market adding only 29,000 positions per month while inflation reaccelerates to 3.7% \u2014 this stagflationary combination of rising rates, weak employment, and sticky inflation means the environment is hostile for risk assets, especially speculative and unprofitable holdings."
+    "text": "Jobs growth collapsed to just 29,000 versus 84,000 expected while inflation jumped to 3.7%, creating a stagflationary setup where the Fed may be forced to hike into a weakening economy \u2014 this combination raises the risk of broader market declines."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 59% at its 52-week low with no profits, heavy cash burn, insider selling, and 21% short interest \u2014 there is no reason to hold this and you should exit now to preserve what capital remains."
+    "text": "QBTS is down 59% with no earnings, 21% short interest, and insider selling \u2014 this speculative position has failed and should be sold to stop further losses."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 37% on your position and 57% from its high with deeply negative earnings and insider selling \u2014 quantum computing is pure speculation in a rate-hiking environment, so sell and move on."
+    "text": "IONQ is down 38% with no earnings, shrinking cash, 10% short interest, and insider selling \u2014 the thesis hasn't materialized and it's time to exit."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is your worst performer at -59% with shrinking revenue, deep losses, 20% short interest, and insider selling \u2014 this is a broken stock and holding longer just compounds the damage."
+    "text": "RGTI is your worst performer at -60% with declining revenue, deep losses, nearly 20% short interest, and insider selling \u2014 sell now to preserve what's left."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is down 38% and nearly 48% off its yearly high with a REDUCE signal, so cut this position size meaningfully to limit further losses in what looks like a deteriorating holding."
+    "text": "NCLP.L is down 36% with the weakest relative strength among your ETFs at -54, signaling a sustained downtrend \u2014 reduce this position to limit further damage."
   },
   {
-    "id": "ARCI.L-trim",
+    "id": "BMNR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ARCI.L is a large \u00a3317k position that's 27% off its high with very weak relative strength \u2014 in a stagflationary macro backdrop, reduce your oversized exposure here before the damage gets worse."
+    "text": "BMNR is down 15% and a staggering 61% off its 52-week high with terrible relative strength \u2014 trim this position before it deteriorates further."
   },
   {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet still 51% off its high, and with the Fed actively hiking rates, speculative crypto-linked positions carry outsized risk \u2014 trim to a size you can stomach losing."
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron's 256% revenue growth, PE of just 4.4, and 5.8% free cash flow yield make this pullback an opportunity to add to a fundamentally strong position."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL trades at just 21x earnings with 15% revenue growth and insider buying \u2014 in a market full of broken stocks, this is one of the few quality names on sale and worth adding to on this pullback."
+    "text": "Google is 21% off its high but sports a reasonable PE of 21 with 15% revenue growth \u2014 the fundamentals support adding on this weakness."
   }
 ]
