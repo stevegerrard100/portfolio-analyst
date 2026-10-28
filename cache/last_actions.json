@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "Jobs growth collapsed to just 29,000 versus 84,000 expected while inflation jumped to 3.7%, creating a stagflationary setup where the Fed may be forced to hike into a weakening economy \u2014 this combination raises the risk of broader market declines."
+    "text": "September payrolls came in at just 29,000 versus 84,000 expected while inflation rose to 3.7% \u2014 this stagflationary mix of weakening jobs and rising prices with another rate hike expected in December significantly raises the risk of an economic downturn hitting your portfolio."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 59% with no earnings, 21% short interest, and insider selling \u2014 this speculative position has failed and should be sold to stop further losses."
+    "text": "QBTS is down 56% with a relative strength of -71, no earnings, over 21% short interest, and insiders selling \u2014 there is no fundamental support here and you should exit this position."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 38% with no earnings, shrinking cash, 10% short interest, and insider selling \u2014 the thesis hasn't materialized and it's time to exit."
+    "text": "IONQ is down 33% on your cost basis and 54% from its high with negative earnings, heavy short interest above 10%, and insider selling \u2014 the thesis is broken and it's time to sell."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is your worst performer at -60% with declining revenue, deep losses, nearly 20% short interest, and insider selling \u2014 sell now to preserve what's left."
+    "text": "RGTI is your worst performer at -55% with revenue shrinking 34%, nearly 20% short interest, and negative earnings \u2014 this is a clear exit before further damage."
   },
   {
     "id": "NCLP.L-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "NCLP.L is down 36% with the weakest relative strength among your ETFs at -54, signaling a sustained downtrend \u2014 reduce this position to limit further damage."
+    "text": "NCLP.L is down 33% with the weakest relative strength among your ETFs at -42 and deeply bearish technicals \u2014 reduce your exposure here as the REDUCE signal suggests."
+  },
+  {
+    "id": "MSTR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "MSTR is down 52% from its high acting as a leveraged Bitcoin bet with terrible relative strength \u2014 consider trimming to a size where the volatility won't hurt your overall portfolio."
   },
   {
     "id": "BMNR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "BMNR is down 15% and a staggering 61% off its 52-week high with terrible relative strength \u2014 trim this position before it deteriorates further."
-  },
-  {
-    "id": "MU-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Micron's 256% revenue growth, PE of just 4.4, and 5.8% free cash flow yield make this pullback an opportunity to add to a fundamentally strong position."
+    "text": "BMNR is down nearly 60% from its high with deeply negative relative strength and three consecutive bearish signals \u2014 trim this to limit further downside risk."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is 21% off its high but sports a reasonable PE of 21 with 15% revenue growth \u2014 the fundamentals support adding on this weakness."
+    "text": "GOOGL is down about 20% from its high but trades at a reasonable PE of 21 with solid 15% revenue growth \u2014 this pullback in a high-quality business is worth adding to on weakness."
   }
 ]
