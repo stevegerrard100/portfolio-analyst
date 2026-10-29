@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "September payrolls came in at just 29,000 versus 84,000 expected while inflation rose to 3.7% \u2014 this stagflationary mix of weakening jobs and rising prices with another rate hike expected in December significantly raises the risk of an economic downturn hitting your portfolio."
+    "text": "The Fed is expected to hike again in December with inflation rising to 3.7%, while September payrolls badly missed at just 29,000 jobs \u2014 this stagflationary mix of rising prices and weakening employment is a real threat to stock valuations, so consider holding extra cash and being selective with new positions."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 56% with a relative strength of -71, no earnings, over 21% short interest, and insiders selling \u2014 there is no fundamental support here and you should exit this position."
+    "text": "QBTS is down 59% from its high, the company is losing money, nearly a quarter of shares are sold short, and insiders are selling \u2014 this is a broken position and it's time to cut your losses and move on."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 33% on your cost basis and 54% from its high with negative earnings, heavy short interest above 10%, and insider selling \u2014 the thesis is broken and it's time to sell."
+    "text": "IONQ has no profits, negative free cash flow, heavy insider selling, and is down 55% from its high \u2014 the thesis here isn't working and staying in means hoping for a miracle rather than investing on evidence."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is your worst performer at -55% with revenue shrinking 34%, nearly 20% short interest, and negative earnings \u2014 this is a clear exit before further damage."
-  },
-  {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "NCLP.L is down 33% with the weakest relative strength among your ETFs at -42 and deeply bearish technicals \u2014 reduce your exposure here as the REDUCE signal suggests."
-  },
-  {
-    "id": "MSTR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "MSTR is down 52% from its high acting as a leveraged Bitcoin bet with terrible relative strength \u2014 consider trimming to a size where the volatility won't hurt your overall portfolio."
-  },
-  {
-    "id": "BMNR-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "BMNR is down nearly 60% from its high with deeply negative relative strength and three consecutive bearish signals \u2014 trim this to limit further downside risk."
+    "text": "RGTI has the worst relative strength in your portfolio with shrinking revenue, no path to profitability, and heavy short interest \u2014 down 56%, this is a clear exit before it gets worse."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "GOOGL is down about 20% from its high but trades at a reasonable PE of 21 with solid 15% revenue growth \u2014 this pullback in a high-quality business is worth adding to on weakness."
+    "text": "GOOGL is down about 14% but trades at a reasonable 21x earnings with 15% revenue growth \u2014 this pullback in one of the strongest businesses in the world is a chance to add at a better price."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Adobe at 9x earnings with 10% revenue growth and a 10% free cash flow yield looks genuinely undervalued \u2014 those are value-stock numbers on a high-quality software company."
+  },
+  {
+    "id": "MU-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Micron's 256% revenue growth and 4.8x PE make it one of the cheapest growth stories in your portfolio \u2014 the memory chip cycle is turning and the numbers back adding here."
+  },
+  {
+    "id": "PPG-buy",
+    "action_type": "buy",
+    "priority": "low",
+    "text": "PPG scores 8.1 on the breakout screener with newly positive relative strength versus the S&P 500 \u2014 this defensive industrial name breaking out could offer shelter if the economy slows further."
   }
 ]
