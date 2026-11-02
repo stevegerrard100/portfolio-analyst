@@ -3,48 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "September payrolls came in at just 29,000 jobs (far below the 84,000 forecast) while inflation jumped to 3.7% on an energy surge \u2014 this stagflationary mix of weakening jobs and rising prices with a Fed expected to hike again in December means you should be cautious about adding new risk right now."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "QBTS is down 60% from its high with no earnings, a quarter of its shares being bet against it by short sellers, and insiders dumping stock \u2014 the thesis is broken and this should be sold to stop further damage."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "IONQ is down 56% with negative earnings, cash-burning operations, 12% short interest, and insider selling \u2014 quantum computing is exciting long-term but this stock is telling you the market doesn't believe yet, so exit now."
+    "text": "The Fed just hiked rates to 3.75%-4% while job growth collapsed to just 29,000 \u2014 this rising-rates-plus-weakening-economy combination is stagflationary and means riskier holdings face serious headwinds, so tighten your overall risk exposure now."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI is down 73% from its high with shrinking revenue (down 34%), no profits, heavy insider selling, and 21% short interest \u2014 this is the most damaged position in the portfolio and should be sold immediately."
+    "text": "RGTI is down 75% from its high with negative earnings, revenue shrinking 34%, and heavy short interest \u2014 there's no fundamental reason to stay in this, sell and free up capital."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "QBTS is down 61% with the weakest relative strength in your portfolio, no earnings, 24% short interest, and insiders are selling \u2014 exit this position entirely."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 58% with negative earnings, negative cash flow, 12% short interest, and insider selling \u2014 the thesis is broken, sell to protect remaining capital."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is down 49% with deeply negative cash flow and insider selling \u2014 it's essentially a leveraged Bitcoin bet, so reduce your position size to limit the outsized damage it can do if crypto weakens further."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe at a PE of 9 with a 10% free cash flow yield (meaning it generates a lot of real cash relative to its price) and steady 10% revenue growth looks genuinely undervalued \u2014 consider adding on this pullback."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google under a PE of 19 with 15% revenue growth and strong cash flow is cheap by its own historical standards \u2014 this is a high-quality name worth adding to at these levels."
+    "text": "MSTR is down 52% and burning cash at an alarming rate as a leveraged Bitcoin bet \u2014 reduce your position size meaningfully because this kind of concentrated speculative exposure is dangerous in a stagflationary environment."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron's 256% revenue growth driven by AI demand at a PE of just 4.5 with strong free cash flow makes this a compelling add, though be aware semiconductor stocks can be cyclical."
+    "text": "Micron at a PE of 4.3 with 256% revenue growth and nearly 6% free cash flow yield is genuinely cheap \u2014 consider adding on this pullback if you can stomach near-term volatility."
+  },
+  {
+    "id": "GOOGL-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Google at a PE of 18.5 with 15% revenue growth and insider buying represents real value for a dominant business \u2014 worth adding a small amount at these levels."
   }
 ]
