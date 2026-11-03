@@ -3,42 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed just hiked rates to 3.75%-4% while job growth collapsed to just 29,000 \u2014 this rising-rates-plus-weakening-economy combination is stagflationary and means riskier holdings face serious headwinds, so tighten your overall risk exposure now."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RGTI is down 75% from its high with negative earnings, revenue shrinking 34%, and heavy short interest \u2014 there's no fundamental reason to stay in this, sell and free up capital."
+    "text": "September payrolls badly missed at just 29,000 jobs while inflation reaccelerated to 3.7% with the Fed signaling another possible rate hike \u2014 this stagflationary mix (slowing growth plus rising prices) means you should be cautious about adding new risk right now."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 61% with the weakest relative strength in your portfolio, no earnings, 24% short interest, and insiders are selling \u2014 exit this position entirely."
+    "text": "Sell QBTS \u2014 it's down 64% and nearly 73% off its high with no earnings, burning cash, and heavy short selling, meaning other investors are actively betting against it; there's no reason to hold this."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 58% with negative earnings, negative cash flow, 12% short interest, and insider selling \u2014 the thesis is broken, sell to protect remaining capital."
+    "text": "Sell IONQ \u2014 down 43% with deeply negative earnings, insiders are selling their own shares, and 12% of the stock is being shorted; the quantum computing thesis hasn't translated into real business results."
+  },
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell RGTI \u2014 down 62% with revenue actually shrinking, 21% short interest (meaning one in five available shares is bet against it), and insiders dumping stock; this is a broken position."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is down 52% and burning cash at an alarming rate as a leveraged Bitcoin bet \u2014 reduce your position size meaningfully because this kind of concentrated speculative exposure is dangerous in a stagflationary environment."
+    "text": "Trim MSTR \u2014 it's 51% off its high with terrible cash flow of negative 41% and insiders selling, and as a Bitcoin proxy it adds extra volatility you don't need in a stagflationary environment."
+  },
+  {
+    "id": "BMNR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim BMNR \u2014 three straight earnings misses, down nearly 58% from its high with weak momentum; the company keeps disappointing and the stock reflects that."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to ADBE \u2014 at a price-to-earnings ratio of just 9.2 with strong cash flow and steady 10.5% revenue growth, Adobe looks genuinely cheap for a high-quality software company."
   },
   {
     "id": "MU-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron at a PE of 4.3 with 256% revenue growth and nearly 6% free cash flow yield is genuinely cheap \u2014 consider adding on this pullback if you can stomach near-term volatility."
-  },
-  {
-    "id": "GOOGL-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Google at a PE of 18.5 with 15% revenue growth and insider buying represents real value for a dominant business \u2014 worth adding a small amount at these levels."
+    "text": "Consider adding to MU \u2014 a PE of 4 with 256% revenue growth is extraordinary value, and the consensus view on Wall Street remains positive despite the broader market weakness."
   }
 ]
