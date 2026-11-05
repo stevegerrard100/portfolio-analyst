@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "September payrolls badly missed at just 29,000 jobs while inflation reaccelerated to 3.7% \u2014 this stagflationary mix with a possible December rate hike means your riskier holdings face serious headwinds, so tighten your exposure to speculative names now."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "RGTI is down 72% from its high with negative earnings and shrinking revenue \u2014 the thesis is broken, sell the full position and stop the bleeding."
+    "text": "Job growth collapsed to just 29,000 in September while inflation rose to 3.7% \u2014 this stagflationary mix (weak jobs plus sticky inflation) means the Fed is boxed in and can't cut rates to help the economy, raising the odds of a harder slowdown ahead."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "QBTS is down 64% with negative earnings, 24% short interest, and insiders selling \u2014 this is a broken stock with no fundamental support, exit completely."
+    "text": "Sell QBTS now \u2014 down 64%, unprofitable, burning cash, and showing a relative strength of -69, meaning nearly every other stock is doing better; this thesis is broken."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 58% with negative earnings, 12% short interest, and insiders bailing \u2014 the risk of further downside far outweighs any speculative upside, sell it all."
+    "text": "Sell IONQ \u2014 down 41% with -57 relative strength, no profits, cash burn, and nearly 12% short interest signal this quantum computing bet has failed."
+  },
+  {
+    "id": "RGTI-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell RGTI immediately \u2014 it has the worst relative strength in your portfolio at -71, revenue is actually declining, and a 60% drawdown with high short interest says the market has no confidence here."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Trim NCLP.L \u2014 down 39% with terrible relative strength and bearish momentum across every timeframe, this ETF position is dead weight and freeing up capital makes more sense than hoping for a recovery."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet down 49% from its high with deeply negative technicals \u2014 reduce your position size to limit damage if crypto weakness continues."
+    "text": "Trim MSTR \u2014 down 44% from its high with negative momentum, this leveraged Bitcoin bet adds outsized risk to your portfolio during an uncertain macro environment."
   },
   {
-    "id": "MU-add",
+    "id": "CNC-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Micron at a PE of 4.1 with 256% revenue growth and consistent earnings beats is genuinely cheap \u2014 consider adding on this pullback while the valuation is this compressed."
+    "text": "Add to CNC \u2014 it's the strongest technical name you own with a relative strength of 75, trading above its 50-day average with bullish momentum, which is exactly the kind of stock that holds up in a shaky economy."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google at a PE of 18 on 15% revenue growth while down 30% from its high is rare value for a dominant business \u2014 worth adding here if you can handle near-term macro chop."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Adobe at a PE of 9 with 10.3% free cash flow yield and steady double-digit revenue growth looks meaningfully undervalued \u2014 consider adding while it's out of favor."
+    "text": "Add to GOOGL on this pullback \u2014 15% revenue growth and strong fundamentals at a 28% discount from highs makes this a chance to buy a world-class business while it's on sale."
   }
 ]
