@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "Job growth collapsed to just 29,000 in September while inflation rose to 3.7% \u2014 this stagflationary mix (weak jobs plus sticky inflation) means the Fed is boxed in and can't cut rates to help the economy, raising the odds of a harder slowdown ahead."
+    "text": "VIX at 28.18 combined with rising inflation (3.7% CPI), a near-miss on jobs (29k vs 84k forecast), and a Fed that may still hike signals risk-off conditions are building \u2014 consider holding extra cash and being very selective with new buys."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS now \u2014 down 64%, unprofitable, burning cash, and showing a relative strength of -69, meaning nearly every other stock is doing better; this thesis is broken."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell IONQ \u2014 down 41% with -57 relative strength, no profits, cash burn, and nearly 12% short interest signal this quantum computing bet has failed."
+    "text": "QBTS is down 67% with no earnings, burning cash, and 24% short interest \u2014 the thesis is broken and holding this is just hoping, so sell and redeploy the remaining capital into something that's actually working."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI immediately \u2014 it has the worst relative strength in your portfolio at -71, revenue is actually declining, and a 60% drawdown with high short interest says the market has no confidence here."
+    "text": "RGTI has the worst relative strength in your portfolio at -74, is down 64% with shrinking revenue and 21% short interest \u2014 there's nothing to wait for here, sell it."
   },
   {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "Trim NCLP.L \u2014 down 39% with terrible relative strength and bearish momentum across every timeframe, this ETF position is dead weight and freeing up capital makes more sense than hoping for a recovery."
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "IONQ is down 43% with negative earnings, cash-burning operations, and 12% short interest \u2014 in this macro environment speculative money-losers get punished hardest, so exit now."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR \u2014 down 44% from its high with negative momentum, this leveraged Bitcoin bet adds outsized risk to your portfolio during an uncertain macro environment."
+    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow and insiders selling \u2014 reduce your position size because this kind of high-volatility speculation adds outsized risk when the VIX is already elevated."
+  },
+  {
+    "id": "NCLP.L-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "NCLP.L is down 40% with weak relative strength and all technical indicators bearish \u2014 trim this ETF position to limit further damage while you reassess whether the underlying thesis still holds."
   },
   {
     "id": "CNC-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to CNC \u2014 it's the strongest technical name you own with a relative strength of 75, trading above its 50-day average with bullish momentum, which is exactly the kind of stock that holds up in a shaky economy."
+    "text": "CNC is your strongest technical holding with relative strength of 79, bullish MACD, and trading above its 50-day average \u2014 in a nervous market, leaning into what's actually working makes sense."
   },
   {
-    "id": "GOOGL-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL on this pullback \u2014 15% revenue growth and strong fundamentals at a 28% discount from highs makes this a chance to buy a world-class business while it's on sale."
+    "text": "Adobe at a PE of just 9 with 10% revenue growth and a 10% free cash flow yield looks genuinely cheap \u2014 consider adding on this pullback since the fundamentals strongly support a higher price over time."
   }
 ]
