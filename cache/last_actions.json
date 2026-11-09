@@ -3,48 +3,48 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "VIX at 28.18 combined with rising inflation (3.7% CPI), a near-miss on jobs (29k vs 84k forecast), and a Fed that may still hike signals risk-off conditions are building \u2014 consider holding extra cash and being very selective with new buys."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "QBTS is down 67% with no earnings, burning cash, and 24% short interest \u2014 the thesis is broken and holding this is just hoping, so sell and redeploy the remaining capital into something that's actually working."
+    "text": "VIX at 25.64 with CPI accelerating to 3.7% and the Fed signaling one more rate hike ahead \u2014 this combination of elevated volatility, sticky inflation, and tightening policy means conditions favor caution over aggressive new positions right now."
   },
   {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "RGTI has the worst relative strength in your portfolio at -74, is down 64% with shrinking revenue and 21% short interest \u2014 there's nothing to wait for here, sell it."
+    "text": "Sell RGTI immediately \u2014 down 66% from its high, revenue is shrinking by 34%, the company is unprofitable, and massive short interest signals the market sees more downside ahead."
+  },
+  {
+    "id": "QBTS-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell QBTS now \u2014 down 67% from highs, unprofitable, and 24% short interest means nearly a quarter of tradeable shares are betting against it, making any recovery extremely difficult."
+  },
+  {
+    "id": "BMNR-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell BMNR \u2014 down 54% from its high with three consecutive earnings misses, negative momentum across every metric, and negative fundamentals confirm the thesis is broken."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 43% with negative earnings, cash-burning operations, and 12% short interest \u2014 in this macro environment speculative money-losers get punished hardest, so exit now."
+    "text": "Sell IONQ \u2014 the company is losing money, you're down 37% on your position, and despite quantum computing hype the 12% short interest and 55% drawdown say the market doesn't believe in the near-term story."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "MSTR is a leveraged Bitcoin bet with negative free cash flow and insiders selling \u2014 reduce your position size because this kind of high-volatility speculation adds outsized risk when the VIX is already elevated."
-  },
-  {
-    "id": "NCLP.L-trim",
-    "action_type": "trim",
-    "priority": "medium",
-    "text": "NCLP.L is down 40% with weak relative strength and all technical indicators bearish \u2014 trim this ETF position to limit further damage while you reassess whether the underlying thesis still holds."
-  },
-  {
-    "id": "CNC-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "CNC is your strongest technical holding with relative strength of 79, bullish MACD, and trading above its 50-day average \u2014 in a nervous market, leaning into what's actually working makes sense."
+    "text": "Trim MSTR to reduce risk \u2014 it's essentially a leveraged Bitcoin bet that's down 47% from highs, and in a rising-rate environment with sticky inflation, speculative crypto proxies carry outsized downside risk."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe at a PE of just 9 with 10% revenue growth and a 10% free cash flow yield looks genuinely cheap \u2014 consider adding on this pullback since the fundamentals strongly support a higher price over time."
+    "text": "Add to ADBE on this pullback \u2014 a PE of 8.7 with double-digit revenue and free cash flow growth is genuinely cheap for a dominant software company, though size the position modestly given the elevated VIX environment."
+  },
+  {
+    "id": "CNC-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Add to CNC \u2014 a PE of 12.6 with nearly 20% revenue growth and strong free cash flow in a defensive healthcare name is exactly the kind of holding that should perform well if macro conditions get rougher."
   }
 ]
