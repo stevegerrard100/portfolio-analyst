@@ -1,44 +1,38 @@
 [
   {
-    "id": "MACRO-danger",
-    "action_type": "danger",
-    "priority": "high",
-    "text": "Inflation jumping to 3.7% with the Fed expected to hike in December means borrowing costs are heading higher \u2014 this is a hostile environment for unprofitable and high-valuation stocks, so tighten risk across the board."
-  },
-  {
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 down 54% with shrinking revenue, negative earnings, and over 21% short interest, this is a broken position with no fundamental support to justify holding."
+    "text": "Sell RGTI immediately \u2014 you're down 58%, revenue is declining, the company is burning cash, and it's 63% below its high, which means the thesis here is completely broken."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS immediately \u2014 down 58.5% is the worst loss in your portfolio, and like RGTI the quantum computing thesis has completely failed to deliver results."
+    "text": "Sell QBTS now \u2014 down 62% with nearly 24% short interest (meaning a huge number of pros are betting against it), no earnings, and 67% off its high, this is the definition of a broken position."
   },
   {
     "id": "BMNR-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell BMNR \u2014 down 55% from its high with negative free cash flow and high short interest, this stock is burning cash and showing no signs of recovery."
+    "text": "Sell BMNR \u2014 down 26% with terrible relative strength and 56% below its high, the alarming deterioration signals you should cut your losses and move on."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR \u2014 it's a leveraged Bitcoin bet sitting 48% off its high with terrible technicals, and rising rates make this kind of speculative position especially dangerous."
-  },
-  {
-    "id": "ADBE-add",
-    "action_type": "add",
-    "priority": "low",
-    "text": "Add to ADBE on this pullback \u2014 a PE of 8.7 with double-digit revenue and free cash flow growth makes it genuinely cheap, and profitable cash-generating businesses hold up best when rates are rising."
+    "text": "Trim MSTR to reduce your exposure \u2014 it's essentially a leveraged Bitcoin bet with terrible technicals, and being down 18% with no fundamental earnings support means you should shrink this position size."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 while a 28% drawdown stings, 15% revenue growth and strong fundamentals at a discounted price make this a solid opportunity to build a position in a quality name."
+    "text": "Consider adding to GOOGL on this 29% pullback \u2014 the company is still growing revenue 15%, which means you're getting a proven business at a meaningfully cheaper price than recent months."
+  },
+  {
+    "id": "ADBE-add",
+    "action_type": "add",
+    "priority": "low",
+    "text": "Consider adding to ADBE \u2014 with a PE around 8.6, 10% revenue growth, and strong free cash flow, Adobe looks genuinely undervalued compared to its quality as a business."
   }
 ]
