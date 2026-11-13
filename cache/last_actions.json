@@ -3,36 +3,36 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 61% with revenue collapsing 34%, no path to profitability, and 21% short interest, meaning this business is fundamentally broken and the stock is likely headed lower."
+    "text": "Sell RGTI now \u2014 it's down 63% with declining revenue, no path to profitability, and 20% short interest, meaning a large number of traders are betting it drops further."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS immediately \u2014 down 63% and nearly 67% off its high with no profits and extreme short interest of 21%, this is a speculation that has failed and capital should be preserved."
+    "text": "Sell QBTS now \u2014 down 65% and nearly 70% from its high, deeply unprofitable, and in the same sinking boat as Rigetti with no fundamental reason to hold."
   },
   {
-    "id": "BMNR-sell",
+    "id": "IONQ-sell",
     "action_type": "sell",
-    "priority": "high",
-    "text": "Sell BMNR as it's flashing red across every metric \u2014 down 24%, more than 50% off its high, terrible relative strength, and trading below key moving averages with no sign of recovery."
+    "priority": "critical",
+    "text": "Sell IONQ \u2014 down 38% with nearly 60% drawdown from highs, the company is losing money, and elevated short interest above average signals more downside risk."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR to reduce your exposure \u2014 it's essentially a leveraged Bitcoin bet that's down 21% and nearly 47% off its high, and in a rising-rate environment this kind of speculative leverage works against you."
+    "text": "Trim MSTR significantly \u2014 it's a leveraged Bitcoin bet down 24% and nearly 50% from its high, and with a possible Fed rate hike in December, speculative assets like this face additional pressure."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE on this pullback \u2014 a PE of just 8.7 with solid 10.5% revenue growth and strong free cash flow makes this look genuinely undervalued, which is rare for a software leader of this quality."
+    "text": "Consider adding to ADBE \u2014 a PE of 8.7 (price relative to earnings) is genuinely cheap for a company growing revenue and free cash flow above 10%, and the 33% drawdown looks like an overreaction."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL while it sits 27% off its highs \u2014 the fundamentals remain strong despite the price drop, and this kind of discount on a dominant business with healthy earnings doesn't come around often."
+    "text": "Consider adding to GOOGL \u2014 down 26% from its high despite 15% revenue growth, which means you're buying a proven business at a meaningful discount to where the market valued it recently."
   }
 ]
