@@ -3,42 +3,42 @@
     "id": "RGTI-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell RGTI now \u2014 it's down 66% with collapsing revenue, deeply negative earnings, and 26% short interest, meaning a huge chunk of traders are betting it drops further."
+    "text": "Sell RGTI now \u2014 down 67.5% with shrinking revenue, no profits, 20% short interest, and every technical indicator bearish, meaning this thesis is broken."
   },
   {
     "id": "QBTS-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell QBTS now \u2014 down 67% with 25% short interest, negative earnings, and every technical signal pointing down, this quantum computing bet has no near-term catalyst to recover."
+    "text": "Sell QBTS now \u2014 down 69% with nearly a quarter of shares being bet against it and no fundamental support to justify holding through further losses."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ now \u2014 a 43% loss with negative earnings, nearly 60% off its high, and bearish technicals everywhere means the thesis is broken and capital is better deployed elsewhere."
+    "text": "Sell IONQ now \u2014 this speculative quantum play is down 46% and sitting 63% below its high with no earnings to cushion further drops."
   },
   {
     "id": "BMNR-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell BMNR now \u2014 down 32%, more than half off its 52-week high with no signs of a turnaround, so cut this loss before it gets worse."
+    "text": "Sell BMNR now \u2014 down 33% and nearly 60% off its high with bearish momentum across the board, signaling the position is broken."
   },
   {
     "id": "MSTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR because it's essentially a leveraged Bitcoin bet that's down 30% with all technicals bearish \u2014 reduce your exposure to limit further damage while keeping a smaller position if you still believe in the Bitcoin thesis."
+    "text": "Trim MSTR \u2014 down 31% with negative free cash flow, bearish technicals, and high speculation risk make this too dangerous at current size."
   },
   {
-    "id": "ADBE-add",
+    "id": "CNC-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to ADBE \u2014 trading at just 9x earnings with 10% revenue growth and strong free cash flow, it looks undervalued for a company of this quality and the ADD signal suggests this pullback is a buying opportunity."
+    "text": "Add to CNC \u2014 trading just 1.6% from its 52-week high with strong relative strength and bullish momentum, making it one of the healthiest positions in this portfolio."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 despite being down 14%, the fundamentals remain strong, and buying more at these lower prices can reduce your average cost on a company whose business is still healthy."
+    "text": "Add to GOOGL \u2014 despite being nearly 30% off its high, a PE of 18.7 with 15% revenue growth means you're getting a great business at a meaningful discount."
   }
 ]
