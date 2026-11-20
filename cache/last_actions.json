@@ -3,48 +3,42 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "VIX at 25.46, inflation reaccelerating to 3.7-4.1%, and the Fed signaling a possible December rate hike \u2014 this combination of elevated fear and tightening policy means new money should be deployed cautiously and cash reserves protected."
-  },
-  {
-    "id": "RGTI-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell RGTI immediately \u2014 down 69% with declining revenue, burning cash, and 20% of shares sold short, this speculative quantum computing position has no catalyst to recover anytime soon."
-  },
-  {
-    "id": "QBTS-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell QBTS now \u2014 down 70%, unprofitable, burning cash, and a staggering 25% short interest means the market is actively betting against this stock and the fundamentals give no reason to disagree."
-  },
-  {
-    "id": "IONQ-sell",
-    "action_type": "sell",
-    "priority": "critical",
-    "text": "Sell IONQ \u2014 down 48% with negative earnings, cash-burning operations, and 12% short interest, this is another speculative position where the thesis has clearly failed."
+    "text": "VIX at 29.57 signals elevated fear, CPI running at 4.1% with the Fed signaling higher-for-longer rates and a possible December hike \u2014 this is a risk-off environment where you should be cautious about adding new exposure."
   },
   {
     "id": "BMNR-sell",
     "action_type": "sell",
     "priority": "high",
-    "text": "Sell BMNR \u2014 down 34% with broken technicals and 61% off its high, this position is showing no signs of recovery and capital is better deployed elsewhere."
+    "text": "Sell BMNR now \u2014 it's down 39% with a 63% collapse from its high, the technical picture is completely broken, and there's no fundamental case to hold on."
   },
   {
-    "id": "MSTR-trim",
+    "id": "MSTR-sell",
+    "action_type": "sell",
+    "priority": "high",
+    "text": "Sell MSTR \u2014 down 42.5% with the worst relative strength in your portfolio, this is a leveraged Bitcoin bet that's not working, and in a rising-rate environment the risk is even higher."
+  },
+  {
+    "id": "IONQ-sell",
+    "action_type": "sell",
+    "priority": "critical",
+    "text": "Sell IONQ \u2014 down 36% and nearly 69% off its highs with no profits and negative cash flow, this speculative quantum computing stock has no margin of safety in a market punishing unprofitable companies."
+  },
+  {
+    "id": "PLTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim MSTR because it's essentially a leveraged Bitcoin bet that's down 33% and 53% off its high \u2014 reduce your exposure to this volatile position before it gets worse in a rising-rate environment."
+    "text": "Trim PLTR \u2014 the 56% revenue growth is impressive but a PE of 60.5 leaves zero room for error, and in a higher-for-longer rate environment, expensive growth stocks face the most downside risk."
   },
   {
-    "id": "CNC-add",
+    "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to CNC \u2014 with 20% revenue growth, a cheap 13x earnings valuation, and defensive healthcare positioning, it's well-suited for an environment where inflation is sticky and rates stay high."
+    "text": "Add to ADBE \u2014 at 38% off its highs with a PE of just 8.1 and strong 11.4% free cash flow growth, this is a proven cash-generating business trading at a genuinely discounted price."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Consider adding to GOOGL \u2014 at 18.5x earnings with 15% revenue growth and insider buying, this pullback in a dominant business looks like a genuine discount worth building into."
+    "text": "Add to GOOGL \u2014 despite being down 19% and 32% below its high, the fundamentals remain strong with 15% revenue growth, making this pullback a potential opportunity in a quality name."
   }
 ]
