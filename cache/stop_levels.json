@@ -136,8 +136,8 @@
     "prev_level": null
   },
   "LLY": {
-    "level": 1040.5779,
-    "prev_level": null
+    "level": 1093.8214,
+    "prev_level": 1040.5779
   },
   "EXFY": {
     "level": 1.4995,
@@ -181,6 +181,10 @@
   },
   "CNC": {
     "level": 64.8109,
+    "prev_level": null
+  },
+  "AVGO": {
+    "level": 283.6812,
     "prev_level": null
   }
 }

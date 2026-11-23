@@ -3,42 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "VIX at 29.57 signals elevated fear, CPI running at 4.1% with the Fed signaling higher-for-longer rates and a possible December hike \u2014 this is a risk-off environment where you should be cautious about adding new exposure."
-  },
-  {
-    "id": "BMNR-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell BMNR now \u2014 it's down 39% with a 63% collapse from its high, the technical picture is completely broken, and there's no fundamental case to hold on."
-  },
-  {
-    "id": "MSTR-sell",
-    "action_type": "sell",
-    "priority": "high",
-    "text": "Sell MSTR \u2014 down 42.5% with the worst relative strength in your portfolio, this is a leveraged Bitcoin bet that's not working, and in a rising-rate environment the risk is even higher."
+    "text": "The VIX is at 35.89 \u2014 well above the 25 stress threshold \u2014 while CPI is running at 4.1% with a possible December rate hike on the table, meaning market volatility is elevated and conditions favor caution over aggressive new positions."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ \u2014 down 36% and nearly 69% off its highs with no profits and negative cash flow, this speculative quantum computing stock has no margin of safety in a market punishing unprofitable companies."
+    "text": "IONQ is down 36% with the worst momentum in your portfolio, no earnings to support the valuation, and cash burn in a speculative sector \u2014 exit this position to free up capital for stronger holdings."
   },
   {
     "id": "PLTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim PLTR \u2014 the 56% revenue growth is impressive but a PE of 60.5 leaves zero room for error, and in a higher-for-longer rate environment, expensive growth stocks face the most downside risk."
+    "text": "PLTR trades at 56.5x earnings, making it your most expensive holding by a wide margin \u2014 in a high-VIX environment with potential rate hikes ahead, trimming some of this richly valued position reduces your portfolio's vulnerability to a sharp pullback."
+  },
+  {
+    "id": "LLY-raise_stop",
+    "action_type": "raise_stop",
+    "priority": "medium",
+    "text": "Raise your LLY stop from $1,040.58 to $1,093.82 to lock in more of your gains while still giving the stock room to breathe."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 at 38% off its highs with a PE of just 8.1 and strong 11.4% free cash flow growth, this is a proven cash-generating business trading at a genuinely discounted price."
+    "text": "Adobe looks genuinely undervalued at 7.9x earnings with over 10% revenue growth and best-in-class 11.6% free cash flow yield \u2014 this pullback in a proven business is worth adding to, though size modestly given the elevated VIX."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 despite being down 19% and 32% below its high, the fundamentals remain strong with 15% revenue growth, making this pullback a potential opportunity in a quality name."
+    "text": "GOOGL is down 19% on your position but still delivering 15% revenue growth at a reasonable valuation \u2014 the fundamentals haven't broken, making this a sensible spot to average down in small increments."
   }
 ]
