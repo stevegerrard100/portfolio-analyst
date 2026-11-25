@@ -3,24 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has shifted to actively hiking rates with potential moves to 4-4.25%, VIX is elevated at 26.62, and inflation is reaccelerating to 3.7-4.1% \u2014 this combination of tightening policy, rising prices, and elevated fear means you should be cautious about adding new risk right now."
+    "text": "The Fed has reversed course to rate hikes with rates at 3.75\u20134.0%, inflation is reaccelerating to 3.7\u20134.1%, and the VIX sits at 26.36 \u2014 this combination of tightening policy, sticky inflation, and elevated fear means the environment is hostile to growth stocks and you should be cautious about adding new risk."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is a speculative quantum computing stock down 32% with a relative strength of -56, meaning it's weaker than almost everything else in the market \u2014 the thesis is broken and this capital is better deployed elsewhere."
+    "text": "IONQ is down 37% with no earnings, no free cash flow, nearly 69% off its highs, and carries EXIT signal \u2014 this is a broken speculative bet and the rising-rate environment makes unprofitable companies even harder to hold, so take the loss and move on."
+  },
+  {
+    "id": "PLTR-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "Palantir's PE of 63.5 is the most expensive in your portfolio, and with the Fed actively hiking rates, sky-high valuations get punished hardest \u2014 consider trimming to lock in gains and reduce your exposure to valuation compression risk."
+  },
+  {
+    "id": "NOW-trim",
+    "action_type": "trim",
+    "priority": "medium",
+    "text": "ServiceNow is down 47% from its high with the worst relative strength in your portfolio at -46.9, and in a rate-hiking cycle its premium valuation faces continued pressure \u2014 trim to right-size this position before further damage."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe is trading at just 8x earnings, which is unusually cheap for a dominant software company, and the ADD signal suggests this pullback is a reasonable spot to increase your position gradually."
+    "text": "Adobe's PE of 8.5 and free cash flow yield near 11% make it the cheapest quality name in your portfolio, and its steady 10.5% revenue growth holds up well even in a tougher macro environment \u2014 this pullback is a reasonable spot to add gradually."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is down 30% from its high but fundamentals remain intact as your largest individual stock position \u2014 adding modestly here averages down your cost on a business that's still growing, though size it conservatively given the macro headwinds."
+    "text": "Google is down 19% but growing revenue at 15% with strong fundamentals behind the dip \u2014 at this lower price the risk-reward has improved, making it worth adding in small increments if you believe in the long-term earnings power."
   }
 ]
