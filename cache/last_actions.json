@@ -3,36 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has reversed course to rate hikes with rates at 3.75\u20134.0%, inflation is reaccelerating to 3.7\u20134.1%, and the VIX sits at 26.36 \u2014 this combination of tightening policy, sticky inflation, and elevated fear means the environment is hostile to growth stocks and you should be cautious about adding new risk."
+    "text": "The Fed has reversed course and is now hiking rates back toward 4.00%+ while CPI remains sticky at 3.7-4.1% and the VIX sits elevated at 28.29 \u2014 this combination of tightening policy, persistent inflation, and high volatility means conditions favor caution over aggressive buying right now."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "IONQ is down 37% with no earnings, no free cash flow, nearly 69% off its highs, and carries EXIT signal \u2014 this is a broken speculative bet and the rising-rate environment makes unprofitable companies even harder to hold, so take the loss and move on."
+    "text": "Sell IONQ \u2014 it's down 30% with a 67% drawdown from highs, burning cash with negative free cash flow, and in a rising-rate environment there is no margin of safety for a speculative, unprofitable company like this."
   },
   {
     "id": "PLTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Palantir's PE of 63.5 is the most expensive in your portfolio, and with the Fed actively hiking rates, sky-high valuations get punished hardest \u2014 consider trimming to lock in gains and reduce your exposure to valuation compression risk."
+    "text": "Trim PLTR because a PE of 64 is extremely vulnerable to compression when the Fed is actively hiking rates, and locking in some gains here reduces your exposure to the highest-valuation name you own."
   },
   {
-    "id": "NOW-trim",
+    "id": "SPCX-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "ServiceNow is down 47% from its high with the worst relative strength in your portfolio at -46.9, and in a rate-hiking cycle its premium valuation faces continued pressure \u2014 trim to right-size this position before further damage."
+    "text": "Trim SPCX \u2014 a PE of 46.5 with negative free cash flow in a small position doesn't justify the risk when rates are heading higher and the market is punishing unprofitable, expensive names."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Adobe's PE of 8.5 and free cash flow yield near 11% make it the cheapest quality name in your portfolio, and its steady 10.5% revenue growth holds up well even in a tougher macro environment \u2014 this pullback is a reasonable spot to add gradually."
+    "text": "Add to ADBE \u2014 a PE of just 8.5 with strong free cash flow and profitability makes it one of your best risk/reward opportunities, and quality at a discount tends to hold up better when macro conditions are tough."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Google is down 19% but growing revenue at 15% with strong fundamentals behind the dip \u2014 at this lower price the risk-reward has improved, making it worth adding in small increments if you believe in the long-term earnings power."
+    "text": "Add to GOOGL \u2014 despite the 19% loss, 15% revenue growth and reasonable valuation mean the pullback looks like a chance to lower your cost basis on a fundamentally sound business."
   }
 ]
