@@ -3,36 +3,36 @@
     "id": "MACRO-danger",
     "action_type": "danger",
     "priority": "high",
-    "text": "The Fed has reversed course and is now hiking rates back toward 4.00%+ while CPI remains sticky at 3.7-4.1% and the VIX sits elevated at 28.29 \u2014 this combination of tightening policy, persistent inflation, and high volatility means conditions favor caution over aggressive buying right now."
+    "text": "The Fed is actively hiking rates again with the VIX elevated at 26.8 and CPI still running at 4.1% \u2014 this combination of tightening policy, above-target inflation, and elevated fear means the environment favors caution over aggressive new positions."
   },
   {
     "id": "IONQ-sell",
     "action_type": "sell",
     "priority": "critical",
-    "text": "Sell IONQ \u2014 it's down 30% with a 67% drawdown from highs, burning cash with negative free cash flow, and in a rising-rate environment there is no margin of safety for a speculative, unprofitable company like this."
+    "text": "IONQ is down 28% with negative free cash flow, negative earnings, and no clear path to profitability \u2014 this is a cash-burning speculative position that should be exited before further damage in a rising-rate environment."
   },
   {
     "id": "PLTR-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim PLTR because a PE of 64 is extremely vulnerable to compression when the Fed is actively hiking rates, and locking in some gains here reduces your exposure to the highest-valuation name you own."
+    "text": "PLTR trades at a PE of 64 in an environment where the Fed is raising rates, which crushes high-multiple stocks hardest \u2014 consider trimming to lock in gains and reduce exposure to valuation compression risk."
   },
   {
     "id": "SPCX-trim",
     "action_type": "trim",
     "priority": "medium",
-    "text": "Trim SPCX \u2014 a PE of 46.5 with negative free cash flow in a small position doesn't justify the risk when rates are heading higher and the market is punishing unprofitable, expensive names."
+    "text": "SPCX carries a PE of 46.5 with negative free cash flow, and as a tiny speculative position it faces outsized risk in a rate-hiking cycle \u2014 trim to a size you're comfortable losing entirely."
   },
   {
     "id": "ADBE-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to ADBE \u2014 a PE of just 8.5 with strong free cash flow and profitability makes it one of your best risk/reward opportunities, and quality at a discount tends to hold up better when macro conditions are tough."
+    "text": "ADBE at a PE of 8.5 with 11% free cash flow yield is genuinely cheap for a software leader \u2014 this kind of valuation offers a margin of safety even if the macro environment stays tough."
   },
   {
     "id": "GOOGL-add",
     "action_type": "add",
     "priority": "low",
-    "text": "Add to GOOGL \u2014 despite the 19% loss, 15% revenue growth and reasonable valuation mean the pullback looks like a chance to lower your cost basis on a fundamentally sound business."
+    "text": "GOOGL offers 15% revenue growth at a PE of just 17.9, which is bargain territory for a company of this quality \u2014 a strong candidate to add on this pullback while others are overpriced."
   }
 ]
